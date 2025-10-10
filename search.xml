@@ -16,7 +16,7 @@
 <p>本节内容主要重点是搭建开发环境，重点是后端环境，会有一些坑（本文只提到了我遇到的）比如 Lombok 版本兼容问题、数据库账户密码设置问题。<br>前面两部分软件开发流程和项目介绍，都是黑马官方笔记 copy 来的，阅读了解一下即可，主要是一些概念。<br>其次关于 Nginx 的概念与作用、Swagger 的使用，个人认为最好熟悉一下。<br>此外，我在 contents 中提到的是官方课程目录，本文不一定全都有相关内容的覆盖，可自行前往课程了解学习。</p>
 </blockquote>
 <hr>
-<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">&lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
 <h3 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h3><ul>
 <li><p>软件开发流程介绍</p>
@@ -107,9 +107,9 @@
 <td align="left">项目整体架构设计、技术选型等</td>
 </tr>
 <tr>
-<td align="left"><font color="red"> 开发工程师 </font></td>
-<td><font color="red"> 编码 </font></td>
-<td align="left"><font color="red"> 功能代码实现 </font></td>
+<td align="left">开发工程师</td>
+<td>编码</td>
+<td align="left">功能代码实现</td>
 </tr>
 <tr>
 <td align="left">测试工程师</td>
