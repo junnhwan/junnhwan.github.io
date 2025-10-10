@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Hello World</title>
+    <url>/2025/09/20/hello-world/</url>
+    <content><![CDATA[<p>This is my first blog. </p>
+<p>Share my programming learning journey and life insights here.</p>
+<p><img src="/2025/09/20/hello-world/1.jpg" alt="hello-world"></p>
+]]></content>
+  </entry>
+  <entry>
     <title>sky-takeout-day01-note</title>
     <url>/2025/10/10/sky-takeout-day01-note/</url>
     <content><![CDATA[<h1 id="Sky-takeout-Day01"><a href="#Sky-takeout-Day01" class="headerlink" title="Sky-takeout  Day01"></a>Sky-takeout  Day01</h1><h3 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h3><ul>
@@ -348,13 +356,5 @@
       <tags>
         <tag>苍穹外卖</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2025/09/20/hello-world/</url>
-    <content><![CDATA[<p>This is my first blog. </p>
-<p>Share my programming learning journey and life insights here.</p>
-<p><img src="/2025/09/20/hello-world/1.jpg" alt="hello-world"></p>
-]]></content>
   </entry>
 </search>
