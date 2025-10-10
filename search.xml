@@ -11,7 +11,14 @@
   <entry>
     <title>sky-takeout-day01-note</title>
     <url>/2025/10/10/sky-takeout-day01-note/</url>
-    <content><![CDATA[<h1 id="Sky-takeout-Day01"><a href="#Sky-takeout-Day01" class="headerlink" title="Sky-takeout  Day01"></a>Sky-takeout  Day01</h1><h3 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h3><ul>
+    <content><![CDATA[<h1 id="Sky-takeout-Day01"><a href="#Sky-takeout-Day01" class="headerlink" title="Sky-takeout  Day01"></a>Sky-takeout  Day01</h1><blockquote>
+<p>【前言】</p>
+<p>本节内容主要重点是搭建开发环境，重点是后端环境，会有一些坑（本文只提到了我遇到的）比如 Lombok 版本兼容问题、数据库账户密码设置问题。<br>前面两部分软件开发流程和项目介绍，都是黑马官方笔记 copy 来的，阅读了解一下即可，主要是一些概念。<br>其次关于 Nginx 的概念与作用、Swagger 的使用，个人认为最好熟悉一下。<br>此外，我在 contents 中提到的是官方课程目录，本文不一定全都有相关内容的覆盖，可自行前往课程了解学习。</p>
+</blockquote>
+<hr>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">&lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h3><ul>
 <li><p>软件开发流程介绍</p>
 <ul>
 <li>开发流程</li>
@@ -39,10 +46,6 @@
 </li>
 </ul>
 <hr>
-<blockquote>
-<p>【前言】</p>
-<p>本节内容主要重点是搭建开发环境，重点是后端环境，会有一些坑（本文只提到了我遇到的）比如 Lombok 版本兼容问题、数据库账户密码设置问题。<br>前面两部分软件开发流程和项目介绍，都是黑马官方笔记 copy 来的，阅读了解一下即可，主要是一些概念。<br>其次关于 Nginx 的概念与作用、Swagger 的使用，个人认为最好熟悉一下。<br>此外，我在 contents 中提到的是官方课程目录，本文不一定全都有相关内容的覆盖，可自行前往课程了解学习。</p>
-</blockquote>
 <h3 id="1-软件开发流程介绍"><a href="#1-软件开发流程介绍" class="headerlink" title="1. 软件开发流程介绍"></a>1. 软件开发流程介绍</h3><h4 id="开发流程"><a href="#开发流程" class="headerlink" title="开发流程"></a>开发流程</h4><img src="/2025/10/10/sky-takeout-day01-note/image-20251010113130473.png" alt="image-20251010113130473" style="zoom:50%;">
 
 <p><strong>1). 第 1 阶段: 需求分析</strong></p>
