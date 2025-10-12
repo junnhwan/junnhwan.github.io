@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2025/09/20/hello-world/</url>
-    <content><![CDATA[<p>This is my first blog. </p>
-<p>Share my programming learning journey and life insights here.</p>
-<p><img src="/2025/09/20/hello-world/1.jpg" alt="hello-world"></p>
-]]></content>
-  </entry>
-  <entry>
     <title>sky-takeout-day01-note</title>
     <url>/2025/10/10/sky-takeout-day01-note/</url>
     <content><![CDATA[<h1 id="Sky-takeout-Day01"><a href="#Sky-takeout-Day01" class="headerlink" title="Sky-takeout  Day01"></a>Sky-takeout  Day01</h1><blockquote>
@@ -354,6 +346,516 @@
 </ul>
 <p>​	接口文档访问路径为 <a href="http://localhost/">http://localhost</a>: 8080&#x2F;doc.html</p>
 <h5 id="3）Swagger-常用注解"><a href="#3）Swagger-常用注解" class="headerlink" title="3）Swagger 常用注解"></a>3）Swagger 常用注解</h5><img src="/2025/10/10/sky-takeout-day01-note/image-20251010110634376.png" alt="image-20251010110634376" style="zoom: 67%;">
+]]></content>
+      <tags>
+        <tag>苍穹外卖</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2025/09/20/hello-world/</url>
+    <content><![CDATA[<p>This is my first blog. </p>
+<p>Share my programming learning journey and life insights here.</p>
+<p><img src="/2025/09/20/hello-world/1.jpg" alt="hello-world"></p>
+]]></content>
+  </entry>
+  <entry>
+    <title>sky-takeout-day03-note</title>
+    <url>/2025/10/12/sky-takeout-day03-note/</url>
+    <content><![CDATA[<h1 id="Sky-takeout-Day03"><a href="#Sky-takeout-Day03" class="headerlink" title="Sky-takeout  Day03"></a>Sky-takeout  Day03</h1><hr>
+<blockquote>
+<p>【前言】<br>Day03 的 Task 是 <strong>公共字段自动填充</strong> 与 <strong>菜品管理相关功能</strong> 的代码开发，主要的菜品管理部分也是基础 CRUD 的练习，另外就是公共字段自动填充这种偏向技术一点的开发技巧的学习。</p>
+<p>公共字段自动填充主要涉及到 枚举、注解、Spring的 AOP 、反射 的知识，用<strong>自定义注解</strong>实现了当执行 <em><strong>insert新增* 与 *update更新</strong></em>  时在Mapper层对创建人、创建时间和修改人、修改时间的字段的自动填充，避免了在Service设置属性的冗余重复代码。</p>
+<p>剩余的菜品管理就是 CRUD 练习了， 只是相比前面的员工管理模块，菜品管理会涉及到菜品Dish与分类Category、套餐Setmeal的<strong>多表的联系</strong>，分析起来会更比员工管理的单表更复杂一点，要考虑的比较多，但是这部分练习能锻炼到我们对<strong>多表的业务功能的分析能力</strong>。</p>
+</blockquote>
+<span id="more"></span>
+
+<h2 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h2><ul>
+<li>公共字段自动填充</li>
+<li>新增菜品</li>
+<li>菜品分页查询</li>
+<li>删除菜品</li>
+<li>修改菜品</li>
+</ul>
+<h2 id="1-公共字段自动填充"><a href="#1-公共字段自动填充" class="headerlink" title="1. 公共字段自动填充"></a>1. 公共字段自动填充</h2><h3 id="公共字段问题引入"><a href="#公共字段问题引入" class="headerlink" title="公共字段问题引入"></a>公共字段问题引入</h3><p>​	前面在<strong>新增员工</strong>或者<strong>新增菜品分类</strong>时需要设置创建时间、创建人、修改时间、修改人等字段，在<strong>编辑员工</strong>或者<strong>编辑菜品分类</strong>时需要设置修改时间、修改人等字段。这些字段属于<strong>公共字段</strong>，很多表中都会有这些字段，如下：</p>
+<table>
+<thead>
+<tr>
+<th><strong>序号</strong></th>
+<th><strong>字段名</strong></th>
+<th><strong>含义</strong></th>
+<th><strong>数据类型</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>create_time</td>
+<td>创建时间</td>
+<td>datetime</td>
+</tr>
+<tr>
+<td>2</td>
+<td>create_user</td>
+<td>创建人id</td>
+<td>bigint</td>
+</tr>
+<tr>
+<td>3</td>
+<td>update_time</td>
+<td>修改时间</td>
+<td>datetime</td>
+</tr>
+<tr>
+<td>4</td>
+<td>update_user</td>
+<td>修改人id</td>
+<td>bigint</td>
+</tr>
+</tbody></table>
+<p>对于这些字段，我们的赋值方式为： </p>
+<p>1). 在新增数据时, 将createTime、updateTime 设置为当前时间, createUser、updateUser设置为当前登录用户ID。</p>
+<p>2). 在更新数据时, 将updateTime 设置为当前时间, updateUser设置为当前登录用户ID。</p>
+<p>代码层面，复制方式如下，通过set属性来设置这些公共字段的值</p>
+<p>Insert时<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012092311740.png" alt="image-20251012092311740" style="zoom: 33%;"></p>
+<p>Update时<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012092427001.png" alt="image-20251012092427001" style="zoom:33%;"></p>
+<p>如果都按照上述的操作方式来处理这些公共字段, 需要在每一个业务方法中进行操作, 编码相对冗余、繁琐，那能不能对于这些公共字段在某个地方统一处理，来简化开发呢？</p>
+<ul>
+<li>答案是可以的，我们使用<strong>AOP切面编程，实现功能增强</strong>，来完成公共字段自动填充功能。</li>
+</ul>
+<p>这样做的好处：</p>
+<ul>
+<li>减少重复代码，提升开发效率；</li>
+<li>保证字段赋值的一致性（如时间格式、操作人 ID 的来源统一）；</li>
+<li>降低人为疏忽导致的字段遗漏风险。</li>
+</ul>
+<h3 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h3><p><strong>实现步骤：</strong></p>
+<p>1). 自定义注解 AutoFill，用于标识需要进行公共字段自动填充的方法</p>
+<p>2). 自定义切面类 AutoFillAspect，统一拦截加入了 AutoFill 注解的方法，通过反射为公共字段赋值</p>
+<p>3). 在 Mapper 的方法上加入 AutoFill 注解</p>
+<p>实现上述步骤，需掌握以下知识</p>
+<p>**技术点：**枚举、注解、AOP、反射</p>
+<h3 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h3><h4 id="1）编写注解，自定义注解AutoFill"><a href="#1）编写注解，自定义注解AutoFill" class="headerlink" title="1）编写注解，自定义注解AutoFill"></a>1）编写注解，自定义注解AutoFill</h4><p>在sky-server模块，创建com.sky.annotation包。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.annotation;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sky.enumeration.OperationType;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.ElementType;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Retention;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.RetentionPolicy;</span><br><span class="line"><span class="keyword">import</span> java.lang.annotation.Target;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 自定义公共字段自动填充注解，用于标记需要自动填充公共字段的方法</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> AutoFill &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 数据库操作类型，如插入或更新 INSERT, UPDATE</span></span><br><span class="line">    OperationType <span class="title function_">value</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>在初始项目的枚举包中已定义了操作类型枚举<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012095830097.png" alt="image-20251012095830097" style="zoom:33%;"></p>
+<h4 id="2）编写切面类-自定义AutoFillAspect切面"><a href="#2）编写切面类-自定义AutoFillAspect切面" class="headerlink" title="2）编写切面类, 自定义AutoFillAspect切面"></a>2）编写切面类, 自定义AutoFillAspect切面</h4><p>在sky-server模块，创建com.sky.aspect包。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.aspect;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sky.annotation.AutoFill;</span><br><span class="line"><span class="keyword">import</span> com.sky.constant.AutoFillConstant;</span><br><span class="line"><span class="keyword">import</span> com.sky.context.BaseContext;</span><br><span class="line"><span class="keyword">import</span> com.sky.enumeration.OperationType;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.JoinPoint;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Aspect;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Before;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.annotation.Pointcut;</span><br><span class="line"><span class="keyword">import</span> org.aspectj.lang.reflect.MethodSignature;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.InvocationTargetException;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.time.LocalDateTime;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 自定义切面类，处理公共字段自动填充逻辑</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AutoFillAspect</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 切入点，匹配所有标记了 <span class="doctag">@AutoFill</span> 注解的方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="comment">// 切入点表达式，匹配所有在 com.sky.mapper 包下的方法，并且这些方法上有 @AutoFill 注解</span></span><br><span class="line">    <span class="comment">// execution(* com.sky.mapper.*.*(..)) 匹配 com.sky.mapper 包及其子包下的所有方法</span></span><br><span class="line">    <span class="comment">// &amp;&amp; @annotation(com.sky.annotation.AutoFill) 匹配那些被 @AutoFill 注解标记的方法</span></span><br><span class="line">    <span class="comment">// 这样，任何调用 com.sky.mapper 包下的方法且这些方法被 @AutoFill 注解标记时，</span></span><br><span class="line">    <span class="comment">// 都会触发这个切入点，从而可以在相应的通知中实现自动填充公共字段的逻辑</span></span><br><span class="line">    <span class="meta">@Pointcut(&quot;execution(* com.sky.mapper.*.*(..)) &amp;&amp; @annotation(com.sky.annotation.AutoFill)&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">autoFillPointCut</span><span class="params">()</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 前置通知，在切入点方法执行前，执行通知--进行公共字段自动填充逻辑 (反射 + AOP)</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> joinPoint 连接点信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Before(&quot;autoFillPointCut()&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">autoFill</span><span class="params">(JoinPoint joinPoint)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;自动填充公共字段...&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 1.获取当前拦截方法的数据库操作类型（插入或更新）</span></span><br><span class="line">        <span class="comment">// 注意这里自动导包的话要导入 org.aspectj.lang.reflect.MethodSignature，</span></span><br><span class="line">        <span class="comment">// 不是 java.lang.reflect.MethodSignature</span></span><br><span class="line">        <span class="comment">// 否则调用不了getMethod()方法</span></span><br><span class="line">        <span class="type">MethodSignature</span> <span class="variable">signature</span> <span class="operator">=</span> (MethodSignature) joinPoint.getSignature();  <span class="comment">// 获取方法签名</span></span><br><span class="line">        <span class="type">AutoFill</span> <span class="variable">annotation</span> <span class="operator">=</span> signature.getMethod().getAnnotation(AutoFill.class);<span class="comment">// 获取方法上的注解</span></span><br><span class="line">        <span class="type">OperationType</span> <span class="variable">operationType</span> <span class="operator">=</span> annotation.value(); <span class="comment">// 获取注解的值（操作类型）</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2.获取当前拦截方法的参数对象（实体类对象）</span></span><br><span class="line">        Object[] args = joinPoint.getArgs(); <span class="comment">// 获取方法参数</span></span><br><span class="line">        <span class="keyword">if</span> (args == <span class="literal">null</span> || args.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>; <span class="comment">// 如果没有参数，直接返回</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">Object</span> <span class="variable">entity</span> <span class="operator">=</span> args[<span class="number">0</span>]; <span class="comment">// 项目约定第一个参数是实体类对象</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3.根据操作类型，准备需要填充的公共字段及其值（如创建时间、更新时间、创建人、更新人等）</span></span><br><span class="line">        <span class="type">LocalDateTime</span> <span class="variable">now</span> <span class="operator">=</span> LocalDateTime.now();</span><br><span class="line">        <span class="type">Long</span> <span class="variable">currentId</span> <span class="operator">=</span> BaseContext.getCurrentId();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4.使用反射机制，给实体类对象的公共字段赋值（如创建时间、更新时间、创建人、更新人等）</span></span><br><span class="line">        <span class="keyword">if</span>(operationType == OperationType.INSERT) &#123;</span><br><span class="line">            <span class="comment">// 插入操作，准备插入时需要填充的字段及其值 (四个字段)</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 通过反射获取实体类的公共字段的set方法</span></span><br><span class="line">                <span class="type">Method</span> <span class="variable">setCreateUser</span> <span class="operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);</span><br><span class="line">                <span class="type">Method</span> <span class="variable">setCreateTime</span> <span class="operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);</span><br><span class="line">                <span class="type">Method</span> <span class="variable">setUpdateUser</span> <span class="operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);</span><br><span class="line">                <span class="type">Method</span> <span class="variable">setUpdateTime</span> <span class="operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);</span><br><span class="line">                <span class="comment">// 调用set方法，给实体类对象的公共字段赋值</span></span><br><span class="line">                setCreateUser.invoke(entity, currentId);</span><br><span class="line">                setCreateTime.invoke(entity, now);</span><br><span class="line">                setUpdateUser.invoke(entity, currentId);</span><br><span class="line">                setUpdateTime.invoke(entity, now);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (operationType == OperationType.UPDATE) &#123;</span><br><span class="line">            <span class="comment">// 更新操作，准备更新时需要填充的字段及其值 (两个字段)</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 通过反射获取实体类的公共字段的set方法</span></span><br><span class="line">                <span class="type">Method</span> <span class="variable">setUpdateUser</span> <span class="operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);</span><br><span class="line">                <span class="type">Method</span> <span class="variable">setUpdateTime</span> <span class="operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);</span><br><span class="line">                <span class="comment">// 调用set方法，给实体类对象的公共字段赋值</span></span><br><span class="line">                setUpdateUser.invoke(entity, currentId);</span><br><span class="line">                setUpdateTime.invoke(entity, now);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3）在Mapper的编辑（插入、更新）相关方法加上注解"><a href="#3）在Mapper的编辑（插入、更新）相关方法加上注解" class="headerlink" title="3）在Mapper的编辑（插入、更新）相关方法加上注解"></a>3）在Mapper的编辑（插入、更新）相关方法加上注解<img src="/2025/10/12/sky-takeout-day03-note/image-20251012100810762.png" alt="image-20251012100810762" style="zoom:33%;"></h4><p><strong>同时</strong>，将业务层为公共字段赋值的代码注释掉。</p>
+<p>1). 将员工管理的新增和编辑方法中的公共字段赋值的代码注释。</p>
+<p>2). 将菜品分类管理的新增和修改方法中的公共字段赋值的代码注释。</p>
+<h3 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h3><ul>
+<li><p>初步测试，发现前置通知成功拦截方法</p>
+  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012101400679.png" alt="image-20251012101400679" style="zoom:33%;">
+</li>
+<li><p>完善切面类中前置通知的公共字段自动填充逻辑后，进行调试，观察线程和变量捕获情况</p>
+  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012121509064.png" alt="image-20251012121509064" style="zoom:50%;"></li>
+</ul>
+<h2 id="2-新增菜品"><a href="#2-新增菜品" class="headerlink" title="2.新增菜品"></a>2.新增菜品</h2><h3 id="需求分析与接口设计"><a href="#需求分析与接口设计" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p>新增菜品的<strong>产品原型</strong>：<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012122838118.png" alt="image-20251012122838118" style="zoom: 50%;"></p>
+<p><strong>业务规则：</strong></p>
+<ul>
+<li>菜品名称必须是唯一的</li>
+<li>菜品必须属于某个分类下，不能单独存在</li>
+<li>新增菜品时可以根据情况选择菜品的口味</li>
+<li>每个菜品必须对应一张图片</li>
+</ul>
+<p>**接口设计：**明确每个接口的请求方式、请求路径、传入参数和返回值。</p>
+<ul>
+<li>根据类型查询分类（已完成）</li>
+<li>文件上传</li>
+<li>新增菜品</li>
+</ul>
+<p><strong>1. 根据类型查询分类</strong></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165033612-1760243432816-9.png" alt="image-20221121165033612" style="zoom:50%;"> <img src="/2025/10/12/sky-takeout-day03-note/image-20221121165043619.png" alt="image-20221121165043619" style="zoom:50%;"></p>
+<p><strong>2. 文件上传</strong></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165201319-1760243432816-11.png" alt="image-20221121165201319" style="zoom:50%;"><img src="/2025/10/12/sky-takeout-day03-note/image-20221121165215634.png" alt="image-20221121165215634" style="zoom:50%;"></p>
+<p><strong>3. 新增菜品</strong></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20221121165254961.png" alt="image-20221121165254961" style="zoom: 50%;"><img src="/2025/10/12/sky-takeout-day03-note/../../TODO/cqwm/讲义/day03/assets/image-20221121165308394.png" alt="image-20221121165308394" style="zoom: 50%;"><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165322687-1760243432807-7.png" alt="image-20221121165322687" style="zoom: 50%;"></p>
+<p>**数据库设计：**涉及两张表——dish和dish_flavor，通过逻辑外键建立联系</p>
+<p><strong>1). 菜品表:dish</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>字段名</strong></th>
+<th><strong>数据类型</strong></th>
+<th><strong>说明</strong></th>
+<th><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>主键</td>
+<td>自增</td>
+</tr>
+<tr>
+<td>name</td>
+<td>varchar(32)</td>
+<td>菜品名称</td>
+<td>唯一</td>
+</tr>
+<tr>
+<td>category_id</td>
+<td>bigint</td>
+<td>分类id</td>
+<td>逻辑外键</td>
+</tr>
+<tr>
+<td>price</td>
+<td>decimal(10,2)</td>
+<td>菜品价格</td>
+<td></td>
+</tr>
+<tr>
+<td>image</td>
+<td>varchar(255)</td>
+<td>图片路径</td>
+<td></td>
+</tr>
+<tr>
+<td>description</td>
+<td>varchar(255)</td>
+<td>菜品描述</td>
+<td></td>
+</tr>
+<tr>
+<td>status</td>
+<td>int</td>
+<td>售卖状态</td>
+<td>1起售 0停售</td>
+</tr>
+<tr>
+<td>create_time</td>
+<td>datetime</td>
+<td>创建时间</td>
+<td></td>
+</tr>
+<tr>
+<td>update_time</td>
+<td>datetime</td>
+<td>最后修改时间</td>
+<td></td>
+</tr>
+<tr>
+<td>create_user</td>
+<td>bigint</td>
+<td>创建人id</td>
+<td></td>
+</tr>
+<tr>
+<td>update_user</td>
+<td>bigint</td>
+<td>最后修改人id</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>2). 菜品口味表:dish_flavor</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>字段名</strong></th>
+<th><strong>数据类型</strong></th>
+<th><strong>说明</strong></th>
+<th><strong>备注</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>bigint</td>
+<td>主键</td>
+<td>自增</td>
+</tr>
+<tr>
+<td>dish_id</td>
+<td>bigint</td>
+<td>菜品id</td>
+<td>逻辑外键</td>
+</tr>
+<tr>
+<td>name</td>
+<td>varchar(32)</td>
+<td>口味名称</td>
+<td></td>
+</tr>
+<tr>
+<td>value</td>
+<td>varchar(255)</td>
+<td>口味值</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3 id="代码编写-1"><a href="#代码编写-1" class="headerlink" title="代码编写"></a>代码编写</h3><h4 id="1-文件上传"><a href="#1-文件上传" class="headerlink" title="1. 文件上传"></a>1. 文件上传</h4><p>在项目初始代码已有一部分阿里OSS配置文件<br><strong>AliOssProperties.java</strong>  （阿里云OSS属性配置JavaBean类）</p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142649962.png" alt="image-20251012142649962"></p>
+<p><strong>application.yml</strong> （这里读取了配置属性JavaBean类的字段值）</p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142702849.png" alt="image-20251012142702849"></p>
+<p><strong>AliOssUtil.java</strong> （这里是文件上传的具体实现）</p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142710484.png" alt="image-20251012142710484"></p>
+<p><strong>OssConfiguration.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sky.properties.AliOssProperties;</span><br><span class="line"><span class="keyword">import</span> com.sky.utils.AliOssUtil;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * OSS配置类, 用于创建AliOssUtil对象, 读取配置文件中的OSS相关配置, 并提供给AliOssUtil使用</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span> <span class="comment">// 表示该类是一个配置类, 可以包含Bean定义</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OssConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span> <span class="comment">// 将方法的返回值作为Bean对象注册到Spring容器中</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span> <span class="comment">// 当容器中没有指定类型的Bean时, 才会创建该Bean</span></span><br><span class="line">    <span class="keyword">public</span> AliOssUtil <span class="title function_">aliOssUtil</span><span class="params">(AliOssProperties aliOssProperties)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;开始创建阿里云文件上传工具类对象AliOssUtil, &#123;&#125;&quot;</span>, aliOssProperties);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">AliOssUtil</span>(</span><br><span class="line">                aliOssProperties.getEndpoint(),</span><br><span class="line">                aliOssProperties.getAccessKeyId(),</span><br><span class="line">                aliOssProperties.getAccessKeySecret(),</span><br><span class="line">                aliOssProperties.getBucketName()</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>CommonController.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.controller.admin;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sky.constant.MessageConstant;</span><br><span class="line"><span class="keyword">import</span> com.sky.result.Result;</span><br><span class="line"><span class="keyword">import</span> com.sky.utils.AliOssUtil;</span><br><span class="line"><span class="keyword">import</span> io.swagger.annotations.Api;</span><br><span class="line"><span class="keyword">import</span> io.swagger.annotations.ApiOperation;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.multipart.MultipartFile;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.UUID;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/admin/common&quot;)</span></span><br><span class="line"><span class="meta">@Api(tags = &quot;通用接口&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CommonController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AliOssUtil aliOssUtil;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 文件上传</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> file 文件</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 文件访问路径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@RequestMapping(&quot;/upload&quot;)</span></span><br><span class="line">    <span class="meta">@ApiOperation(&quot;文件上传&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Result&lt;String&gt; <span class="title function_">upload</span><span class="params">(MultipartFile file)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;文件上传: &#123;&#125;&quot;</span>, file);</span><br><span class="line">        <span class="comment">// 获取原始文件名</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">originalFilename</span> <span class="operator">=</span> file.getOriginalFilename();</span><br><span class="line">        <span class="comment">// 获取文件后缀名</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">extension</span> <span class="operator">=</span> originalFilename.substring(originalFilename.lastIndexOf(<span class="string">&quot;.&quot;</span>));</span><br><span class="line">        <span class="comment">// 构造新文件名(防止文件名重复)</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">objectName</span> <span class="operator">=</span> UUID.randomUUID().toString() + extension;</span><br><span class="line">        <span class="comment">// 上传文件到OSS, 并接收返回的文件访问路径</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">fileUrl</span> <span class="operator">=</span> aliOssUtil.upload(file.getBytes(), objectName);</span><br><span class="line">            <span class="comment">// 返回文件访问路径</span></span><br><span class="line">            <span class="keyword">return</span> Result.success(fileUrl);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            log.error(<span class="string">&quot;文件上传失败: &#123;&#125;&quot;</span>, e.getMessage());</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> Result.error(MessageConstant.UPLOAD_FAILED); <span class="comment">// 上传失败</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-新增菜品-1"><a href="#2-新增菜品-1" class="headerlink" title="2. 新增菜品"></a>2. 新增菜品</h4><p><strong>DishController.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.controller.admin;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sky.dto.DishDTO;</span><br><span class="line"><span class="keyword">import</span> com.sky.result.Result;</span><br><span class="line"><span class="keyword">import</span> com.sky.service.DishService;</span><br><span class="line"><span class="keyword">import</span> io.swagger.annotations.Api;</span><br><span class="line"><span class="keyword">import</span> io.swagger.annotations.ApiOperation;</span><br><span class="line"><span class="keyword">import</span> lombok.extern.slf4j.Slf4j;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.*;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/admin/dish&quot;)</span></span><br><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Api(tags = &quot;菜品管理&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DishController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DishService dishService;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 新增菜品</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dishDTO 菜品信息</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 操作结果</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@PostMapping</span></span><br><span class="line">    <span class="meta">@ApiOperation(&quot;新增菜品&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Result&lt;Void&gt; <span class="title function_">save</span><span class="params">(<span class="meta">@RequestBody</span> DishDTO dishDTO)</span> &#123;  <span class="comment">// 这里DTO信息记得要加RequestBody，否则接受不到数据 @RequestBody 将请求体中的json数据转换为对应的Java对象</span></span><br><span class="line">        log.info(<span class="string">&quot;新增菜品: &#123;&#125;&quot;</span>, dishDTO);</span><br><span class="line">        dishService.saveWithFlavor(dishDTO);</span><br><span class="line">        <span class="keyword">return</span> Result.success();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>DishServiceImpl.java</strong></p>
+<p>这里注意涉及多表要<strong>开启事务</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.service.impl;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sky.dto.DishDTO;</span><br><span class="line"><span class="keyword">import</span> com.sky.entity.Dish;</span><br><span class="line"><span class="keyword">import</span> com.sky.entity.DishFlavor;</span><br><span class="line"><span class="keyword">import</span> com.sky.mapper.DishFlavorMapper;</span><br><span class="line"><span class="keyword">import</span> com.sky.mapper.DishMapper;</span><br><span class="line"><span class="keyword">import</span> com.sky.service.DishService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.BeanUtils;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DishServiceImpl</span> <span class="keyword">implements</span> <span class="title class_">DishService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DishMapper dishMapper;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DishFlavorMapper dishFlavorMapper;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 新增菜品，同时保存对应的口味数据, 所以方法名字WithFlavor体现出来, 需要操作两张表：dish、dish_flavor, 需要开启事务, 保证数据一致性</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dishDTO 菜品信息</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="meta">@Transactional</span>  <span class="comment">// 涉及多表操作，开启事务</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">saveWithFlavor</span><span class="params">(DishDTO dishDTO)</span> &#123;</span><br><span class="line">        <span class="type">Dish</span> <span class="variable">dish</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Dish</span>();</span><br><span class="line">        BeanUtils.copyProperties(dishDTO, dish);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 1. 向菜品表中插入 1 条数据，保存菜品的基本信息到菜品表dish</span></span><br><span class="line">        dishMapper.insert(dish);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 向菜品口味表中插入 n 条数据（一个菜品可能有0 或多个以上口味），保存菜品的口味数据到菜品口味表dish_flavor</span></span><br><span class="line">        <span class="type">Long</span> <span class="variable">dishId</span> <span class="operator">=</span> dish.getId(); <span class="comment">// 获取菜品id</span></span><br><span class="line">        List&lt;DishFlavor&gt; flavors = dishDTO.getFlavors(); <span class="comment">// 获取口味数据</span></span><br><span class="line">        <span class="comment">// 需要判断flavors是否为空，不为空才进行插入</span></span><br><span class="line">        <span class="keyword">if</span> (flavors != <span class="literal">null</span> &amp;&amp; !flavors.isEmpty()) &#123;</span><br><span class="line">            <span class="comment">// 遍历口味数据，逐个设置口味对应的菜品id</span></span><br><span class="line">            flavors.forEach(flavor -&gt; flavor.setDishId(dishId));</span><br><span class="line">            <span class="comment">// 批量插入口味数据</span></span><br><span class="line">            dishFlavorMapper.insertBatch(flavors);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>DishMapper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sky.annotation.AutoFill;</span><br><span class="line"><span class="keyword">import</span> com.sky.entity.Dish;</span><br><span class="line"><span class="keyword">import</span> com.sky.enumeration.OperationType;</span><br><span class="line"><span class="keyword">import</span> org.apache.ibatis.annotations.Mapper;</span><br><span class="line"><span class="keyword">import</span> org.apache.ibatis.annotations.Select;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">DishMapper</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据分类id查询菜品数量</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> categoryId 分类Id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 数量</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Select(&quot;select count(id) from dish where category_id = #&#123;categoryId&#125;&quot;)</span></span><br><span class="line">    Integer <span class="title function_">countByCategoryId</span><span class="params">(Long categoryId)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 插入菜品, 这里记得需要在xml设置属性：useKeyProperty：主键自增, keyProperty：插入后会将生成的主键回填到实体类对象中的id属性</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dish 菜品</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@AutoFill(OperationType.INSERT)</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">insert</span><span class="params">(Dish dish)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>DishFlavorMapper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.sky.entity.DishFlavor;</span><br><span class="line"><span class="keyword">import</span> org.apache.ibatis.annotations.Mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">DishFlavorMapper</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 批量插入口味数据</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> flavors 口味数据</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">insertBatch</span><span class="params">(List&lt;DishFlavor&gt; flavors)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>DishMapper.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.sky.mapper.DishMapper&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">&quot;insert&quot;</span> <span class="attr">useGeneratedKeys</span>=<span class="string">&quot;true&quot;</span> <span class="attr">keyProperty</span>=<span class="string">&quot;id&quot;</span>&gt;</span></span><br><span class="line">        insert into dish</span><br><span class="line">        (name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)</span><br><span class="line">        values</span><br><span class="line">        (#&#123;name&#125;, #&#123;categoryId&#125;, #&#123;price&#125;, #&#123;image&#125;, #&#123;description&#125;, #&#123;status&#125;, #&#123;createTime&#125;, #&#123;updateTime&#125;, #&#123;createUser&#125;, #&#123;updateUser&#125;)</span><br><span class="line">    <span class="tag">&lt;/<span class="name">insert</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>DishFlavorMapper.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.sky.mapper.DishFlavorMapper&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">insert</span> <span class="attr">id</span>=<span class="string">&quot;insertBatch&quot;</span>&gt;</span></span><br><span class="line">        insert into dish_flavor (dish_id, name, value) values</span><br><span class="line">        <span class="tag">&lt;<span class="name">foreach</span> <span class="attr">collection</span>=<span class="string">&quot;flavors&quot;</span> <span class="attr">item</span>=<span class="string">&quot;df&quot;</span> <span class="attr">separator</span>=<span class="string">&quot;,&quot;</span>&gt;</span></span><br><span class="line">            (#&#123;df.dishId&#125;, #&#123;df.name&#125;, #&#123;df.value&#125;)</span><br><span class="line">        <span class="tag">&lt;/<span class="name">foreach</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">insert</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Debug问题发现记录"><a href="#Debug问题发现记录" class="headerlink" title="Debug问题发现记录"></a>Debug问题发现记录</h3><h4 id="1）在Controller那里，DTO是json传来的，需要加RequestBody注解，否则会导致接收不到数据，全为null"><a href="#1）在Controller那里，DTO是json传来的，需要加RequestBody注解，否则会导致接收不到数据，全为null" class="headerlink" title="1）在Controller那里，DTO是json传来的，需要加RequestBody注解，否则会导致接收不到数据，全为null"></a>1）在Controller那里，DTO是json传来的，需要加RequestBody注解，否则会导致接收不到数据，全为null</h4><h4 id="2）在dishMapper-xml那里不要忘记加两个属性值配置：useGeneratedKeys-true-和-keyProperty-”id”"><a href="#2）在dishMapper-xml那里不要忘记加两个属性值配置：useGeneratedKeys-true-和-keyProperty-”id”" class="headerlink" title="2）在dishMapper.xml那里不要忘记加两个属性值配置：useGeneratedKeys &#x3D; true 和 keyProperty &#x3D;  ”id”"></a>2）在dishMapper.xml那里不要忘记加两个属性值配置：useGeneratedKeys &#x3D; true 和 keyProperty &#x3D;  ”id”</h4><h4 id="3）dish-flavor表没有公共字段需要填充，不用加AutoFill注解"><a href="#3）dish-flavor表没有公共字段需要填充，不用加AutoFill注解" class="headerlink" title="3）dish_flavor表没有公共字段需要填充，不用加AutoFill注解"></a>3）dish_flavor表没有公共字段需要填充，不用加AutoFill注解</h4><h4 id="4）还有一个Bug是因为dishFlavor中insert-into的字段顺序和foreach里面的顺序没对应上，导致insertBatch操作一直有问题但是没报错，因为一开始那里是用代码补全来写的，后面仔细看才发现顺序没对上😭"><a href="#4）还有一个Bug是因为dishFlavor中insert-into的字段顺序和foreach里面的顺序没对应上，导致insertBatch操作一直有问题但是没报错，因为一开始那里是用代码补全来写的，后面仔细看才发现顺序没对上😭" class="headerlink" title="4）还有一个Bug是因为dishFlavor中insert into的字段顺序和foreach里面的顺序没对应上，导致insertBatch操作一直有问题但是没报错，因为一开始那里是用代码补全来写的，后面仔细看才发现顺序没对上😭"></a>4）还有一个Bug是因为dishFlavor中insert into的字段顺序和foreach里面的顺序没对应上，导致insertBatch操作一直有问题但是没报错，因为一开始那里是用代码补全来写的，后面仔细看才发现顺序没对上😭</h4><h4 id="5）写分页查询发现遗漏了一点，这里做个补充，涉及多表要开启事务-Transactional注解保证原子性（在Service那里）"><a href="#5）写分页查询发现遗漏了一点，这里做个补充，涉及多表要开启事务-Transactional注解保证原子性（在Service那里）" class="headerlink" title="5）写分页查询发现遗漏了一点，这里做个补充，涉及多表要开启事务@Transactional注解保证原子性（在Service那里）"></a>5）写分页查询发现遗漏了一点，这里做个补充，涉及多表要<strong>开启事务</strong>@Transactional注解保证原子性（在Service那里）</h4><h3 id="功能测试-1"><a href="#功能测试-1" class="headerlink" title="功能测试"></a>功能测试</h3><h4 id="文件上传测试"><a href="#文件上传测试" class="headerlink" title="文件上传测试"></a>文件上传测试</h4><p>在文件上传时，若文件成功上传到阿里云，但是前端没有回显，需要在阿里云做如下配置 ：<br>设置文件管理的 “阻止公共访问” 和 ”读写权限”</p>
+<p>1）关闭阻止公共访问<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012141856723.png" alt="image-20251012141856723" style="zoom:33%;"></p>
+<p>2）读写权限设为公共读<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012141904531.png" alt="image-20251012141904531" style="zoom:33%;"></p>
+<p>设置好后发现图片显示就没问题了</p>
+<p>前端图片显示正常<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142202054.png" alt="image-20251012142202054" style="zoom: 25%;"></p>
+<p>成功上传到阿里云OSS<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142212893.png" alt="image-20251012142212893" style="zoom:25%;"></p>
+<h4 id="新增菜品测试"><a href="#新增菜品测试" class="headerlink" title="新增菜品测试"></a>新增菜品测试</h4><p>注意：在测试新增菜品时，名字不要设置成在表中已有的，我一开始拿“北冰洋”来测试发现一直失败，后面才发现是名字要唯一，表中初始自带了北冰洋所以测试不了</p>
+<p>测试成功图，因为还没做分页查询，所以直接查看数据库是否添加成功新数据</p>
+<p>菜品添加成功<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012153940610.png" alt="image-20251012153940610"></p>
+<p>口味添加成功<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012155802631.png" alt="image-20251012155802631"></p>
+<h2 id="3-菜品分页查询"><a href="#3-菜品分页查询" class="headerlink" title="3.菜品分页查询"></a>3.菜品分页查询</h2><h3 id="需求分析与接口设计-1"><a href="#需求分析与接口设计-1" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p><strong>业务规则：</strong></p>
+<ul>
+<li>根据页码展示菜品信息</li>
+<li>每页展示10条数据</li>
+<li>分页查询时可以根据需要输入菜品名称、菜品分类、菜品状态进行查询</li>
+</ul>
+<p><strong>接口设计：</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20221121202019258.png" alt="image-20221121202019258" style="zoom:50%;"> <img src="/2025/10/12/sky-takeout-day03-note/../../TODO/cqwm/讲义/day03/assets/image-20221121202033284.png" alt="image-20221121202033284" style="zoom:50%;"></p>
+<ul>
+<li><p>这里大体上步骤跟前面员工分页查询一致，但是需要注意的是由于前端展示Dish时还需要分类名称，所以多封装了一个 <strong>DishVO</strong> （除了多分类名称，还有口味数组）实体类作为分页结果<strong>Page的泛型</strong>。</p>
+  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012165640112.png" alt="image-20251012165640112" style="zoom:33%;">
+</li>
+<li><p>此外就是这个分页查询会涉及到<strong>dish和category两张表</strong>的，用了一个<strong>左外连接</strong>来查询二表信息。</p>
+</li>
+</ul>
+<h3 id="代码编写-2"><a href="#代码编写-2" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>DishController.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 分页查询菜品</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> dishPageQueryDTO 分页查询参数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 分页查询结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/page&quot;)</span></span><br><span class="line"><span class="meta">@ApiOperation(&quot;分页查询菜品&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;PageResult&gt; <span class="title function_">page</span><span class="params">(DishPageQueryDTO dishPageQueryDTO)</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;分页查询菜品: &#123;&#125;&quot;</span>, dishPageQueryDTO);</span><br><span class="line">    <span class="type">PageResult</span> <span class="variable">pageResult</span> <span class="operator">=</span> dishService.pageQuery(dishPageQueryDTO);</span><br><span class="line">    <span class="keyword">return</span> Result.success(pageResult);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishServiceImpl.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 分页查询菜品</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> dishPageQueryDTO 分页查询参数</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 分页查询结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> PageResult <span class="title function_">pageQuery</span><span class="params">(DishPageQueryDTO dishPageQueryDTO)</span> &#123;</span><br><span class="line">    PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());</span><br><span class="line">    <span class="comment">// 需要注意的是这里 Page 的泛型是 DishVO， 因为返回给前端的视图，除了要有菜品信息Dish，还要有分类名称categoryName，而项目中的 DishVO 中已经做好了分类名称的封装</span></span><br><span class="line">    <span class="comment">// 具体分类名称的封装是在 mapper.xml 中通过 left join 关联查询的 (c.name as categoryName), 见 dishMapper.xml</span></span><br><span class="line">    Page&lt;DishVO&gt; page = dishMapper.pageQuery(dishPageQueryDTO);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">PageResult</span>(page.getTotal(), page.getResult());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishMapper.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;pageQuery&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;com.sky.vo.DishVO&quot;</span>&gt;</span></span><br><span class="line">        select d.*, c.name ascategoryName</span><br><span class="line">        from dish d left outer join category c</span><br><span class="line">        on d.category_id = c.id</span><br><span class="line">        <span class="tag">&lt;<span class="name">where</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;name != null and name != &#x27;&#x27;&quot;</span>&gt;</span></span><br><span class="line">                and d.name like concat(&#x27;%&#x27;, #&#123;name&#125;, &#x27;%&#x27;)</span><br><span class="line">            <span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;categoryId != null&quot;</span>&gt;</span>&gt;</span><br><span class="line">                and d.category_id = #&#123;categoryId&#125;</span><br><span class="line">            <span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;status != null&quot;</span>&gt;</span></span><br><span class="line">                and d.status = #&#123;status&#125;</span><br><span class="line">            <span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">where</span>&gt;</span></span><br><span class="line">        order by d.update_time desc</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="功能测试-2"><a href="#功能测试-2" class="headerlink" title="功能测试"></a>功能测试</h3><p>接口文档测试</p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012170915227.png" alt="image-20251012170915227"></p>
+<p>前后端联调测试（图片不在我的阿里云所以显示不了，这是正常的）</p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012170933704.png" alt="image-20251012170933704"></p>
+<h2 id="4-删除菜品"><a href="#4-删除菜品" class="headerlink" title="4.删除菜品"></a>4.删除菜品</h2><h3 id="需求分析与接口设计-2"><a href="#需求分析与接口设计-2" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p><strong>业务规则：</strong></p>
+<ul>
+<li>可以一次删除一个菜品，也可以批量删除菜品</li>
+<li>起售中的菜品不能删除</li>
+<li>被套餐关联的菜品不能删除</li>
+<li>删除菜品后，关联的口味数据也需要删除掉</li>
+</ul>
+<p><strong>接口设计:</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012171359093.png" alt="image-20251012171359093" style="zoom: 50%;"></p>
+<p>**注意：**删除一个菜品和批量删除菜品共用一个接口，故ids可包含多个菜品id,之间用逗号分隔。</p>
+<p><strong>表设计：</strong></p>
+<p>菜品删除会涉及三张表<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012171525991.png" alt="image-20251012171525991" style="zoom:33%;"></p>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li>在dish表中删除菜品基本数据时，同时，也要把关联在dish_flavor表中的数据一块删除。</li>
+<li>setmeal_dish表为菜品和套餐关联的中间表。</li>
+<li>若删除的菜品数据关联着某个套餐，此时，删除失败。</li>
+<li>若要删除套餐关联的菜品数据，先解除两者关联，再对菜品进行删除。</li>
+</ul>
+<h3 id="代码编写-3"><a href="#代码编写-3" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>DishController.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * (批量)删除菜品</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> ids 菜品id，多个id用逗号分隔</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 操作结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@DeleteMapping</span></span><br><span class="line"><span class="meta">@ApiOperation(&quot;删除菜品&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;Void&gt; <span class="title function_">delete</span><span class="params">(<span class="meta">@RequestParam(&quot;ids&quot;)</span> List&lt;Long&gt; ids)</span> &#123; <span class="comment">// 这里用@RequestParam注解接收ids参数</span></span><br><span class="line">    log.info(<span class="string">&quot;(批量)删除菜品: &#123;&#125;&quot;</span>, ids);</span><br><span class="line">    dishService.deleteBatch(ids);</span><br><span class="line">    <span class="keyword">return</span> Result.success();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishServiceImpl.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * (批量)删除菜品</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> ids 菜品id，多个id用逗号分隔</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="meta">@Transactional</span>  <span class="comment">// 涉及多表操作，开启事务</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">deleteBatch</span><span class="params">(List&lt;Long&gt; ids)</span> &#123;</span><br><span class="line">    <span class="comment">// 菜品处于起售状态，不能删除</span></span><br><span class="line">    <span class="keyword">for</span>(Long id : ids) &#123;</span><br><span class="line">        <span class="type">Dish</span> <span class="variable">dish</span> <span class="operator">=</span> dishMapper.getById(id);</span><br><span class="line">        <span class="keyword">if</span> (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">DeletionNotAllowedException</span>(MessageConstant.DISH_ON_SALE);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 菜品被套餐关联，不能删除</span></span><br><span class="line">    List&lt;Long&gt; setmealIds = setmealDishMapper.getSetmealIdsByDishIds(ids);</span><br><span class="line">    <span class="keyword">if</span>(setmealIds != <span class="literal">null</span> &amp;&amp; !setmealIds.isEmpty()) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">DeletionNotAllowedException</span>(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 这里有个优化，为了避免循环删除多次sql操作，可以直接批量删除，用in语句 (多次SQL语句执行效率低)</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 删除菜品数据</span></span><br><span class="line">    <span class="comment">// SQL: delete from dish where id in (1, 2, 3);</span></span><br><span class="line">    dishMapper.deleteBatchByIds(ids);</span><br><span class="line">    <span class="comment">// 删除菜品关联的口味数据</span></span><br><span class="line">    <span class="comment">// SQL: delete from dish_flavor where dish_id in (1, 2, 3);</span></span><br><span class="line">    dishFlavorMapper.deleteBatchByDishIds(ids);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishMapper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据id查询菜品</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> id 菜品id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 菜品</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Select(&quot;select * from dish where id = #&#123;id&#125;&quot;)</span></span><br><span class="line">Dish <span class="title function_">getById</span><span class="params">(Long id)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 批量删除菜品</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> ids 菜品id，多个id用逗号分隔</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">deleteBatchByIds</span><span class="params">(List&lt;Long&gt; ids)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishMapper.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">delete</span> <span class="attr">id</span>=<span class="string">&quot;deleteBatchByIds&quot;</span>&gt;</span></span><br><span class="line">    delete from dish</span><br><span class="line">    where id in</span><br><span class="line">    <span class="tag">&lt;<span class="name">foreach</span> <span class="attr">collection</span>=<span class="string">&quot;ids&quot;</span> <span class="attr">item</span>=<span class="string">&quot;id&quot;</span> <span class="attr">open</span>=<span class="string">&quot;(&quot;</span> <span class="attr">separator</span>=<span class="string">&quot;,&quot;</span> <span class="attr">close</span>=<span class="string">&quot;)&quot;</span>&gt;</span></span><br><span class="line">        #&#123;id&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">foreach</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">delete</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>SetmealDishMapper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.sky.mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.apache.ibatis.annotations.Mapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Mapper</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">SetmealDishMapper</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据菜品id查询对应的套餐id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> dishIds 菜品id</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 套餐id</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    List&lt;Long&gt; <span class="title function_">getSetmealIdsByDishIds</span><span class="params">(List&lt;Long&gt; dishIds)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>SetmealDishMapper.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> ?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">mapper</span> <span class="keyword">PUBLIC</span> <span class="string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span></span><br><span class="line"><span class="meta">        <span class="string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.sky.mapper.SetmealDishMapper&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;getSetmealIdsByDishIds&quot;</span> <span class="attr">resultType</span>=<span class="string">&quot;java.lang.Long&quot;</span>&gt;</span></span><br><span class="line">        select setmeal_id from setmeal_dish</span><br><span class="line">        where dish_id in</span><br><span class="line">        <span class="tag">&lt;<span class="name">foreach</span> <span class="attr">collection</span>=<span class="string">&quot;dishIds&quot;</span> <span class="attr">item</span>=<span class="string">&quot;dishId&quot;</span> <span class="attr">open</span>=<span class="string">&quot;(&quot;</span> <span class="attr">separator</span>=<span class="string">&quot;,&quot;</span> <span class="attr">close</span>=<span class="string">&quot;)&quot;</span>&gt;</span></span><br><span class="line">            #&#123;dishId&#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">foreach</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>DishFlavorMapper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据菜品集合ids批量删除对应的口味数据</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> dishIds 菜品id，多个id用逗号分隔</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">deleteBatchByDishIds</span><span class="params">(List&lt;Long&gt; dishIds)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishFlavorMapper.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">delete</span> <span class="attr">id</span>=<span class="string">&quot;deleteBatchByDishIds&quot;</span>&gt;</span></span><br><span class="line">    delete from dish_flavor</span><br><span class="line">    where dish_id in</span><br><span class="line">    <span class="tag">&lt;<span class="name">foreach</span> <span class="attr">collection</span>=<span class="string">&quot;dishIds&quot;</span> <span class="attr">item</span>=<span class="string">&quot;dishId&quot;</span> <span class="attr">open</span>=<span class="string">&quot;(&quot;</span> <span class="attr">separator</span>=<span class="string">&quot;,&quot;</span> <span class="attr">close</span>=<span class="string">&quot;)&quot;</span>&gt;</span></span><br><span class="line">        #&#123;dishId&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">foreach</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">delete</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="功能测试-3"><a href="#功能测试-3" class="headerlink" title="功能测试"></a>功能测试</h3><p>略</p>
+<h2 id="5-修改菜品"><a href="#5-修改菜品" class="headerlink" title="5. 修改菜品"></a>5. 修改菜品</h2><h3 id="需求分析与接口设计-3"><a href="#需求分析与接口设计-3" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p><strong>修改菜品原型</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012183851728.png" alt="image-20251012183851728" style="zoom: 50%;"></p>
+<p><strong>接口设计：</strong></p>
+<ul>
+<li>根据id查询菜品</li>
+<li>根据类型查询分类(已实现)</li>
+<li>文件上传(已实现)</li>
+<li>修改菜品</li>
+</ul>
+<img src="/2025/10/12/sky-takeout-day03-note/image-20251012184023473.png" alt="image-20251012184023473" style="zoom: 50%;">
+
+<p>这里要注意修改菜品 ，<strong>id字段是必须的</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012184045407.png" alt="image-20251012184045407" style="zoom:50%;"></p>
+<h3 id="代码编写-4"><a href="#代码编写-4" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>DishController.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 修改菜品, 同时更新对应的口味数据</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> dishDTO 菜品信息</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 操作结果</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@PutMapping</span></span><br><span class="line"><span class="meta">@ApiOperation(&quot;修改菜品&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result&lt;Void&gt; <span class="title function_">update</span><span class="params">(<span class="meta">@RequestBody</span> DishDTO dishDTO)</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;修改菜品: &#123;&#125;&quot;</span>, dishDTO);</span><br><span class="line">    dishService.updateWithFlavor(dishDTO);</span><br><span class="line">    <span class="keyword">return</span> Result.success();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishServiceImpl.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 修改菜品，同时更新对应的口味数据</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> dishDTO 菜品信息</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="meta">@Transactional</span>  <span class="comment">// 涉及多表操作，开启事务</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">updateWithFlavor</span><span class="params">(DishDTO dishDTO)</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 更新菜品基本信息到菜品表dish</span></span><br><span class="line">    <span class="type">Dish</span> <span class="variable">dish</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Dish</span>();</span><br><span class="line">    BeanUtils.copyProperties(dishDTO, dish);</span><br><span class="line">    dishMapper.update(dish);</span><br><span class="line"></span><br><span class="line">    List&lt;Long&gt; ids = List.of(dishDTO.getId());</span><br><span class="line">    <span class="comment">// 删除原有口味数据</span></span><br><span class="line">    dishFlavorMapper.deleteBatchByDishIds(ids);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重新插入口味数据</span></span><br><span class="line">    List&lt;DishFlavor&gt; flavors = dishDTO.getFlavors(); <span class="comment">// 获取口味数据</span></span><br><span class="line">    <span class="comment">// 需要判断flavors是否为空，不为空才进行插入</span></span><br><span class="line">    <span class="keyword">if</span> (flavors != <span class="literal">null</span> &amp;&amp; !flavors.isEmpty()) &#123;</span><br><span class="line">        <span class="comment">// 遍历口味数据，逐个设置口味对应的菜品id</span></span><br><span class="line">        flavors.forEach(flavor -&gt; flavor.setDishId(dishDTO.getId()));</span><br><span class="line">        <span class="comment">// 批量插入口味数据</span></span><br><span class="line">        dishFlavorMapper.insertBatch(flavors);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishMapper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/** </span></span><br><span class="line"><span class="comment"> * 修改菜品 </span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> dish 菜品</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@AutoFill(OperationType.UPDATE)</span> <span class="comment">// 修改操作，自动填充</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">update</span><span class="params">(Dish dish)</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>DishMapper.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">update</span> <span class="attr">id</span>=<span class="string">&quot;update&quot;</span>&gt;</span></span><br><span class="line">    update dish</span><br><span class="line">    <span class="tag">&lt;<span class="name">set</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;name != null&quot;</span>&gt;</span>name = #&#123;name&#125;,<span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;categoryId != null&quot;</span>&gt;</span>category_id = #&#123;categoryId&#125;,<span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;price != null&quot;</span>&gt;</span>price = #&#123;price&#125;,<span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;image != null&quot;</span>&gt;</span>image = #&#123;image&#125;,<span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;description != null&quot;</span>&gt;</span>description = #&#123;description&#125;,<span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;status != null&quot;</span>&gt;</span>status = #&#123;status&#125;,<span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;updateTime != null&quot;</span>&gt;</span>update_time = #&#123;updateTime&#125;,<span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">if</span> <span class="attr">test</span>=<span class="string">&quot;updateUser != null&quot;</span>&gt;</span>update_user = #&#123;updateUser&#125;<span class="tag">&lt;/<span class="name">if</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">set</span>&gt;</span></span><br><span class="line">    where id = #&#123;id&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">update</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>DishFlavorMapper.java</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据菜品id查询对应的口味数据</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> dishId 菜品id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 口味数据</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Select(&quot;select * from dish_flavor where dish_id = #&#123;dishId&#125;&quot;)</span></span><br><span class="line">List&lt;DishFlavor&gt; <span class="title function_">getByDishId</span><span class="params">(Long dishId)</span>;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="功能测试-4"><a href="#功能测试-4" class="headerlink" title="功能测试"></a>功能测试</h3><p>根据id查询菜品功能测试：</p>
+<p>菜品信息及口味信息正常回显<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012185442072.png" alt="image-20251012185442072"></p>
+<p>修改菜品信息功能测试：<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012195244620.png" alt="image-20251012195244620"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012195254125.png" alt="image-20251012195254125"></p>
+<h2 id="附：其他盲区知识补充"><a href="#附：其他盲区知识补充" class="headerlink" title="附：其他盲区知识补充"></a>附：其他盲区知识补充</h2><h3 id="在阿里云OSS实现文件上传时——关于属性类、工具类、配置类的疑问"><a href="#在阿里云OSS实现文件上传时——关于属性类、工具类、配置类的疑问" class="headerlink" title="在阿里云OSS实现文件上传时——关于属性类、工具类、配置类的疑问"></a>在阿里云OSS实现文件上传时——关于属性类、工具类、配置类的疑问</h3><p>在苍穹外卖项目中，“工具类属性为空，需通过<code>config</code>包下的配置类注入” 的设计既体现了<strong>软件设计的核心思路</strong>，也是 Spring Boot 开发的<strong>固定套路</strong>。以下从 “设计本质”“核心思路”“实际好处” 三个维度详细解释：</p>
+<h4 id="一、本质：解决「配置硬编码」与「环境隔离」的问题"><a href="#一、本质：解决「配置硬编码」与「环境隔离」的问题" class="headerlink" title="一、本质：解决「配置硬编码」与「环境隔离」的问题"></a>一、本质：解决「配置硬编码」与「环境隔离」的问题</h4><p>阿里云 OSS 的配置（<code>endpoint</code>、<code>accessKeyId</code>、<code>accessKeySecret</code>、<code>bucketName</code>）属于<strong>环境敏感信息</strong>（开发 &#x2F; 测试 &#x2F; 生产环境的配置不同），如果直接写死在<code>AliOssUtil</code>工具类中，会导致以下问题：</p>
+<ol>
+<li><strong>硬编码风险</strong>：配置修改需重新编译代码、打包部署，运维成本高；</li>
+<li><strong>安全隐患</strong>：密钥信息暴露在代码中，易被泄露；</li>
+<li><strong>环境混乱</strong>：不同环境的配置混在代码里，易引发线上事故。</li>
+</ol>
+<h4 id="二、核心设计思路：「配置外置化-依赖注入-解耦」"><a href="#二、核心设计思路：「配置外置化-依赖注入-解耦」" class="headerlink" title="二、核心设计思路：「配置外置化 + 依赖注入 + 解耦」"></a>二、核心设计思路：「配置外置化 + 依赖注入 + 解耦」</h4><p>通过<code>config</code>包下的配置类管理 OSS 属性，本质是<strong>将 “配置逻辑” 与 “业务逻辑” 分离</strong>，遵循以下设计原则：</p>
+<h5 id="1-配置外置化（把配置从代码中抽离）"><a href="#1-配置外置化（把配置从代码中抽离）" class="headerlink" title="1. 配置外置化（把配置从代码中抽离）"></a>1. 配置外置化（把配置从代码中抽离）</h5><ul>
+<li><p>步骤</p>
+<p>  ：将 OSS 配置写入application.yml （或 application-dev.yml &#x2F; application-prod.yml）：</p>
+  <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">aliyun:</span></span><br><span class="line">  <span class="attr">oss:</span></span><br><span class="line">    <span class="attr">endpoint:</span> <span class="string">oss-cn-hangzhou.aliyuncs.com</span></span><br><span class="line">    <span class="attr">access-key-id:</span> <span class="string">LTAI5t9xxxxxxxxx</span></span><br><span class="line">    <span class="attr">access-key-secret:</span> <span class="string">3dxxxxxxxxx</span></span><br><span class="line">    <span class="attr">bucket-name:</span> <span class="string">sky-take-out</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>目的</strong>：配置与代码解耦，修改配置无需动代码，重启服务即可生效。</p>
+</li>
+</ul>
+<h5 id="2-依赖注入（让-Spring-管理工具类的属性）"><a href="#2-依赖注入（让-Spring-管理工具类的属性）" class="headerlink" title="2. 依赖注入（让 Spring 管理工具类的属性）"></a>2. 依赖注入（让 Spring 管理工具类的属性）</h5><p><code>AliOssUtil</code>工具类本身是 “业务逻辑类”（负责文件上传），不应关心 “配置从哪来”。通过<strong>配置类 + <code>@ConfigurationProperties</code></strong> 实现 “配置注入”：</p>
+<h6 id="（1）创建配置类（如OssConfiguration）"><a href="#（1）创建配置类（如OssConfiguration）" class="headerlink" title="（1）创建配置类（如OssConfiguration）"></a>（1）创建配置类（如<code>OssConfiguration</code>）</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span> <span class="comment">// 标记为Spring配置类</span></span><br><span class="line"><span class="meta">@ConfigurationProperties(prefix = &quot;aliyun.oss&quot;)</span> <span class="comment">// 绑定application.yml中以aliyun.oss开头的配置</span></span><br><span class="line"><span class="meta">@Data</span> <span class="comment">// 自动生成getter/setter</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OssProperties</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String endpoint;</span><br><span class="line">    <span class="keyword">private</span> String accessKeyId;</span><br><span class="line">    <span class="keyword">private</span> String accessKeySecret;</span><br><span class="line">    <span class="keyword">private</span> String bucketName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="（2）将工具类注册为-Spring-Bean-并注入配置"><a href="#（2）将工具类注册为-Spring-Bean-并注入配置" class="headerlink" title="（2）将工具类注册为 Spring Bean 并注入配置"></a>（2）将工具类注册为 Spring Bean 并注入配置</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span> <span class="comment">// 配置类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OssConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> OssProperties ossProperties; <span class="comment">// 注入配置属性</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span> <span class="comment">// 将AliOssUtil注册为Spring Bean</span></span><br><span class="line">    <span class="keyword">public</span> AliOssUtil <span class="title function_">aliOssUtil</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">AliOssUtil</span> <span class="variable">util</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AliOssUtil</span>();</span><br><span class="line">        <span class="comment">// 给工具类的属性赋值</span></span><br><span class="line">        util.setEndpoint(ossProperties.getEndpoint());</span><br><span class="line">        util.setAccessKeyId(ossProperties.getAccessKeyId());</span><br><span class="line">        util.setAccessKeySecret(ossProperties.getAccessKeySecret());</span><br><span class="line">        util.setBucketName(ossProperties.getBucketName());</span><br><span class="line">        <span class="keyword">return</span> util;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h6 id="（3）工具类定义（简洁化，只关注业务）"><a href="#（3）工具类定义（简洁化，只关注业务）" class="headerlink" title="（3）工具类定义（简洁化，只关注业务）"></a>（3）工具类定义（简洁化，只关注业务）</h6><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Component</span> <span class="comment">// 让Spring管理</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AliOssUtil</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> String endpoint;</span><br><span class="line">    <span class="keyword">private</span> String accessKeyId;</span><br><span class="line">    <span class="keyword">private</span> String accessKeySecret;</span><br><span class="line">    <span class="keyword">private</span> String bucketName;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// setter方法（供配置类注入）</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setEndpoint</span><span class="params">(String endpoint)</span> &#123; <span class="built_in">this</span>.endpoint = endpoint; &#125;</span><br><span class="line">    <span class="comment">// 其他setter...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 业务方法：文件上传</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">upload</span><span class="params">(<span class="type">byte</span>[] bytes, String objectName)</span> &#123;</span><br><span class="line">        <span class="comment">// 使用endpoint、accessKeyId等属性完成OSS上传</span></span><br><span class="line">        <span class="type">OSS</span> <span class="variable">ossClient</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">OSSClientBuilder</span>().build(endpoint, accessKeyId, accessKeySecret);</span><br><span class="line">        <span class="comment">// ... 上传逻辑 ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="3-解耦（业务逻辑与配置逻辑分离）"><a href="#3-解耦（业务逻辑与配置逻辑分离）" class="headerlink" title="3. 解耦（业务逻辑与配置逻辑分离）"></a>3. 解耦（业务逻辑与配置逻辑分离）</h5><ul>
+<li><strong>业务逻辑（<code>AliOssUtil</code>）</strong>：只负责 “文件上传”，不关心配置从哪来；</li>
+<li><strong>配置逻辑（<code>OssConfiguration</code> + <code>OssProperties</code>）</strong>：只负责 “读取配置、注入属性”，不关心业务怎么用。</li>
+</ul>
+<h4 id="三、这是-Spring-Boot-的「固定套路」"><a href="#三、这是-Spring-Boot-的「固定套路」" class="headerlink" title="三、这是 Spring Boot 的「固定套路」"></a>三、这是 Spring Boot 的「固定套路」</h4><p>在 Spring Boot 开发中，对接 ** 第三方服务（如 OSS、Redis、数据库、消息队列）** 时，几乎都遵循 “配置类 + 工具类 &#x2F; 服务类” 的套路：</p>
+<ol>
+<li><strong>配置外置</strong>：把第三方服务的参数（如密钥、地址）写在<code>application.yml</code>；</li>
+<li><strong>配置类封装</strong>：用<code>@ConfigurationProperties</code>将配置绑定到 Java 类（如<code>OssProperties</code>）；</li>
+<li><strong>Bean 注册 + 注入</strong>：在配置类中创建第三方服务的工具类 Bean（如<code>AliOssUtil</code>），并注入配置属性；</li>
+<li><strong>业务层调用</strong>：其他组件通过<code>@Autowired</code>注入工具类，直接使用。</li>
+</ol>
+<h4 id="四、实际好处（为什么必须这么做？）"><a href="#四、实际好处（为什么必须这么做？）" class="headerlink" title="四、实际好处（为什么必须这么做？）"></a>四、实际好处（为什么必须这么做？）</h4><ol>
+<li><strong>环境隔离</strong>：开发环境用测试 OSS 桶，生产环境用正式桶，只需改配置文件；</li>
+<li><strong>安全合规</strong>：密钥等敏感信息不进代码库，符合企业级安全规范；</li>
+<li><strong>可维护性</strong>：配置集中管理，新人接手时只需看<code>application.yml</code>就知道系统依赖了哪些第三方服务；</li>
+<li><strong>扩展性</strong>：若需切换 OSS 服务商（如从阿里云换成腾讯云），只需修改配置类和工具类，业务层无感知。</li>
+</ol>
+<p>总结：这种设计既是 <strong>“配置外置化 + 依赖注入” 的软件设计思路 <strong>（解耦、可维护），也是 Spring Boot 开发第三方服务的</strong>固定套路</strong>（约定优于配置）。通过 “配置类 + 工具类” 的分工，让代码更优雅、更易维护。</p>
+<hr>
+<blockquote>
+<p><em><strong>以下是项目中的代码的解释</strong></em></p>
+</blockquote>
+<p>结合你提供的代码和之前的设计思路，这两个类（<code>AliOssProperties</code> 和 <code>AliOssUtil</code>）的分工与配合体现了 <strong>“配置与业务分离”</strong> 的核心思想，我们一步步拆解：</p>
+<h3 id="一、AliOssProperties：配置属性的-“容器”"><a href="#一、AliOssProperties：配置属性的-“容器”" class="headerlink" title="一、AliOssProperties：配置属性的 “容器”"></a>一、<code>AliOssProperties</code>：配置属性的 “容器”</h3><p>这个类的核心作用是 <strong>“把配置文件中的 OSS 参数映射到 Java 对象”</strong>，相当于一个 “配置容器”。</p>
+<h4 id="关键注解解析"><a href="#关键注解解析" class="headerlink" title="关键注解解析"></a>关键注解解析</h4><ol>
+<li><p><strong><code>@Component</code></strong>：将该类标记为 Spring 的组件，让 Spring 容器管理它（自动创建实例）。</p>
+</li>
+<li><p><code>@ConfigurationProperties(prefix = &quot;sky.alioss&quot;)</code></p>
+<ul>
+<li><p>告诉 Spring：“去配置文件（如<code>application.yml</code>）中找所有以<code>sky.alioss</code>为前缀的配置项，把它们的值赋给当前类的同名字段”。</p>
+</li>
+<li><p>例如，配置文件中若有：</p>
+  <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">sky:</span></span><br><span class="line">  <span class="attr">alioss:</span></span><br><span class="line">    <span class="attr">endpoint:</span> <span class="string">oss-cn-beijing.aliyuncs.com</span></span><br><span class="line">    <span class="attr">access-key-id:</span> <span class="string">ABC123</span></span><br><span class="line">    <span class="attr">access-key-secret:</span> <span class="string">XYZ456</span></span><br><span class="line">    <span class="attr">bucket-name:</span> <span class="string">my-takeout</span></span><br></pre></td></tr></table></figure>
+
+<p>  Spring 会自动将这些值分别赋给AliOssProperties的endpoint、accessKeyId等字段。</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>@Data</code></strong>：Lombok 注解，自动生成<code>getter</code>、<code>setter</code>方法（Spring 注入配置时需要这些方法）。</p>
+</li>
+</ol>
+<h4 id="为什么需要这个类？"><a href="#为什么需要这个类？" class="headerlink" title="为什么需要这个类？"></a>为什么需要这个类？</h4><p>如果没有<code>AliOssProperties</code>，要获取配置就得手动写代码读取<code>application.yml</code>（比如用<code>@Value</code>注解逐个注入），但当配置项较多时（如这里的 4 个参数），代码会很繁琐：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 不推荐：用@Value逐个注入，配置项多了会很冗余</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AliOssUtil</span> &#123;</span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;sky.alioss.endpoint&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String endpoint;</span><br><span class="line">    <span class="meta">@Value(&quot;$&#123;sky.alioss.access-key-id&#125;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String accessKeyId;</span><br><span class="line">    <span class="comment">// ... 其他参数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>而<code>AliOssProperties</code>通过<code>@ConfigurationProperties</code>一次性绑定所有配置，更简洁、更易维护。</p>
+<h3 id="二、AliOssUtil：OSS-操作的-“业务工具”"><a href="#二、AliOssUtil：OSS-操作的-“业务工具”" class="headerlink" title="二、AliOssUtil：OSS 操作的 “业务工具”"></a>二、<code>AliOssUtil</code>：OSS 操作的 “业务工具”</h3><p>这个类是 <strong>“实际干活的工具”</strong>，负责调用阿里云 OSS 的 SDK 完成文件上传，它的核心是<code>upload</code>方法。</p>
+<h4 id="关键设计解析"><a href="#关键设计解析" class="headerlink" title="关键设计解析"></a>关键设计解析</h4><ol>
+<li><code>@AllArgsConstructor</code>：Lombok 注解，自动生成一个包含所有字段（endpoint、accessKeyId等）的构造函数。<ul>
+<li>作用：方便通过 “构造函数注入” 的方式，将<code>AliOssProperties</code>中的配置参数传递给<code>AliOssUtil</code>（后面会讲如何配合）。</li>
+</ul>
+</li>
+<li><strong>字段设计</strong>：<code>endpoint</code>、<code>accessKeyId</code>等字段与<code>AliOssProperties</code>完全对应，因为这些是 OSS 上传必须的参数。</li>
+<li><strong><code>upload</code>方法</strong>：使用注入的参数创建 OSS 客户端（<code>OSS ossClient</code>），执行上传逻辑，最终返回文件的访问 URL。</li>
+</ol>
+<h4 id="为什么工具类不自己读取配置？"><a href="#为什么工具类不自己读取配置？" class="headerlink" title="为什么工具类不自己读取配置？"></a>为什么工具类不自己读取配置？</h4><p>如果<code>AliOssUtil</code>自己读取配置（比如硬编码或手动解析配置文件），会导致：</p>
+<ul>
+<li>工具类与配置强耦合：换环境（如开发→生产）时，需要修改工具类代码；</li>
+<li>复用性差：如果另一个模块也需要 OSS 上传，得重复写读取配置的逻辑；</li>
+<li>测试困难：单元测试时无法方便地替换为测试环境的配置。</li>
+</ul>
+<h3 id="三、两个类如何-“配合工作”？"><a href="#三、两个类如何-“配合工作”？" class="headerlink" title="三、两个类如何 “配合工作”？"></a>三、两个类如何 “配合工作”？</h3><p>目前你的代码中还缺少一个 <strong>“配置类”</strong>（如<code>OssConfig</code>），它是连接<code>AliOssProperties</code>和<code>AliOssUtil</code>的 “桥梁”。完整流程如下：</p>
+<h4 id="步骤-1：配置类创建AliOssUtil实例并注入配置"><a href="#步骤-1：配置类创建AliOssUtil实例并注入配置" class="headerlink" title="步骤 1：配置类创建AliOssUtil实例并注入配置"></a>步骤 1：配置类创建<code>AliOssUtil</code>实例并注入配置</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span> <span class="comment">// 标记为Spring配置类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OssConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AliOssProperties aliOssProperties; <span class="comment">// 注入配置容器</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span> <span class="comment">// 将AliOssUtil注册为Spring Bean，供其他组件使用</span></span><br><span class="line">    <span class="keyword">public</span> AliOssUtil <span class="title function_">aliOssUtil</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 调用AliOssUtil的全参构造函数，传入配置参数</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">AliOssUtil</span>(</span><br><span class="line">            aliOssProperties.getEndpoint(),</span><br><span class="line">            aliOssProperties.getAccessKeyId(),</span><br><span class="line">            aliOssProperties.getAccessKeySecret(),</span><br><span class="line">            aliOssProperties.getBucketName()</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="步骤-2：业务代码中直接使用AliOssUtil"><a href="#步骤-2：业务代码中直接使用AliOssUtil" class="headerlink" title="步骤 2：业务代码中直接使用AliOssUtil"></a>步骤 2：业务代码中直接使用<code>AliOssUtil</code></h4><p>当需要上传文件时，直接注入<code>AliOssUtil</code>即可，无需关心配置细节：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FileUploadService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> AliOssUtil aliOssUtil; <span class="comment">// 注入工具类</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">uploadFile</span><span class="params">(MultipartFile file)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="type">byte</span>[] bytes = file.getBytes();</span><br><span class="line">        <span class="type">String</span> <span class="variable">fileName</span> <span class="operator">=</span> UUID.randomUUID().toString() + file.getOriginalFilename();</span><br><span class="line">        <span class="keyword">return</span> aliOssUtil.upload(bytes, fileName); <span class="comment">// 直接调用上传方法</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="四、这种设计的核心优势"><a href="#四、这种设计的核心优势" class="headerlink" title="四、这种设计的核心优势"></a>四、这种设计的核心优势</h3><ol>
+<li><strong>配置集中管理</strong>：所有 OSS 参数都在<code>application.yml</code>中，改配置无需动代码。</li>
+<li><strong>业务与配置解耦</strong>：<code>AliOssUtil</code>只负责上传，不关心配置从哪来；<code>AliOssProperties</code>只负责存配置，不关心怎么用。</li>
+<li><strong>环境隔离</strong>：开发 &#x2F; 测试 &#x2F; 生产环境的配置可以写在不同的配置文件（如<code>application-dev.yml</code>、<code>application-prod.yml</code>），通过<code>spring.profiles.active</code>切换。</li>
+<li><strong>可测试性</strong>：单元测试时，可以手动创建<code>AliOssUtil</code>实例，传入测试用的 OSS 配置（如本地 MinIO 服务），无需依赖真实阿里云环境。</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><code>AliOssProperties</code>：相当于 “配置的搬运工”，把<code>application.yml</code>中的 OSS 参数搬到 Java 对象里，方便 Spring 管理。</li>
+<li><code>AliOssUtil</code>：相当于 “实际干活的工人”，拿着<code>AliOssProperties</code>提供的 “工具（配置）” 完成文件上传。</li>
+<li>中间通过配置类（<code>OssConfig</code>）连接，形成 “配置→容器→工具→业务” 的完整链路，这是 Spring Boot 处理第三方服务（如 OSS、Redis、数据库）的标准套路，既规范又灵活。</li>
+</ul>
+<hr>
+<h3 id="dishFlavor-的dishId-循环赋值的理解"><a href="#dishFlavor-的dishId-循环赋值的理解" class="headerlink" title="dishFlavor 的dishId 循环赋值的理解"></a>dishFlavor 的dishId 循环赋值的理解</h3><p>这段代码中循环给每个<code>dishFlavor</code>设置<code>dishId</code>，核心原因是<strong>建立菜品与口味之间的关联关系</strong>，具体可以从这几个角度理解：</p>
+<h4 id="1-业务逻辑：一个菜品对应多个口味"><a href="#1-业务逻辑：一个菜品对应多个口味" class="headerlink" title="1. 业务逻辑：一个菜品对应多个口味"></a>1. 业务逻辑：一个菜品对应多个口味</h4><p>一道菜（<code>Dish</code>）可能有多个口味（比如 “麻辣烫” 可能有 “微辣”、”中辣”、”特辣” 等口味）。这些口味需要明确 “属于哪道菜”，否则数据库中就无法区分某个口味是哪个菜品的。</p>
+<h4 id="2-数据库设计：通过外键关联"><a href="#2-数据库设计：通过外键关联" class="headerlink" title="2. 数据库设计：通过外键关联"></a>2. 数据库设计：通过外键关联</h4><p>在数据库中，<code>dish</code>表（菜品表）和<code>dish_flavor</code>表（口味表）是<strong>一对多</strong>的关系：</p>
+<ul>
+<li><code>dish</code>表的主键是<code>dish_id</code>（即代码中的<code>dishId</code>）</li>
+<li><code>dish_flavor</code>表需要一个<code>dish_id</code>字段作为<strong>外键</strong>，关联到<code>dish</code>表的主键</li>
+</ul>
+<p>这样设计的目的是：通过<code>dish_id</code>可以查询到某道菜的所有口味（比如 “查询麻辣烫的所有口味”）。</p>
+<h4 id="3-代码逻辑：批量设置外键"><a href="#3-代码逻辑：批量设置外键" class="headerlink" title="3. 代码逻辑：批量设置外键"></a>3. 代码逻辑：批量设置外键</h4><p>代码中：</p>
+<ul>
+<li>先插入菜品信息到<code>dish</code>表，获取数据库生成的主键<code>dishId</code>（这是当前菜品的唯一标识）</li>
+<li><code>dishDTO.getFlavors()</code>获取的是当前菜品的所有口味列表（多个<code>DishFlavor</code>对象）</li>
+<li>循环给每个<code>DishFlavor</code>设置<code>dishId</code>，就是给每个口味 “打上所属菜品的标签”</li>
+<li>最后批量插入到<code>dish_flavor</code>表时，所有口味就能通过<code>dishId</code>正确关联到对应的菜品</li>
+</ul>
+<p>举个例子：如果新增一道 “宫保鸡丁”（<code>dishId=100</code>），它有 “微辣” 和 “不辣” 两个口味。循环设置后，两个口味的<code>dishId</code>都会被设为 100，插入到数据库后，就能明确这两个口味都属于 “宫保鸡丁” 这道菜了。</p>
 ]]></content>
       <tags>
         <tag>苍穹外卖</tag>
