@@ -197,182 +197,182 @@ Contents
 </tr>
 </tbody></table>
 <h3 id="流程分析"><a href="#流程分析" class="headerlink" title="流程分析"></a>流程分析</h3><h3 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h3><h4 id="1）根据分类-id-查询并列出菜品"><a href="#1）根据分类-id-查询并列出菜品" class="headerlink" title="1）根据分类 id 查询并列出菜品"></a>1）根据分类 id 查询并列出菜品</h4><p><strong>DishController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据分类条件查询列出菜品
      * @param categoryId 分类id
      * @return 菜品列表
-     */
-    @GetMapping("/list")
-    @ApiOperation("根据分类条件查询并列出菜品")
-    public Result<List<Dish>> list(Long categoryId) &#123;
-        log.info("根据分类条件查询并列出菜品: &#123;&#125;", categoryId);
-        List<Dish> dishList = dishService.list(categoryId);
-        return Result.success(dishList);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/list"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"根据分类条件查询并列出菜品"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>Dish<span class="token operator">>></span> <span class="token function">list</span><span class="token punctuation">(</span>Long categoryId<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"根据分类条件查询并列出菜品: &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> categoryId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        List<span class="token operator">&lt;</span>Dish<span class="token operator">></span> dishList <span class="token operator">=</span> dishService<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span>categoryId<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span>dishList<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishServiceImpl.java</strong></p>
 <p>这里注意 status <strong>状态是 ENABLE</strong>，一开始写成 DISABLE 了，没有菜品列出，后面发现是状态设置错了。</p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据分类条件查询列出菜品
      * @param categoryId 分类id
      * @return 菜品列表
-     */
-    @Override
-    public List<Dish> list(Long categoryId) &#123;
-        Dish dish = Dish.builder()
-                .status(StatusConstant.ENABLE) // 注意这里是只查询起售状态的菜品
-                .categoryId(categoryId)
-                .build();
-        return dishMapper.list(dish);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> List<span class="token operator">&lt;</span>Dish<span class="token operator">></span> <span class="token function">list</span><span class="token punctuation">(</span>Long categoryId<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        Dish dish <span class="token operator">=</span> Dish<span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">status</span><span class="token punctuation">(</span>StatusConstant<span class="token punctuation">.</span>ENABLE<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 注意这里是只查询起售状态的菜品</span>
+                <span class="token punctuation">.</span><span class="token function">categoryId</span><span class="token punctuation">(</span>categoryId<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> dishMapper<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span>dish<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 动态条件查询菜品
      * @param dish 条件
      * @return 菜品列表
-     */
-    List<Dish> list(Dish dish);
+     */</span>
+    List<span class="token operator">&lt;</span>Dish<span class="token operator">></span> <span class="token function">list</span><span class="token punctuation">(</span>Dish dish<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.xml</strong></p>
-<pre class="line-numbers language-xml"><code class="language-xml">    <select id="list" resultType="com.sky.entity.Dish">
+<pre class="line-numbers language-xml"><code class="language-xml">    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>select</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span> <span class="token attr-name">resultType</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.sky.entity.Dish<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
         select * from dish
-        <where>
-            <if test="name != null and name != ''">
-                and name like concat('%', #&#123;name&#125;, '%')
-            </if>
-            <if test="categoryId != null">
-                and category_id = #&#123;categoryId&#125;
-            </if>
-            <if test="status != null">
-                and status = #&#123;status&#125;
-            </if>
-        </where>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>where</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>name !<span class="token punctuation">=</span> null and name !<span class="token punctuation">=</span> <span class="token punctuation">'</span><span class="token punctuation">'</span><span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+                and name like concat('%', #<span class="token entity" title="&#123;">&amp;#123;</span>name<span class="token entity" title="&#125;">&amp;#125;</span>, '%')
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>categoryId !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+                and category_id = #<span class="token entity" title="&#123;">&amp;#123;</span>categoryId<span class="token entity" title="&#125;">&amp;#125;</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>status !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+                and status = #<span class="token entity" title="&#123;">&amp;#123;</span>status<span class="token entity" title="&#125;">&amp;#125;</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>where</span><span class="token punctuation">></span></span>
         order by create_time desc
-    </select>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>select</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="2）新增套餐"><a href="#2）新增套餐" class="headerlink" title="2）新增套餐"></a>2）新增套餐</h4><p>SetmealController.java</p>
-<pre class="line-numbers language-java"><code class="language-java">package com.sky.controller.admin;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>admin<span class="token punctuation">;</span>
 
-import com.sky.dto.SetmealDTO;
-import com.sky.result.Result;
-import com.sky.service.SetmealService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>dto<span class="token punctuation">.</span>SetmealDTO<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>result<span class="token punctuation">.</span>Result<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>service<span class="token punctuation">.</span>SetmealService<span class="token punctuation">;</span>
+<span class="token keyword">import</span> io<span class="token punctuation">.</span>swagger<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Api<span class="token punctuation">;</span>
+<span class="token keyword">import</span> io<span class="token punctuation">.</span>swagger<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>ApiOperation<span class="token punctuation">;</span>
+<span class="token keyword">import</span> lombok<span class="token punctuation">.</span>extern<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span>Slf4j<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>Autowired<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>web<span class="token punctuation">.</span>bind<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>PostMapping<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>web<span class="token punctuation">.</span>bind<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>RequestBody<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>web<span class="token punctuation">.</span>bind<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>RequestMapping<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>web<span class="token punctuation">.</span>bind<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>RestController<span class="token punctuation">;</span>
 
-@RestController
-@Api(tags = "套餐管理")
-@RequestMapping("admin/setmeal")
-@Slf4j
-public class SetmealController &#123;
+<span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@Api</span><span class="token punctuation">(</span>tags <span class="token operator">=</span> <span class="token string">"套餐管理"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"admin/setmeal"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SetmealController</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
 
-    @Autowired
-    private SetmealService setmealService;
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> SetmealService setmealService<span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 新增套餐
      * @param setmealDTO 套餐信息
      * @return 结果
-     */
-    @PostMapping
-    @ApiOperation("新增套餐")
-    public Result<Void> save(@RequestBody SetmealDTO setmealDTO) &#123; // 这里要加 @RequestBody 将前端传递的json数据转换为java对象
-        log.info("新增套餐: &#123;&#125;", setmealDTO);
-        setmealService.saveWithDish(setmealDTO);
-        return Result.success();
-    &#125;
-&#125;
+     */</span>
+    <span class="token annotation punctuation">@PostMapping</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"新增套餐"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>Void<span class="token operator">></span> <span class="token function">save</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> SetmealDTO setmealDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 这里要加 @RequestBody 将前端传递的json数据转换为java对象</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"新增套餐: &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> setmealDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        setmealService<span class="token punctuation">.</span><span class="token function">saveWithDish</span><span class="token punctuation">(</span>setmealDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>SetmealServiceImpl.java</p>
-<pre class="line-numbers language-java"><code class="language-java">package com.sky.service.impl;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>service<span class="token punctuation">.</span>impl<span class="token punctuation">;</span>
 
-import com.sky.dto.SetmealDTO;
-import com.sky.entity.Setmeal;
-import com.sky.entity.SetmealDish;
-import com.sky.mapper.SetmealDishMapper;
-import com.sky.mapper.SetmealMapper;
-import com.sky.service.SetmealService;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>dto<span class="token punctuation">.</span>SetmealDTO<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>entity<span class="token punctuation">.</span>Setmeal<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>entity<span class="token punctuation">.</span>SetmealDish<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>mapper<span class="token punctuation">.</span>SetmealDishMapper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>mapper<span class="token punctuation">.</span>SetmealMapper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>service<span class="token punctuation">.</span>SetmealService<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>BeanUtils<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>Autowired<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>stereotype<span class="token punctuation">.</span>Service<span class="token punctuation">;</span>
 
-import java.util.List;
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>List<span class="token punctuation">;</span>
 
-@Service
-public class SetmealServiceImpl implements SetmealService &#123;
+<span class="token annotation punctuation">@Service</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">SetmealServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">SetmealService</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
 
-    @Autowired
-    private SetmealMapper setmealMapper;
-    @Autowired
-    private SetmealDishMapper setmealDishMapper;
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> SetmealMapper setmealMapper<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> SetmealDishMapper setmealDishMapper<span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 新增套餐
      * @param setmealDTO 套餐信息
-     */
-    @Override
-    public void saveWithDish(SetmealDTO setmealDTO) &#123;
-        Setmeal setmeal = new Setmeal();
-        BeanUtils.copyProperties(setmealDTO, setmeal);
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">saveWithDish</span><span class="token punctuation">(</span>SetmealDTO setmealDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        Setmeal setmeal <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Setmeal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        BeanUtils<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>setmealDTO<span class="token punctuation">,</span> setmeal<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        // 1. 向setmeal表插入套餐
-        setmealMapper.insert(setmeal);
+        <span class="token comment" spellcheck="true">// 1. 向setmeal表插入套餐</span>
+        setmealMapper<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>setmeal<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        // 2. 向setmeal_dish表插入套餐和菜品的关联关系
-        // 先获取套餐id
-        Long setmealId = setmeal.getId();
-        // 再获取套餐和菜品的关联关系
-        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
-        // 设置套餐id
-        setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
-        // 批量插入套餐和菜品的关联关系
-        setmealDishMapper.insertBatch(setmealDishes);
-    &#125;
-&#125;
+        <span class="token comment" spellcheck="true">// 2. 向setmeal_dish表插入套餐和菜品的关联关系</span>
+        <span class="token comment" spellcheck="true">// 先获取套餐id</span>
+        Long setmealId <span class="token operator">=</span> setmeal<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 再获取套餐和菜品的关联关系</span>
+        List<span class="token operator">&lt;</span>SetmealDish<span class="token operator">></span> setmealDishes <span class="token operator">=</span> setmealDTO<span class="token punctuation">.</span><span class="token function">getSetmealDishes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 设置套餐id</span>
+        setmealDishes<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>setmealDish <span class="token operator">-</span><span class="token operator">></span> setmealDish<span class="token punctuation">.</span><span class="token function">setSetmealId</span><span class="token punctuation">(</span>setmealId<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 批量插入套餐和菜品的关联关系</span>
+        setmealDishMapper<span class="token punctuation">.</span><span class="token function">insertBatch</span><span class="token punctuation">(</span>setmealDishes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>SetmealMapper.java</p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 插入套餐, 并且将主键回填到实体类对象中 (useGeneratedKeys = true, keyProperty = "id")
      * @param setmeal 套餐
-     */
-    @AutoFill(value = OperationType.INSERT)
-    void insert(Setmeal setmeal);
+     */</span>
+    <span class="token annotation punctuation">@AutoFill</span><span class="token punctuation">(</span>value <span class="token operator">=</span> OperationType<span class="token punctuation">.</span>INSERT<span class="token punctuation">)</span>
+    <span class="token keyword">void</span> <span class="token function">insert</span><span class="token punctuation">(</span>Setmeal setmeal<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>SetmealMapper.xml</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.sky.mapper.SetmealMapper">
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token prolog">&lt;?xml version="1.0" encoding="UTF-8" ?></span>
+<span class="token doctype">&lt;!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" ></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>mapper</span> <span class="token attr-name">namespace</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.sky.mapper.SetmealMapper<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>insert</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>insert<span class="token punctuation">"</span></span> <span class="token attr-name">useGeneratedKeys</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span> <span class="token attr-name">keyProperty</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>id<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
         insert into setmeal (category_id, name, price, description, image, create_time, update_time, create_user, update_user)
         values
-        (#&#123;categoryId&#125;, #&#123;name&#125;, #&#123;price&#125;, #&#123;description&#125;, #&#123;image&#125;, #&#123;createTime&#125;, #&#123;updateTime&#125;, #&#123;createUser&#125;, #&#123;updateUser&#125;)
-    </insert>
+        (#<span class="token entity" title="&#123;">&amp;#123;</span>categoryId<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>name<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>price<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>description<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>image<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>createTime<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>updateTime<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>createUser<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>updateUser<span class="token entity" title="&#125;">&amp;#125;</span>)
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>insert</span><span class="token punctuation">></span></span>
 
-</mapper>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mapper</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>SetmealDishMapper.java</p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 批量插入套餐和菜品的关联关系
      * @param setmealDishes 套餐和菜品的关联关系
-     */
-    void insertBatch(List<SetmealDish> setmealDishes);
+     */</span>
+    <span class="token keyword">void</span> <span class="token function">insertBatch</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>SetmealDish<span class="token operator">></span> setmealDishes<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>SetmealDishMapper.xml</p>
-<pre class="line-numbers language-java"><code class="language-java">    <insert id="insertBatch">
-        insert into setmeal_dish (setmeal_id, dish_id, name, price, copies)
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token operator">&lt;</span>insert id<span class="token operator">=</span><span class="token string">"insertBatch"</span><span class="token operator">></span>
+        insert into <span class="token function">setmeal_dish</span> <span class="token punctuation">(</span>setmeal_id<span class="token punctuation">,</span> dish_id<span class="token punctuation">,</span> name<span class="token punctuation">,</span> price<span class="token punctuation">,</span> copies<span class="token punctuation">)</span>
         values
-        <foreach collection="setmealDishes" item="sd" separator=",">
-            (#&#123;sd.setmealId&#125;, #&#123;sd.dishId&#125;, #&#123;sd.name&#125;, #&#123;sd.price&#125;, #&#123;sd.copies&#125;)
-        </foreach>
-    </insert>
+        <span class="token operator">&lt;</span>foreach collection<span class="token operator">=</span><span class="token string">"setmealDishes"</span> item<span class="token operator">=</span><span class="token string">"sd"</span> separator<span class="token operator">=</span><span class="token string">","</span><span class="token operator">></span>
+            <span class="token punctuation">(</span>#<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>sd<span class="token punctuation">.</span>setmealId<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>sd<span class="token punctuation">.</span>dishId<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>sd<span class="token punctuation">.</span>name<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>sd<span class="token punctuation">.</span>price<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>sd<span class="token punctuation">.</span>copies<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>foreach<span class="token operator">></span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>insert<span class="token operator">></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h3><p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013112100927.png" alt="image-20251013112100927"></p>
 <p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013112107482.png" alt="image-20251013112107482"></p>
@@ -392,57 +392,57 @@ public class SetmealServiceImpl implements SetmealService &#123;
 
 <p><strong>接口设计：</strong><br><img src="/2025/10/13/sky-takeout-day04-note/image-20251013112435652.png" alt="image-20251013112435652"></p>
 <h3 id="流程分析-1"><a href="#流程分析-1" class="headerlink" title="流程分析"></a>流程分析</h3><h3 id="代码编写-1"><a href="#代码编写-1" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>SetmealController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 分页查询套餐
      * @param setmealPageQueryDTO 分页查询参数
      * @return 套餐分页结果
-     */
-    @GetMapping("/page")
-    @ApiOperation("分页查询套餐")
-    public Result<PageResult> page(SetmealPageQueryDTO setmealPageQueryDTO) &#123;
-        log.info("分页查询套餐: &#123;&#125;", setmealPageQueryDTO);
-        PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);
-        return Result.success(pageResult);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/page"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"分页查询套餐"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>PageResult<span class="token operator">></span> <span class="token function">page</span><span class="token punctuation">(</span>SetmealPageQueryDTO setmealPageQueryDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"分页查询套餐: &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> setmealPageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        PageResult pageResult <span class="token operator">=</span> setmealService<span class="token punctuation">.</span><span class="token function">pageQuery</span><span class="token punctuation">(</span>setmealPageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span>pageResult<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealServiceImpl.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 分页查询套餐
      * @param setmealPageQueryDTO 分页查询参数
      * @return 套餐分页结果
-     */
-    @Override
-    public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) &#123;
-        PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
-        Page<SetmealVO> page = setmealMapper.pageQuery(setmealPageQueryDTO);
-        return new PageResult(page.getTotal(), page.getResult());
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> PageResult <span class="token function">pageQuery</span><span class="token punctuation">(</span>SetmealPageQueryDTO setmealPageQueryDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        PageHelper<span class="token punctuation">.</span><span class="token function">startPage</span><span class="token punctuation">(</span>setmealPageQueryDTO<span class="token punctuation">.</span><span class="token function">getPage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> setmealPageQueryDTO<span class="token punctuation">.</span><span class="token function">getPageSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Page<span class="token operator">&lt;</span>SetmealVO<span class="token operator">></span> page <span class="token operator">=</span> setmealMapper<span class="token punctuation">.</span><span class="token function">pageQuery</span><span class="token punctuation">(</span>setmealPageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">PageResult</span><span class="token punctuation">(</span>page<span class="token punctuation">.</span><span class="token function">getTotal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> page<span class="token punctuation">.</span><span class="token function">getResult</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 分页查询套餐
      * @param setmealPageQueryDTO 分页查询参数
      * @return 套餐分页结果
-     */
-    Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+     */</span>
+    Page<span class="token operator">&lt;</span>SetmealVO<span class="token operator">></span> <span class="token function">pageQuery</span><span class="token punctuation">(</span>SetmealPageQueryDTO setmealPageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealMapper.xml</strong></p>
-<pre class="line-numbers language-xml"><code class="language-xml">    <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
+<pre class="line-numbers language-xml"><code class="language-xml">    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>select</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>pageQuery<span class="token punctuation">"</span></span> <span class="token attr-name">resultType</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>com.sky.vo.SetmealVO<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
         select s.*, c.name as categoryName
         from setmeal s left outer join category c
         on s.category_id = c.id
-        <where>
-            <if test="name != null">
-                s.name like concat('%', #&#123;name&#125;, '%')
-            </if>
-            <if test="status != null">
-                and s.status = #&#123;status&#125;
-            </if>
-            <if test="categoryId != null">
-                and s.category_id = #&#123;categoryId&#125;
-            </if>
-        </where>
-    </select>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>where</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>name !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+                s.name like concat('%', #<span class="token entity" title="&#123;">&amp;#123;</span>name<span class="token entity" title="&#125;">&amp;#125;</span>, '%')
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>status !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+                and s.status = #<span class="token entity" title="&#123;">&amp;#123;</span>status<span class="token entity" title="&#125;">&amp;#125;</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>categoryId !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+                and s.category_id = #<span class="token entity" title="&#123;">&amp;#123;</span>categoryId<span class="token entity" title="&#125;">&amp;#125;</span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>where</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>select</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试-1"><a href="#功能测试-1" class="headerlink" title="功能测试"></a>功能测试</h3><p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013114913208.png" alt="image-20251013114913208"></p>
 <p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013114722042.png" alt="image-20251013114722042"></p>
@@ -457,79 +457,79 @@ public class SetmealServiceImpl implements SetmealService &#123;
 
 
 <h3 id="流程分析-2"><a href="#流程分析-2" class="headerlink" title="流程分析"></a>流程分析</h3><h3 id="代码编写-2"><a href="#代码编写-2" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>SetmealController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 删除套餐
      * @param ids 套餐id集合
      * @return 结果
-     */
-    @DeleteMapping
-    @ApiOperation("删除套餐")
-    public Result<Void> delete(@RequestParam("ids") List<Long> ids) &#123;
-        log.info("删除套餐: &#123;&#125;", ids);
-        setmealService.deleteWithDish(ids);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@DeleteMapping</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"删除套餐"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>Void<span class="token operator">></span> <span class="token function">delete</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span><span class="token punctuation">(</span><span class="token string">"ids"</span><span class="token punctuation">)</span> List<span class="token operator">&lt;</span>Long<span class="token operator">></span> ids<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"删除套餐: &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> ids<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        setmealService<span class="token punctuation">.</span><span class="token function">deleteWithDish</span><span class="token punctuation">(</span>ids<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealServiceImpl.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 删除套餐, 同时删除套餐和菜品的关联数据
      * @param ids 套餐id集合
-     */
-    @Override
-    public void deleteWithDish(List<Long> ids) &#123;
-        // 起售中的套餐不能删除
-        // 1. 查询套餐状态, 确认是否可以删除
-        for (Long id : ids) &#123;
-            Setmeal setmeal = setmealMapper.getById(id);
-            if (setmeal != null && Objects.equals(setmeal.getStatus(), StatusConstant.ENABLE)) &#123; // 套餐起售中
-                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
-            &#125;
-        &#125;
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">deleteWithDish</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Long<span class="token operator">></span> ids<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 起售中的套餐不能删除</span>
+        <span class="token comment" spellcheck="true">// 1. 查询套餐状态, 确认是否可以删除</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span>Long id <span class="token operator">:</span> ids<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            Setmeal setmeal <span class="token operator">=</span> setmealMapper<span class="token punctuation">.</span><span class="token function">getById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>setmeal <span class="token operator">!=</span> null <span class="token operator">&amp;&amp;</span> Objects<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>setmeal<span class="token punctuation">.</span><span class="token function">getStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> StatusConstant<span class="token punctuation">.</span>ENABLE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 套餐起售中</span>
+                <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">DeletionNotAllowedException</span><span class="token punctuation">(</span>MessageConstant<span class="token punctuation">.</span>SETMEAL_ON_SALE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        // 2. 删除套餐表中的数据
-        // delete from setmeal where id in (1,2,3)
-        setmealMapper.deleteByIds(ids);
-        // 3. 删除套餐和菜品的关联数据
-        // delete from setmeal_dish where setmeal_id in (1,2,3)
-        setmealDishMapper.deleteBySetmealIds(ids);
-    &#125;
+        <span class="token comment" spellcheck="true">// 2. 删除套餐表中的数据</span>
+        <span class="token comment" spellcheck="true">// delete from setmeal where id in (1,2,3)</span>
+        setmealMapper<span class="token punctuation">.</span><span class="token function">deleteByIds</span><span class="token punctuation">(</span>ids<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 3. 删除套餐和菜品的关联数据</span>
+        <span class="token comment" spellcheck="true">// delete from setmeal_dish where setmeal_id in (1,2,3)</span>
+        setmealDishMapper<span class="token punctuation">.</span><span class="token function">deleteBySetmealIds</span><span class="token punctuation">(</span>ids<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据id查询套餐  (用于删除套餐时, 查询套餐状态)
      * @param id 套餐id
-     */
-    @Select("select * from setmeal where id = #&#123;id&#125;")
-    Setmeal getById(Long id);
+     */</span>
+    <span class="token annotation punctuation">@Select</span><span class="token punctuation">(</span><span class="token string">"select * from setmeal where id = #&amp;#123;id&amp;#125;"</span><span class="token punctuation">)</span>
+    Setmeal <span class="token function">getById</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据id删除套餐
      * @param ids 套餐id集合
-     */
-    void deleteByIds(List<Long> ids);
+     */</span>
+    <span class="token keyword">void</span> <span class="token function">deleteByIds</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Long<span class="token operator">></span> ids<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealMapper.xml</strong></p>
-<pre class="line-numbers language-xml"><code class="language-xml">    <delete id="deleteByIds" parameterType="list">
+<pre class="line-numbers language-xml"><code class="language-xml">    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>delete</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>deleteByIds<span class="token punctuation">"</span></span> <span class="token attr-name">parameterType</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
         delete from setmeal where id in
-        <foreach collection="ids" item="id" open="(" separator="," close=")">
-            #&#123;id&#125;
-        </foreach>
-    </delete>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>foreach</span> <span class="token attr-name">collection</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>ids<span class="token punctuation">"</span></span> <span class="token attr-name">item</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>id<span class="token punctuation">"</span></span> <span class="token attr-name">open</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>(<span class="token punctuation">"</span></span> <span class="token attr-name">separator</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>,<span class="token punctuation">"</span></span> <span class="token attr-name">close</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>)<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+            #<span class="token entity" title="&#123;">&amp;#123;</span>id<span class="token entity" title="&#125;">&amp;#125;</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>foreach</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>delete</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealDishMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据套餐id删除对应的套餐和菜品的关联关系
      * @param setmealIds 套餐id集合
-     */
-    void deleteBySetmealIds(List<Long> setmealIds);
+     */</span>
+    <span class="token keyword">void</span> <span class="token function">deleteBySetmealIds</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>Long<span class="token operator">></span> setmealIds<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealDishMapper.xml</strong></p>
-<pre class="line-numbers language-xml"><code class="language-xml">    <delete id="deleteBySetmealIds">
+<pre class="line-numbers language-xml"><code class="language-xml">    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>delete</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>deleteBySetmealIds<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
         delete from setmeal_dish where setmeal_id in
-        <foreach collection="setmealIds" item="setmealId" open="(" separator="," close=")">
-            #&#123;setmealId&#125;
-        </foreach>
-    </delete>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>foreach</span> <span class="token attr-name">collection</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>setmealIds<span class="token punctuation">"</span></span> <span class="token attr-name">item</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>setmealId<span class="token punctuation">"</span></span> <span class="token attr-name">open</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>(<span class="token punctuation">"</span></span> <span class="token attr-name">separator</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>,<span class="token punctuation">"</span></span> <span class="token attr-name">close</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>)<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+            #<span class="token entity" title="&#123;">&amp;#123;</span>setmealId<span class="token entity" title="&#125;">&amp;#125;</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>foreach</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>delete</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试-2"><a href="#功能测试-2" class="headerlink" title="功能测试"></a>功能测试</h3><p>起售中无法删除</p>
 <p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013135201884.png" alt="image-20251013135201884"></p>
@@ -546,109 +546,109 @@ public class SetmealServiceImpl implements SetmealService &#123;
 <li>修改套餐</li>
 </ul>
 <h3 id="流程分析-3"><a href="#流程分析-3" class="headerlink" title="流程分析"></a>流程分析</h3><h3 id="代码编写-3"><a href="#代码编写-3" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>SetmealController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据id查询套餐信息, 包括套餐和菜品的关联信息
      * @param id 套餐id
      * @return 套餐信息
-     */
-    @GetMapping("/&#123;id&#125;")
-    @ApiOperation("根据id查询套餐信息(包括套餐和菜品的关联信息)")
-    public Result<SetmealVO> getById(@PathVariable Long id) &#123;  // 这里要加 @PathVariable 将路径参数中的id参数绑定到方法的id参数上
-        log.info("根据id查询套餐信息: &#123;&#125;", id);
-        SetmealVO setmealVO = setmealService.getByIdWithDishes(id);
-        return Result.success(setmealVO);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/&amp;#123;id&amp;#125;"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"根据id查询套餐信息(包括套餐和菜品的关联信息)"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>SetmealVO<span class="token operator">></span> <span class="token function">getById</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 这里要加 @PathVariable 将路径参数中的id参数绑定到方法的id参数上</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"根据id查询套餐信息: &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        SetmealVO setmealVO <span class="token operator">=</span> setmealService<span class="token punctuation">.</span><span class="token function">getByIdWithDishes</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span>setmealVO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 修改套餐(包括套餐和菜品的关联信息)
      * @param setmealDTO 套餐信息
      * @return 结果
-     */
-    @PutMapping
-    @ApiOperation("修改套餐")
-    public Result<Void> update(@RequestBody SetmealDTO setmealDTO) &#123;  // 这里要加 @RequestBody 将前端传递的json数据转换为java对象
-        log.info("修改套餐: &#123;&#125;", setmealDTO);
-        setmealService.updateWithDish(setmealDTO);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@PutMapping</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"修改套餐"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>Void<span class="token operator">></span> <span class="token function">update</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> SetmealDTO setmealDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 这里要加 @RequestBody 将前端传递的json数据转换为java对象</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"修改套餐: &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> setmealDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        setmealService<span class="token punctuation">.</span><span class="token function">updateWithDish</span><span class="token punctuation">(</span>setmealDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealServiceImpl.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据id查询套餐信息, 包括套餐和菜品的关联信息
      * @param id 套餐id
      * @return 套餐信息
-     */
-    @Override
-    public SetmealVO getByIdWithDishes(Long id) &#123;
-        // 1. 查询套餐基本信息
-        Setmeal setmeal = setmealMapper.getById(id);
-        // 2. 查询套餐和菜品的关联信息
-        List<SetmealDish> setmealDishes = setmealDishMapper.getByIdWithDishes(id);
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> SetmealVO <span class="token function">getByIdWithDishes</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 1. 查询套餐基本信息</span>
+        Setmeal setmeal <span class="token operator">=</span> setmealMapper<span class="token punctuation">.</span><span class="token function">getById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 2. 查询套餐和菜品的关联信息</span>
+        List<span class="token operator">&lt;</span>SetmealDish<span class="token operator">></span> setmealDishes <span class="token operator">=</span> setmealDishMapper<span class="token punctuation">.</span><span class="token function">getByIdWithDishes</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        // 3. 将套餐基本信息与套餐菜品信息封装到VO对象中并返回
-        SetmealVO setmealVO = new SetmealVO();
-        BeanUtils.copyProperties(setmeal, setmealVO);
-        setmealVO.setSetmealDishes(setmealDishes);
+        <span class="token comment" spellcheck="true">// 3. 将套餐基本信息与套餐菜品信息封装到VO对象中并返回</span>
+        SetmealVO setmealVO <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SetmealVO</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        BeanUtils<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>setmeal<span class="token punctuation">,</span> setmealVO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        setmealVO<span class="token punctuation">.</span><span class="token function">setSetmealDishes</span><span class="token punctuation">(</span>setmealDishes<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        return setmealVO;
-    &#125;
+        <span class="token keyword">return</span> setmealVO<span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 修改套餐(包括套餐和菜品的关联信息)
      * @param setmealDTO 套餐信息
-     */
-    @Override
-    public void updateWithDish(SetmealDTO setmealDTO) &#123;
-        Setmeal setmeal = new Setmeal();
-        BeanUtils.copyProperties(setmealDTO, setmeal);
-        // 1. 首先，更新setmeal表中的基本信息
-        setmealMapper.updateById(setmeal);
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">updateWithDish</span><span class="token punctuation">(</span>SetmealDTO setmealDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        Setmeal setmeal <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Setmeal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        BeanUtils<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>setmealDTO<span class="token punctuation">,</span> setmeal<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 1. 首先，更新setmeal表中的基本信息</span>
+        setmealMapper<span class="token punctuation">.</span><span class="token function">updateById</span><span class="token punctuation">(</span>setmeal<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        // 2. 然后，更新setmeal_dish表中的关联信息
-        Long setmealId = setmeal.getId();
-        // 2.1 先删除原有的关联信息
-        setmealDishMapper.deleteBySetmealIds(List.of(setmealId));
+        <span class="token comment" spellcheck="true">// 2. 然后，更新setmeal_dish表中的关联信息</span>
+        Long setmealId <span class="token operator">=</span> setmeal<span class="token punctuation">.</span><span class="token function">getId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 2.1 先删除原有的关联信息</span>
+        setmealDishMapper<span class="token punctuation">.</span><span class="token function">deleteBySetmealIds</span><span class="token punctuation">(</span>List<span class="token punctuation">.</span><span class="token function">of</span><span class="token punctuation">(</span>setmealId<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        // 2.2 再重新插入新的关联信息
-        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
-        // 设置套餐id
-        setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
-        // 批量插入套餐和菜品的关联关系
-        setmealDishMapper.insertBatch(setmealDishes);
-    &#125;
+        <span class="token comment" spellcheck="true">// 2.2 再重新插入新的关联信息</span>
+        List<span class="token operator">&lt;</span>SetmealDish<span class="token operator">></span> setmealDishes <span class="token operator">=</span> setmealDTO<span class="token punctuation">.</span><span class="token function">getSetmealDishes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 设置套餐id</span>
+        setmealDishes<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>setmealDish <span class="token operator">-</span><span class="token operator">></span> setmealDish<span class="token punctuation">.</span><span class="token function">setSetmealId</span><span class="token punctuation">(</span>setmealId<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 批量插入套餐和菜品的关联关系</span>
+        setmealDishMapper<span class="token punctuation">.</span><span class="token function">insertBatch</span><span class="token punctuation">(</span>setmealDishes<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据id动态修改套餐信息
      * @param setmeal 套餐信息
-     */
-    @AutoFill(value = OperationType.UPDATE)
-    void updateById(Setmeal setmeal);
+     */</span>
+    <span class="token annotation punctuation">@AutoFill</span><span class="token punctuation">(</span>value <span class="token operator">=</span> OperationType<span class="token punctuation">.</span>UPDATE<span class="token punctuation">)</span>
+    <span class="token keyword">void</span> <span class="token function">updateById</span><span class="token punctuation">(</span>Setmeal setmeal<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealMapper.xml</strong></p>
-<pre class="line-numbers language-xml"><code class="language-xml">    <update id="updateById">
+<pre class="line-numbers language-xml"><code class="language-xml">    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>update</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>updateById<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
         update setmeal
-        <set>
-            <if test="categoryId != null">category_id = #&#123;categoryId&#125;,</if>
-            <if test="name != null">name = #&#123;name&#125;,</if>
-            <if test="price != null">price = #&#123;price&#125;,</if>
-            <if test="status != null">status = #&#123;status&#125;,</if>
-            <if test="description != null">description = #&#123;description&#125;,</if>
-            <if test="image != null">image = #&#123;image&#125;,</if>
-            update_time = #&#123;updateTime&#125;,
-            update_user = #&#123;updateUser&#125;
-        </set>
-        where id = #&#123;id&#125;
-    </update>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>set</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>categoryId !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>category_id = #<span class="token entity" title="&#123;">&amp;#123;</span>categoryId<span class="token entity" title="&#125;">&amp;#125;</span>,<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>name !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>name = #<span class="token entity" title="&#123;">&amp;#123;</span>name<span class="token entity" title="&#125;">&amp;#125;</span>,<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>price !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>price = #<span class="token entity" title="&#123;">&amp;#123;</span>price<span class="token entity" title="&#125;">&amp;#125;</span>,<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>status !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>status = #<span class="token entity" title="&#123;">&amp;#123;</span>status<span class="token entity" title="&#125;">&amp;#125;</span>,<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>description !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>description = #<span class="token entity" title="&#123;">&amp;#123;</span>description<span class="token entity" title="&#125;">&amp;#125;</span>,<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>image !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>image = #<span class="token entity" title="&#123;">&amp;#123;</span>image<span class="token entity" title="&#125;">&amp;#125;</span>,<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+            update_time = #<span class="token entity" title="&#123;">&amp;#123;</span>updateTime<span class="token entity" title="&#125;">&amp;#125;</span>,
+            update_user = #<span class="token entity" title="&#123;">&amp;#123;</span>updateUser<span class="token entity" title="&#125;">&amp;#125;</span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>set</span><span class="token punctuation">></span></span>
+        where id = #<span class="token entity" title="&#123;">&amp;#123;</span>id<span class="token entity" title="&#125;">&amp;#125;</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>update</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealDishMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据套餐id查询对应的套餐和菜品的关联关系
      * @param setmealId 套餐id
      * @return 套餐和菜品的关联关系
-     */
-    @Select("select * from setmeal_dish where setmeal_id = #&#123;setmealId&#125;")
-    List<SetmealDish> getByIdWithDishes(Long setmealId);
+     */</span>
+    <span class="token annotation punctuation">@Select</span><span class="token punctuation">(</span><span class="token string">"select * from setmeal_dish where setmeal_id = #&amp;#123;setmealId&amp;#125;"</span><span class="token punctuation">)</span>
+    List<span class="token operator">&lt;</span>SetmealDish<span class="token operator">></span> <span class="token function">getByIdWithDishes</span><span class="token punctuation">(</span>Long setmealId<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试-3"><a href="#功能测试-3" class="headerlink" title="功能测试"></a>功能测试</h3><p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013152423948.png" alt="image-20251013152423948"></p>
 <p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013152426440.png" alt="image-20251013152426440"></p>
@@ -660,58 +660,58 @@ public class SetmealServiceImpl implements SetmealService &#123;
 </ul>
 <p><strong>接口设计：</strong><br><img src="/2025/10/13/sky-takeout-day04-note/image-20251013162309637.png" alt="image-20251013162309637" style="zoom:50%;"></p>
 <h3 id="流程分析-4"><a href="#流程分析-4" class="headerlink" title="流程分析"></a>流程分析</h3><h3 id="代码编写-4"><a href="#代码编写-4" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>SetmealController</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 起售/停售套餐
      * @param status 状态
      * @param id 套餐id集合
      * @return 结果
-     */
-    @PostMapping("/status/&#123;status&#125;")
-    @ApiOperation("起售/停售套餐")
-    public Result<Void> startOrStop(@PathVariable Integer status, Long id) &#123;
-        log.info("起售/停售套餐: &#123;&#125;, &#123;&#125;", status, id);
-        setmealService.startOrStop(status, id);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/status/&amp;#123;status&amp;#125;"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"起售/停售套餐"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>Void<span class="token operator">></span> <span class="token function">startOrStop</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Integer status<span class="token punctuation">,</span> Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"起售/停售套餐: &amp;#123;&amp;#125;, &amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> status<span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        setmealService<span class="token punctuation">.</span><span class="token function">startOrStop</span><span class="token punctuation">(</span>status<span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealServiceImpl</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 起售/停售套餐
      * @param status 套餐状态
      * @param id 套餐id
-     */
-    @Override
-    public void startOrStop(Integer status, Long id) &#123;
-        // 如果要设置为起售，需要检查套餐内的菜品是否都为起售状态
-        if (Objects.equals(status, StatusConstant.ENABLE)) &#123; // 要起售
-            // select a.* from dish a
-            // left join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = ?;
-            List<Dish> dishList = dishMapper.getBySetmealId(id); // 查询套餐内的菜品
-            dishList.forEach(dish -> &#123;
-                if (dish.getStatus().equals(StatusConstant.DISABLE)) &#123;
-                    throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ENABLE_FAILED);
-                &#125;
-            &#125;); // 只要有一个菜品是停售状态, 就不能起售
-        &#125;
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">startOrStop</span><span class="token punctuation">(</span>Integer status<span class="token punctuation">,</span> Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 如果要设置为起售，需要检查套餐内的菜品是否都为起售状态</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>Objects<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>status<span class="token punctuation">,</span> StatusConstant<span class="token punctuation">.</span>ENABLE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 要起售</span>
+            <span class="token comment" spellcheck="true">// select a.* from dish a</span>
+            <span class="token comment" spellcheck="true">// left join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = ?;</span>
+            List<span class="token operator">&lt;</span>Dish<span class="token operator">></span> dishList <span class="token operator">=</span> dishMapper<span class="token punctuation">.</span><span class="token function">getBySetmealId</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 查询套餐内的菜品</span>
+            dishList<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>dish <span class="token operator">-</span><span class="token operator">></span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                <span class="token keyword">if</span> <span class="token punctuation">(</span>dish<span class="token punctuation">.</span><span class="token function">getStatus</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>StatusConstant<span class="token punctuation">.</span>DISABLE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+                    <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">SetmealEnableFailedException</span><span class="token punctuation">(</span>MessageConstant<span class="token punctuation">.</span>SETMEAL_ENABLE_FAILED<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 只要有一个菜品是停售状态, 就不能起售</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        // 可以起售，更新套餐状态
-        Setmeal setmeal = Setmeal.builder()
-                .id(id)
-                .status(status)
-                .build();
-        setmealMapper.updateById(setmeal);
-    &#125;
+        <span class="token comment" spellcheck="true">// 可以起售，更新套餐状态</span>
+        Setmeal setmeal <span class="token operator">=</span> Setmeal<span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">id</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">status</span><span class="token punctuation">(</span>status<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        setmealMapper<span class="token punctuation">.</span><span class="token function">updateById</span><span class="token punctuation">(</span>setmeal<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据套餐id查询对应的菜品
      * @param id 套餐id
      * @return 菜品列表
-     */
-    @Select("select d.* from dish d " +
-            "left join setmeal_dish sd on d.id = sd.dish_id " +
-            "where sd.setmeal_id = #&#123;id&#125; ")
-    List<Dish> getBySetmealId(Long id);
+     */</span>
+    <span class="token annotation punctuation">@Select</span><span class="token punctuation">(</span><span class="token string">"select d.* from dish d "</span> <span class="token operator">+</span>
+            <span class="token string">"left join setmeal_dish sd on d.id = sd.dish_id "</span> <span class="token operator">+</span>
+            <span class="token string">"where sd.setmeal_id = #&amp;#123;id&amp;#125; "</span><span class="token punctuation">)</span>
+    List<span class="token operator">&lt;</span>Dish<span class="token operator">></span> <span class="token function">getBySetmealId</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试-4"><a href="#功能测试-4" class="headerlink" title="功能测试"></a>功能测试</h3><p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013170117923.png" alt="image-20251013170117923"></p>
 <p><img src="/2025/10/13/sky-takeout-day04-note/image-20251013170122129.png" alt="image-20251013170122129"></p>

@@ -51,52 +51,52 @@
   <img src="/2025/10/11/sky-takeout-day02-note/image-20251010153653291.png" alt="image-20251010153653291" style="zoom:50%;"></li>
 </ul>
 <h3 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>EmployeeController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">/**
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
      * 保存员工信息
      *
      * @param employeeDTO 员工信息DTO
      * @return 返回统一的Result封装对象
-     */
-    @PostMapping
-    @ApiOperation(value = "保存(新增)员工信息")
-    public Result save(@RequestBody EmployeeDTO employeeDTO) &#123;
-        log.info("保存(新增)员工信息：&#123;&#125;", employeeDTO);
-        // 调用service层的方法来处理保存逻辑
-        employeeService.save(employeeDTO);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@PostMapping</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span>value <span class="token operator">=</span> <span class="token string">"保存(新增)员工信息"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result <span class="token function">save</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> EmployeeDTO employeeDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"保存(新增)员工信息：&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> employeeDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 调用service层的方法来处理保存逻辑</span>
+        employeeService<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span>employeeDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>EmployeeServiceImpl.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 保存员工信息
      *
      * @param employeeDTO 员工信息
-     */
-    @Override
-    public void save(EmployeeDTO employeeDTO) &#123;
-        // 先将 DTO 转换为实体对象, 再进行保存, 用spring中的BeanUtils的copyProperties方法
-        Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO, employee);
-        // 再将实体类的剩余属性设置好
-        employee.setStatus(StatusConstant.ENABLE); // 设置默认状态为启用
-        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes())); // 设置初始密码123456, 需要进行MD5加密
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setCreateUser(10L); // TODO: 这里先写死，后面改为当前登录用户的id
-        employee.setUpdateUser(10L); // TODO: 这里先写死，后面改为当前登录用户的id
-        // 最后调用Mapper层的方法进行保存
-        employeeMapper.insert(employee);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">save</span><span class="token punctuation">(</span>EmployeeDTO employeeDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 先将 DTO 转换为实体对象, 再进行保存, 用spring中的BeanUtils的copyProperties方法</span>
+        Employee employee <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Employee</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        BeanUtils<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>employeeDTO<span class="token punctuation">,</span> employee<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 再将实体类的剩余属性设置好</span>
+        employee<span class="token punctuation">.</span><span class="token function">setStatus</span><span class="token punctuation">(</span>StatusConstant<span class="token punctuation">.</span>ENABLE<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 设置默认状态为启用</span>
+        employee<span class="token punctuation">.</span><span class="token function">setPassword</span><span class="token punctuation">(</span>DigestUtils<span class="token punctuation">.</span><span class="token function">md5DigestAsHex</span><span class="token punctuation">(</span><span class="token string">"123456"</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 设置初始密码123456, 需要进行MD5加密</span>
+        employee<span class="token punctuation">.</span><span class="token function">setCreateTime</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        employee<span class="token punctuation">.</span><span class="token function">setUpdateTime</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        employee<span class="token punctuation">.</span><span class="token function">setCreateUser</span><span class="token punctuation">(</span>10L<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// TODO: 这里先写死，后面改为当前登录用户的id</span>
+        employee<span class="token punctuation">.</span><span class="token function">setUpdateUser</span><span class="token punctuation">(</span>10L<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// TODO: 这里先写死，后面改为当前登录用户的id</span>
+        <span class="token comment" spellcheck="true">// 最后调用Mapper层的方法进行保存</span>
+        employeeMapper<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>employee<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>EmployeeMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">/**
+<pre class="line-numbers language-java"><code class="language-java"><span class="token comment" spellcheck="true">/**
      * 插入员工信息
      * @param employee 员工对象
-     */
-    @Insert("insert into employee (username, password, name, phone, sex, id_number, status, create_time, update_time, create_user, update_user)" +
-            "values" +
-            "(#&#123;username&#125;, #&#123;password&#125;, #&#123;name&#125;, #&#123;phone&#125;, #&#123;sex&#125;, #&#123;idNumber&#125;, #&#123;status&#125;, #&#123;createTime&#125;, #&#123;updateTime&#125;, #&#123;createUser&#125;, #&#123;updateUser&#125;)")
-    void insert(Employee employee);
+     */</span>
+    <span class="token annotation punctuation">@Insert</span><span class="token punctuation">(</span><span class="token string">"insert into employee (username, password, name, phone, sex, id_number, status, create_time, update_time, create_user, update_user)"</span> <span class="token operator">+</span>
+            <span class="token string">"values"</span> <span class="token operator">+</span>
+            <span class="token string">"(#&amp;#123;username&amp;#125;, #&amp;#123;password&amp;#125;, #&amp;#123;name&amp;#125;, #&amp;#123;phone&amp;#125;, #&amp;#123;sex&amp;#125;, #&amp;#123;idNumber&amp;#125;, #&amp;#123;status&amp;#125;, #&amp;#123;createTime&amp;#125;, #&amp;#123;updateTime&amp;#125;, #&amp;#123;createUser&amp;#125;, #&amp;#123;updateUser&amp;#125;)"</span><span class="token punctuation">)</span>
+    <span class="token keyword">void</span> <span class="token function">insert</span><span class="token punctuation">(</span>Employee employee<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h3><p>首先先设置一下全局token, 另外过期时间可以设置久一点(在application.yml中jwt部分设置), 避免总是手动设置.</p>
 <img src="/2025/10/11/sky-takeout-day02-note/../../my-note/typora/my-sky-takeout-note/day02.assets/image-20251010161839592.png" alt="image-20251010161839592" style="zoom: 25%;">
@@ -112,24 +112,24 @@
 
 <h4 id="解决用户名重复异常的问题"><a href="#解决用户名重复异常的问题" class="headerlink" title="解决用户名重复异常的问题"></a>解决用户名重复异常的问题</h4><p><img src="/2025/10/11/sky-takeout-day02-note/image-20251010163541987.png" alt="image-20251010163541987"></p>
 <p>要将抛出的 <strong>SQLIntegrityConstraintViolationException</strong> 异常,加入全局异常处理器中, 返回异常消息给前端, 保证友好性.<br>在GlobalExceptionHandler中添加: </p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 捕获SQL异常
      * @param ex 捕获到的异常对象
      * @return 返回封装的异常信息
-     */
-    @ExceptionHandler
-    public Result exceptionHandler(SQLIntegrityConstraintViolationException ex)&#123;
-        // Duplicate entry 'hwan1' for key 'employee.idx_username';
-        String message = ex.getMessage();
-        if(message.contains("Duplicate entry"))&#123;
-            String[] split = message.split(" ");
-            String username = split[2];
-            String msg = username + MessageConstant.ALREADY_EXIST;
-            return Result.error(msg);
-        &#125; else &#123;
-            return Result.error(MessageConstant.UNKNOWN_ERROR);
-        &#125;
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@ExceptionHandler</span>
+    <span class="token keyword">public</span> Result <span class="token function">exceptionHandler</span><span class="token punctuation">(</span>SQLIntegrityConstraintViolationException ex<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// Duplicate entry 'hwan1' for key 'employee.idx_username';</span>
+        String message <span class="token operator">=</span> ex<span class="token punctuation">.</span><span class="token function">getMessage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>message<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"Duplicate entry"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            String<span class="token punctuation">[</span><span class="token punctuation">]</span> split <span class="token operator">=</span> message<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">" "</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+            String username <span class="token operator">=</span> split<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+            String msg <span class="token operator">=</span> username <span class="token operator">+</span> MessageConstant<span class="token punctuation">.</span>ALREADY_EXIST<span class="token punctuation">;</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>msg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span> <span class="token keyword">else</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>MessageConstant<span class="token punctuation">.</span>UNKNOWN_ERROR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="解决设置当前用户id的问题"><a href="#解决设置当前用户id的问题" class="headerlink" title="解决设置当前用户id的问题"></a>解决设置当前用户id的问题</h4><ul>
 <li><p>JWT 工作流程图</p>
@@ -192,44 +192,44 @@
 
 
 <p><strong>EmployeeController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 员工分页查询
      *
      * @param employeePageQueryDTO 员工分页查询DTO
      * @return 返回统一的Result封装对象
-     */
-    @ApiOperation("员工分页查询")
-    @GetMapping("/page")
-    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) &#123;
-        log.info("员工分页查询：参数&#123;&#125;", employeePageQueryDTO);
-        PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
-        return Result.success(pageResult);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"员工分页查询"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/page"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>PageResult<span class="token operator">></span> <span class="token function">page</span><span class="token punctuation">(</span>EmployeePageQueryDTO employeePageQueryDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"员工分页查询：参数&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> employeePageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        PageResult pageResult <span class="token operator">=</span> employeeService<span class="token punctuation">.</span><span class="token function">pageQuery</span><span class="token punctuation">(</span>employeePageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span>pageResult<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>EmployeeServiceImpl.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 员工分页查询
      *
      * @param employeePageQueryDTO 分页查询信息
      * @return 分页结果
-     */
-    @Override
-    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) &#123;
-        PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
-        Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
-        return new PageResult(page.getTotal(), page.getResult());
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> PageResult <span class="token function">pageQuery</span><span class="token punctuation">(</span>EmployeePageQueryDTO employeePageQueryDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        PageHelper<span class="token punctuation">.</span><span class="token function">startPage</span><span class="token punctuation">(</span>employeePageQueryDTO<span class="token punctuation">.</span><span class="token function">getPage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> employeePageQueryDTO<span class="token punctuation">.</span><span class="token function">getPageSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Page<span class="token operator">&lt;</span>Employee<span class="token operator">></span> page <span class="token operator">=</span> employeeMapper<span class="token punctuation">.</span><span class="token function">pageQuery</span><span class="token punctuation">(</span>employeePageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">PageResult</span><span class="token punctuation">(</span>page<span class="token punctuation">.</span><span class="token function">getTotal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> page<span class="token punctuation">.</span><span class="token function">getResult</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>EmployeeMapper.xml</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    <select id="pageQuery" resultType="com.sky.entity.Employee">
-        select * from employee
-        <where>
-            <if test="name != null and name != ''">
-                and name like concat('%', #&#123;name&#125;, '%')
-            </if>
-        </where>
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token operator">&lt;</span>select id<span class="token operator">=</span><span class="token string">"pageQuery"</span> resultType<span class="token operator">=</span><span class="token string">"com.sky.entity.Employee"</span><span class="token operator">></span>
+        select <span class="token operator">*</span> from employee
+        <span class="token operator">&lt;</span>where<span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"name != null and name != ''"</span><span class="token operator">></span>
+                and name like <span class="token function">concat</span><span class="token punctuation">(</span><span class="token string">'%'</span><span class="token punctuation">,</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>name<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span> <span class="token string">'%'</span><span class="token punctuation">)</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>where<span class="token operator">></span>
         order by update_time desc
-    </select>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>select<span class="token operator">></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="解决分页查询时间格式问题"><a href="#解决分页查询时间格式问题" class="headerlink" title="解决分页查询时间格式问题"></a>解决分页查询时间格式问题</h3><p>调试时发现时间格式有问题：<br><img src="/2025/10/11/sky-takeout-day02-note/image-20251010191630040.png" alt="image-20251010191630040" style="zoom:50%;"></p>
 <p>有两种解决方案</p>
@@ -239,17 +239,17 @@
 <li><p>方式二：在 WebMvcConfiguration 中扩展 SpringMVC 的消息转换器，统一对日期类型进行格式处理。</p>
 </li>
 </ul>
-<pre class="line-numbers language-java"><code class="language-java">    @Override
-    protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) &#123;
-        log.info("扩展消息转换器...");
-        // 创建消息转换器对象
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        // 设置对象转换器，底层使用Jackson将Java对象转为json
-        converter.setObjectMapper(new JacksonObjectMapper());
-        // 将上面的消息转换器对象追加到mvc框架的转换器集合中
-        // 这里前面的 0 是优先级，设置在最前面，优先使用我们定义的转换器
-        converters.add(0, converter);
-    &#125;
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token keyword">void</span> <span class="token function">extendMessageConverters</span><span class="token punctuation">(</span>List<span class="token operator">&lt;</span>HttpMessageConverter<span class="token operator">&lt;</span><span class="token operator">?</span><span class="token operator">>></span> converters<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"扩展消息转换器..."</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 创建消息转换器对象</span>
+        MappingJackson2HttpMessageConverter converter <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">MappingJackson2HttpMessageConverter</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 设置对象转换器，底层使用Jackson将Java对象转为json</span>
+        converter<span class="token punctuation">.</span><span class="token function">setObjectMapper</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">JacksonObjectMapper</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 将上面的消息转换器对象追加到mvc框架的转换器集合中</span>
+        <span class="token comment" spellcheck="true">// 这里前面的 0 是优先级，设置在最前面，优先使用我们定义的转换器</span>
+        converters<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> converter<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>JacksonObjectMapper</strong>中定义了<strong>时间格式</strong>：<br><img src="/2025/10/11/sky-takeout-day02-note/image-20251010194037109.png" alt="image-20251010194037109" style="zoom:33%;"></p>
 <h2 id="3-启用禁用员工账号"><a href="#3-启用禁用员工账号" class="headerlink" title="3. 启用禁用员工账号"></a>3. 启用禁用员工账号</h2><h3 id="接口设计"><a href="#接口设计" class="headerlink" title="接口设计"></a>接口设计</h3><img src="/2025/10/11/sky-takeout-day02-note/image-20251010203227868.png" alt="image-20251010203227868" style="zoom: 50%;">
@@ -258,54 +258,54 @@
 <p>2). 同时，把 id 传递过去，明确对哪个用户进行操作。</p>
 <p>3). 返回数据 code 状态是必须，其它是非必须。</p>
 <h3 id="代码编写-2"><a href="#代码编写-2" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>EmployeeController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 启用禁用员工账号
      *
      * @param status 状态
      * @param id     员工id
      * @return 返回统一的Result封装对象
-     */
-    @PostMapping("/status/&#123;status&#125;")
-    @ApiOperation("启用禁用员工账号")
-    public Result<Void> startOrStop(@PathVariable Integer status, Long id) &#123;
-        log.info("启用禁用员工账号：status=&#123;&#125;, id=&#123;&#125;", status, id);
-        employeeService.startOrStop(status, id);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/status/&amp;#123;status&amp;#125;"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"启用禁用员工账号"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>Void<span class="token operator">></span> <span class="token function">startOrStop</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Integer status<span class="token punctuation">,</span> Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"启用禁用员工账号：status=&amp;#123;&amp;#125;, id=&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> status<span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        employeeService<span class="token punctuation">.</span><span class="token function">startOrStop</span><span class="token punctuation">(</span>status<span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>EmployeeServiceImpl.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 启用或禁用员工账号
      *
      * @param status 状态
      * @param id     员工id
-     */
-    @Override
-    public void startOrStop(Integer status, Long id) &#123;
-        Employee employee = Employee.builder()
-                .id(id)
-                .status(status)
-                .build();
-        employeeMapper.updateById(employee);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">startOrStop</span><span class="token punctuation">(</span>Integer status<span class="token punctuation">,</span> Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        Employee employee <span class="token operator">=</span> Employee<span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">id</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">status</span><span class="token punctuation">(</span>status<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        employeeMapper<span class="token punctuation">.</span><span class="token function">updateById</span><span class="token punctuation">(</span>employee<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>EmployeeMapper.xml</strong></p>
 <p>根据传入的<code>Employee</code>对象中的非空字段，选择性地更新<code>employee</code>表中的对应记录。它的核心特点是<strong>只更新需要修改的字段</strong>，避免不必要的数据库操作。</p>
-<pre class="line-numbers language-java"><code class="language-java">    <update id="updateById" parameterType="employee">
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token operator">&lt;</span>update id<span class="token operator">=</span><span class="token string">"updateById"</span> parameterType<span class="token operator">=</span><span class="token string">"employee"</span><span class="token operator">></span>
         update employee
-        <set>
-            <if test="name != null">name = #&#123;name&#125;,</if>
-            <if test="username != null">username = #&#123;username&#125;,</if>
-            <if test="password != null">password = #&#123;password&#125;,</if>
-            <if test="phone != null">phone = #&#123;phone&#125;,</if>
-            <if test="sex != null">sex = #&#123;sex&#125;,</if>
-            <if test="idNumber != null">id_Number = #&#123;idNumber&#125;,</if>
-            <if test="updateTime != null">update_Time = #&#123;updateTime&#125;,</if>
-            <if test="updateUser != null">update_User = #&#123;updateUser&#125;,</if>
-            <if test="status != null">status = #&#123;status&#125;,</if>
-        </set>
-        where id = #&#123;id&#125;
-    </update>
+        <span class="token operator">&lt;</span>set<span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"name != null"</span><span class="token operator">></span>name <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>name<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"username != null"</span><span class="token operator">></span>username <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>username<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"password != null"</span><span class="token operator">></span>password <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>password<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"phone != null"</span><span class="token operator">></span>phone <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>phone<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"sex != null"</span><span class="token operator">></span>sex <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>sex<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"idNumber != null"</span><span class="token operator">></span>id_Number <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>idNumber<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"updateTime != null"</span><span class="token operator">></span>update_Time <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>updateTime<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"updateUser != null"</span><span class="token operator">></span>update_User <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>updateUser<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"status != null"</span><span class="token operator">></span>status <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>status<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>set<span class="token operator">></span>
+        where id <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>id<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>update<span class="token operator">></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <blockquote>
 <p>这里这个功能的实现虽然只需要修改状态值，但是可以把其他需要根据主键动态修改的属性都加上，方便后续复用</p>
@@ -324,69 +324,69 @@
 <li>（在实现 <strong>启用禁用员工账号</strong> 功能时，已实现 employeeMapper.update(employee)，在此不需写 Mapper 层代码。）</li>
 </ul>
 <p><strong>EmployeeController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据id查询员工信息
      *
      * @param id 员工id
      * @return 返回统一的Result封装对象
-     */
-    @GetMapping("/&#123;id&#125;")
-    @ApiOperation("根据id查询员工信息")
-    public Result<Employee> getById(@PathVariable Long id) &#123;
-        log.info("根据id查询员工信息：id=&#123;&#125;", id);
-        Employee employee = employeeService.getById(id);
-        return Result.success(employee);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/&amp;#123;id&amp;#125;"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"根据id查询员工信息"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>Employee<span class="token operator">></span> <span class="token function">getById</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"根据id查询员工信息：id=&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        Employee employee <span class="token operator">=</span> employeeService<span class="token punctuation">.</span><span class="token function">getById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span>employee<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 修改员工信息
      *
      * @param employeeDTO 员工信息DTO
      * @return 返回统一的Result封装对象
-     */
-    @PutMapping
-    @ApiOperation("修改员工信息")
-    public Result<Void> update(@RequestBody EmployeeDTO employeeDTO) &#123;
-        log.info("修改员工信息：&#123;&#125;", employeeDTO);
-        employeeService.update(employeeDTO);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@PutMapping</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"修改员工信息"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>Void<span class="token operator">></span> <span class="token function">update</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> EmployeeDTO employeeDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"修改员工信息：&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> employeeDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        employeeService<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>employeeDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>EmployeeServiceImpl.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据id查询员工信息
      *
      * @param id 员工id
      * @return 员工信息
-     */
-    @Override
-    public Employee getById(Long id) &#123;
-        Employee employee = employeeMapper.getById(id);
-        if (employee == null) &#123;  // 如果没有查询到员工信息, 则抛出异常
-            throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
-        &#125;
-        return employee; // 返回员工信息
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> Employee <span class="token function">getById</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        Employee employee <span class="token operator">=</span> employeeMapper<span class="token punctuation">.</span><span class="token function">getById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>employee <span class="token operator">==</span> null<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 如果没有查询到员工信息, 则抛出异常</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">AccountNotFoundException</span><span class="token punctuation">(</span>MessageConstant<span class="token punctuation">.</span>ACCOUNT_NOT_FOUND<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> employee<span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 返回员工信息</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    @Override
-    public void update(EmployeeDTO employeeDTO) &#123;
-        // 传来的是DTO对象， 要将 DTO 转换为实体对象
-        Employee employee = new Employee();
-        BeanUtils.copyProperties(employeeDTO, employee);
-        // 设置修改相关属性，修改时间和修改人
-        employee.setUpdateTime(LocalDateTime.now());
-        employee.setUpdateUser(BaseContext.getCurrentId());
-        employeeMapper.updateById(employee);  // 更新员工信息 (前面在写启用禁用员工账号时，在Mapper中已经配置了根据id动态更新)
-    &#125;
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">update</span><span class="token punctuation">(</span>EmployeeDTO employeeDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 传来的是DTO对象， 要将 DTO 转换为实体对象</span>
+        Employee employee <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Employee</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        BeanUtils<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>employeeDTO<span class="token punctuation">,</span> employee<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">// 设置修改相关属性，修改时间和修改人</span>
+        employee<span class="token punctuation">.</span><span class="token function">setUpdateTime</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        employee<span class="token punctuation">.</span><span class="token function">setUpdateUser</span><span class="token punctuation">(</span>BaseContext<span class="token punctuation">.</span><span class="token function">getCurrentId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        employeeMapper<span class="token punctuation">.</span><span class="token function">updateById</span><span class="token punctuation">(</span>employee<span class="token punctuation">)</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 更新员工信息 (前面在写启用禁用员工账号时，在Mapper中已经配置了根据id动态更新)</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>EmployeeMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">    /**
+<pre class="line-numbers language-java"><code class="language-java">    <span class="token comment" spellcheck="true">/**
      * 根据id查询员工信息
      * @param id 员工id
      * @return 员工对象
-     */
-    @Select("select * from employee where id = #&#123;id&#125;")
-    Employee getById(Long id);
+     */</span>
+    <span class="token annotation punctuation">@Select</span><span class="token punctuation">(</span><span class="token string">"select * from employee where id = #&amp;#123;id&amp;#125;"</span><span class="token punctuation">)</span>
+    Employee <span class="token function">getById</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试-1"><a href="#功能测试-1" class="headerlink" title="功能测试"></a>功能测试</h3><ul>
 <li><p>1）根据id查询员工并回显信息：返回员工信息json数据</p>
@@ -426,386 +426,386 @@
 </li>
 </ul>
 <h3 id="代码导入"><a href="#代码导入" class="headerlink" title="代码导入"></a>代码导入</h3><p><strong>CategoryController.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">package com.sky.controller.admin;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>controller<span class="token punctuation">.</span>admin<span class="token punctuation">;</span>
 
-import com.sky.dto.CategoryDTO;
-import com.sky.dto.CategoryPageQueryDTO;
-import com.sky.entity.Category;
-import com.sky.result.PageResult;
-import com.sky.result.Result;
-import com.sky.service.CategoryService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import java.util.List;
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>dto<span class="token punctuation">.</span>CategoryDTO<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>dto<span class="token punctuation">.</span>CategoryPageQueryDTO<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>entity<span class="token punctuation">.</span>Category<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>result<span class="token punctuation">.</span>PageResult<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>result<span class="token punctuation">.</span>Result<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>service<span class="token punctuation">.</span>CategoryService<span class="token punctuation">;</span>
+<span class="token keyword">import</span> io<span class="token punctuation">.</span>swagger<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Api<span class="token punctuation">;</span>
+<span class="token keyword">import</span> io<span class="token punctuation">.</span>swagger<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>ApiOperation<span class="token punctuation">;</span>
+<span class="token keyword">import</span> lombok<span class="token punctuation">.</span>extern<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span>Slf4j<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>Autowired<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>web<span class="token punctuation">.</span>bind<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>*<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>List<span class="token punctuation">;</span>
 
-/**
+<span class="token comment" spellcheck="true">/**
  * 分类管理
- */
-@RestController
-@RequestMapping("/admin/category")
-@Api(tags = "分类相关接口")
-@Slf4j
-public class CategoryController &#123;
+ */</span>
+<span class="token annotation punctuation">@RestController</span>
+<span class="token annotation punctuation">@RequestMapping</span><span class="token punctuation">(</span><span class="token string">"/admin/category"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Api</span><span class="token punctuation">(</span>tags <span class="token operator">=</span> <span class="token string">"分类相关接口"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CategoryController</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
 
-    @Autowired
-    private CategoryService categoryService;
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> CategoryService categoryService<span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 新增分类
      * @param categoryDTO 分类信息
      * @return 操作结果
-     */
-    @PostMapping
-    @ApiOperation("新增分类")
-    public Result<String> save(@RequestBody CategoryDTO categoryDTO)&#123;
-        log.info("新增分类：&#123;&#125;", categoryDTO);
-        categoryService.save(categoryDTO);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@PostMapping</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"新增分类"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">save</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> CategoryDTO categoryDTO<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"新增分类：&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> categoryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        categoryService<span class="token punctuation">.</span><span class="token function">save</span><span class="token punctuation">(</span>categoryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 分类分页查询
      * @param categoryPageQueryDTO  分页查询参数
      * @return 分页查询结果
-     */
-    @GetMapping("/page")
-    @ApiOperation("分类分页查询")
-    public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO)&#123;
-        log.info("分页查询：&#123;&#125;", categoryPageQueryDTO);
-        PageResult pageResult = categoryService.pageQuery(categoryPageQueryDTO);
-        return Result.success(pageResult);
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/page"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"分类分页查询"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>PageResult<span class="token operator">></span> <span class="token function">page</span><span class="token punctuation">(</span>CategoryPageQueryDTO categoryPageQueryDTO<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"分页查询：&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> categoryPageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        PageResult pageResult <span class="token operator">=</span> categoryService<span class="token punctuation">.</span><span class="token function">pageQuery</span><span class="token punctuation">(</span>categoryPageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span>pageResult<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 删除分类
      * @param id 分类id
      * @return 操作结果
-     */
-    @DeleteMapping
-    @ApiOperation("删除分类")
-    public Result<String> deleteById(Long id)&#123;
-        log.info("删除分类：&#123;&#125;", id);
-        categoryService.deleteById(id);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@DeleteMapping</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"删除分类"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">deleteById</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        log<span class="token punctuation">.</span><span class="token function">info</span><span class="token punctuation">(</span><span class="token string">"删除分类：&amp;#123;&amp;#125;"</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        categoryService<span class="token punctuation">.</span><span class="token function">deleteById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 修改分类
      * @param categoryDTO 分类信息
      * @return 操作结果
-     */
-    @PutMapping
-    @ApiOperation("修改分类")
-    public Result<String> update(@RequestBody CategoryDTO categoryDTO)&#123;
-        categoryService.update(categoryDTO);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@PutMapping</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"修改分类"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">update</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> CategoryDTO categoryDTO<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        categoryService<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>categoryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 启用、禁用分类
      * @param status 0-禁用，1-启用
      * @param id 分类id
      * @return 操作结果
-     */
-    @PostMapping("/status/&#123;status&#125;")
-    @ApiOperation("启用禁用分类")
-    public Result<String> startOrStop(@PathVariable("status") Integer status, Long id)&#123;
-        categoryService.startOrStop(status,id);
-        return Result.success();
-    &#125;
+     */</span>
+    <span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/status/&amp;#123;status&amp;#125;"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"启用禁用分类"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>String<span class="token operator">></span> <span class="token function">startOrStop</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span><span class="token punctuation">(</span><span class="token string">"status"</span><span class="token punctuation">)</span> Integer status<span class="token punctuation">,</span> Long id<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        categoryService<span class="token punctuation">.</span><span class="token function">startOrStop</span><span class="token punctuation">(</span>status<span class="token punctuation">,</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据类型查询分类
      * @param type 分类类型
      * @return 分类列表
-     */
-    @GetMapping("/list")
-    @ApiOperation("根据类型查询分类")
-    public Result<List<Category>> list(Integer type)&#123;
-        List<Category> list = categoryService.list(type);
-        return Result.success(list);
-    &#125;
-&#125;
+     */</span>
+    <span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/list"</span><span class="token punctuation">)</span>
+    <span class="token annotation punctuation">@ApiOperation</span><span class="token punctuation">(</span><span class="token string">"根据类型查询分类"</span><span class="token punctuation">)</span>
+    <span class="token keyword">public</span> Result<span class="token operator">&lt;</span>List<span class="token operator">&lt;</span>Category<span class="token operator">>></span> <span class="token function">list</span><span class="token punctuation">(</span>Integer type<span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        List<span class="token operator">&lt;</span>Category<span class="token operator">></span> list <span class="token operator">=</span> categoryService<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> Result<span class="token punctuation">.</span><span class="token function">success</span><span class="token punctuation">(</span>list<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>CategoryServiceImpl.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">package com.sky.service.impl;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>service<span class="token punctuation">.</span>impl<span class="token punctuation">;</span>
 
-import com.github.pagehelper.Page;
-import com.github.pagehelper.PageHelper;
-import com.sky.constant.MessageConstant;
-import com.sky.constant.StatusConstant;
-import com.sky.context.BaseContext;
-import com.sky.dto.CategoryDTO;
-import com.sky.dto.CategoryPageQueryDTO;
-import com.sky.entity.Category;
-import com.sky.exception.DeletionNotAllowedException;
-import com.sky.mapper.CategoryMapper;
-import com.sky.mapper.DishMapper;
-import com.sky.mapper.SetmealMapper;
-import com.sky.result.PageResult;
-import com.sky.service.CategoryService;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
-import java.util.List;
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>github<span class="token punctuation">.</span>pagehelper<span class="token punctuation">.</span>Page<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>github<span class="token punctuation">.</span>pagehelper<span class="token punctuation">.</span>PageHelper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>constant<span class="token punctuation">.</span>MessageConstant<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>constant<span class="token punctuation">.</span>StatusConstant<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>context<span class="token punctuation">.</span>BaseContext<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>dto<span class="token punctuation">.</span>CategoryDTO<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>dto<span class="token punctuation">.</span>CategoryPageQueryDTO<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>entity<span class="token punctuation">.</span>Category<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>exception<span class="token punctuation">.</span>DeletionNotAllowedException<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>mapper<span class="token punctuation">.</span>CategoryMapper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>mapper<span class="token punctuation">.</span>DishMapper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>mapper<span class="token punctuation">.</span>SetmealMapper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>result<span class="token punctuation">.</span>PageResult<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>service<span class="token punctuation">.</span>CategoryService<span class="token punctuation">;</span>
+<span class="token keyword">import</span> lombok<span class="token punctuation">.</span>extern<span class="token punctuation">.</span>slf4j<span class="token punctuation">.</span>Slf4j<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>BeanUtils<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>beans<span class="token punctuation">.</span>factory<span class="token punctuation">.</span>annotation<span class="token punctuation">.</span>Autowired<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>springframework<span class="token punctuation">.</span>stereotype<span class="token punctuation">.</span>Service<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>time<span class="token punctuation">.</span>LocalDateTime<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>List<span class="token punctuation">;</span>
 
-/**
+<span class="token comment" spellcheck="true">/**
  * 分类业务层
- */
-@Service
-@Slf4j
-public class CategoryServiceImpl implements CategoryService &#123;
+ */</span>
+<span class="token annotation punctuation">@Service</span>
+<span class="token annotation punctuation">@Slf4j</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">CategoryServiceImpl</span> <span class="token keyword">implements</span> <span class="token class-name">CategoryService</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
 
-    @Autowired
-    private CategoryMapper categoryMapper;
-    @Autowired
-    private DishMapper dishMapper;
-    @Autowired
-    private SetmealMapper setmealMapper;
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> CategoryMapper categoryMapper<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> DishMapper dishMapper<span class="token punctuation">;</span>
+    <span class="token annotation punctuation">@Autowired</span>
+    <span class="token keyword">private</span> SetmealMapper setmealMapper<span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 新增分类
      * @param categoryDTO 分类信息
-     */
-    public void save(CategoryDTO categoryDTO) &#123;
-        Category category = new Category();
-        //属性拷贝
-        BeanUtils.copyProperties(categoryDTO, category);
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">save</span><span class="token punctuation">(</span>CategoryDTO categoryDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        Category category <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Category</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//属性拷贝</span>
+        BeanUtils<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>categoryDTO<span class="token punctuation">,</span> category<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        //分类状态默认为禁用状态0
-        category.setStatus(StatusConstant.DISABLE);
+        <span class="token comment" spellcheck="true">//分类状态默认为禁用状态0</span>
+        category<span class="token punctuation">.</span><span class="token function">setStatus</span><span class="token punctuation">(</span>StatusConstant<span class="token punctuation">.</span>DISABLE<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        //设置创建时间、修改时间、创建人、修改人
-        category.setCreateTime(LocalDateTime.now());
-        category.setUpdateTime(LocalDateTime.now());
-        category.setCreateUser(BaseContext.getCurrentId());
-        category.setUpdateUser(BaseContext.getCurrentId());
+        <span class="token comment" spellcheck="true">//设置创建时间、修改时间、创建人、修改人</span>
+        category<span class="token punctuation">.</span><span class="token function">setCreateTime</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        category<span class="token punctuation">.</span><span class="token function">setUpdateTime</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        category<span class="token punctuation">.</span><span class="token function">setCreateUser</span><span class="token punctuation">(</span>BaseContext<span class="token punctuation">.</span><span class="token function">getCurrentId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        category<span class="token punctuation">.</span><span class="token function">setUpdateUser</span><span class="token punctuation">(</span>BaseContext<span class="token punctuation">.</span><span class="token function">getCurrentId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        categoryMapper.insert(category);
-    &#125;
+        categoryMapper<span class="token punctuation">.</span><span class="token function">insert</span><span class="token punctuation">(</span>category<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 分页查询
      * @param categoryPageQueryDTO 分页查询参数
      * @return 分页结果
-     */
-    public PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) &#123;
-        PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
-        //下一条sql进行分页，自动加入limit关键字分页
-        Page<Category> page = categoryMapper.pageQuery(categoryPageQueryDTO);
-        return new PageResult(page.getTotal(), page.getResult());
-    &#125;
+     */</span>
+    <span class="token keyword">public</span> PageResult <span class="token function">pageQuery</span><span class="token punctuation">(</span>CategoryPageQueryDTO categoryPageQueryDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        PageHelper<span class="token punctuation">.</span><span class="token function">startPage</span><span class="token punctuation">(</span>categoryPageQueryDTO<span class="token punctuation">.</span><span class="token function">getPage</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span>categoryPageQueryDTO<span class="token punctuation">.</span><span class="token function">getPageSize</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//下一条sql进行分页，自动加入limit关键字分页</span>
+        Page<span class="token operator">&lt;</span>Category<span class="token operator">></span> page <span class="token operator">=</span> categoryMapper<span class="token punctuation">.</span><span class="token function">pageQuery</span><span class="token punctuation">(</span>categoryPageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">PageResult</span><span class="token punctuation">(</span>page<span class="token punctuation">.</span><span class="token function">getTotal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> page<span class="token punctuation">.</span><span class="token function">getResult</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据id删除分类
      * @param id 分类id
-     */
-    public void deleteById(Long id) &#123;
-        //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
-        Integer count = dishMapper.countByCategoryId(id);
-        if(count > 0)&#123;
-            //当前分类下有菜品，不能删除
-            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
-        &#125;
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">deleteById</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token comment" spellcheck="true">//查询当前分类是否关联了菜品，如果关联了就抛出业务异常</span>
+        Integer count <span class="token operator">=</span> dishMapper<span class="token punctuation">.</span><span class="token function">countByCategoryId</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>count <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">//当前分类下有菜品，不能删除</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">DeletionNotAllowedException</span><span class="token punctuation">(</span>MessageConstant<span class="token punctuation">.</span>CATEGORY_BE_RELATED_BY_DISH<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        //查询当前分类是否关联了套餐，如果关联了就抛出业务异常
-        count = setmealMapper.countByCategoryId(id);
-        if(count > 0)&#123;
-            //当前分类下有菜品，不能删除
-            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
-        &#125;
+        <span class="token comment" spellcheck="true">//查询当前分类是否关联了套餐，如果关联了就抛出业务异常</span>
+        count <span class="token operator">=</span> setmealMapper<span class="token punctuation">.</span><span class="token function">countByCategoryId</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span>count <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+            <span class="token comment" spellcheck="true">//当前分类下有菜品，不能删除</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">DeletionNotAllowedException</span><span class="token punctuation">(</span>MessageConstant<span class="token punctuation">.</span>CATEGORY_BE_RELATED_BY_SETMEAL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-        //删除分类数据
-        categoryMapper.deleteById(id);
-    &#125;
+        <span class="token comment" spellcheck="true">//删除分类数据</span>
+        categoryMapper<span class="token punctuation">.</span><span class="token function">deleteById</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 修改分类
      * @param categoryDTO 分类信息
-     */
-    public void update(CategoryDTO categoryDTO) &#123;
-        Category category = new Category();
-        BeanUtils.copyProperties(categoryDTO,category);
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">update</span><span class="token punctuation">(</span>CategoryDTO categoryDTO<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        Category category <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Category</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        BeanUtils<span class="token punctuation">.</span><span class="token function">copyProperties</span><span class="token punctuation">(</span>categoryDTO<span class="token punctuation">,</span>category<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        //设置修改时间、修改人
-        category.setUpdateTime(LocalDateTime.now());
-        category.setUpdateUser(BaseContext.getCurrentId());
+        <span class="token comment" spellcheck="true">//设置修改时间、修改人</span>
+        category<span class="token punctuation">.</span><span class="token function">setUpdateTime</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        category<span class="token punctuation">.</span><span class="token function">setUpdateUser</span><span class="token punctuation">(</span>BaseContext<span class="token punctuation">.</span><span class="token function">getCurrentId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-        categoryMapper.update(category);
-    &#125;
+        categoryMapper<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>category<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 启用、禁用分类
      * @param status 分类状态
      * @param id 分类id
-     */
-    public void startOrStop(Integer status, Long id) &#123;
-        Category category = Category.builder()
-                .id(id)
-                .status(status)
-                .updateTime(LocalDateTime.now())
-                .updateUser(BaseContext.getCurrentId())
-                .build();
-        categoryMapper.update(category);
-    &#125;
+     */</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">startOrStop</span><span class="token punctuation">(</span>Integer status<span class="token punctuation">,</span> Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        Category category <span class="token operator">=</span> Category<span class="token punctuation">.</span><span class="token function">builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">id</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">status</span><span class="token punctuation">(</span>status<span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">updateTime</span><span class="token punctuation">(</span>LocalDateTime<span class="token punctuation">.</span><span class="token function">now</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">updateUser</span><span class="token punctuation">(</span>BaseContext<span class="token punctuation">.</span><span class="token function">getCurrentId</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+                <span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        categoryMapper<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>category<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据类型查询分类
      * @param type 分类类型
      * @return 分类列表
-     */
-    public List<Category> list(Integer type) &#123;
-        return categoryMapper.list(type);
-    &#125;
-&#125;
+     */</span>
+    <span class="token keyword">public</span> List<span class="token operator">&lt;</span>Category<span class="token operator">></span> <span class="token function">list</span><span class="token punctuation">(</span>Integer type<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> categoryMapper<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>CategoryMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">package com.sky.mapper;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>mapper<span class="token punctuation">;</span>
 
-import com.github.pagehelper.Page;
-import com.sky.dto.CategoryPageQueryDTO;
-import com.sky.entity.Category;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import java.util.List;
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>github<span class="token punctuation">.</span>pagehelper<span class="token punctuation">.</span>Page<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>dto<span class="token punctuation">.</span>CategoryPageQueryDTO<span class="token punctuation">;</span>
+<span class="token keyword">import</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>entity<span class="token punctuation">.</span>Category<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ibatis<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Delete<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ibatis<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Insert<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ibatis<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Mapper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> java<span class="token punctuation">.</span>util<span class="token punctuation">.</span>List<span class="token punctuation">;</span>
 
-@Mapper
-public interface CategoryMapper &#123;
+<span class="token annotation punctuation">@Mapper</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">CategoryMapper</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 插入数据
      * @param category 分类
-     */
-    @Insert("insert into category(type, name, sort, status, create_time, update_time, create_user, update_user)" +
-            " VALUES" +
-            " (#&#123;type&#125;, #&#123;name&#125;, #&#123;sort&#125;, #&#123;status&#125;, #&#123;createTime&#125;, #&#123;updateTime&#125;, #&#123;createUser&#125;, #&#123;updateUser&#125;)")
-    void insert(Category category);
+     */</span>
+    <span class="token annotation punctuation">@Insert</span><span class="token punctuation">(</span><span class="token string">"insert into category(type, name, sort, status, create_time, update_time, create_user, update_user)"</span> <span class="token operator">+</span>
+            <span class="token string">" VALUES"</span> <span class="token operator">+</span>
+            <span class="token string">" (#&amp;#123;type&amp;#125;, #&amp;#123;name&amp;#125;, #&amp;#123;sort&amp;#125;, #&amp;#123;status&amp;#125;, #&amp;#123;createTime&amp;#125;, #&amp;#123;updateTime&amp;#125;, #&amp;#123;createUser&amp;#125;, #&amp;#123;updateUser&amp;#125;)"</span><span class="token punctuation">)</span>
+    <span class="token keyword">void</span> <span class="token function">insert</span><span class="token punctuation">(</span>Category category<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 分页查询
      * @param categoryPageQueryDTO 分页查询参数
      * @return 分页结果
-     */
-    Page<Category> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
+     */</span>
+    Page<span class="token operator">&lt;</span>Category<span class="token operator">></span> <span class="token function">pageQuery</span><span class="token punctuation">(</span>CategoryPageQueryDTO categoryPageQueryDTO<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据id删除分类
      * @param id 分类id
-     */
-    @Delete("delete from category where id = #&#123;id&#125;")
-    void deleteById(Long id);
+     */</span>
+    <span class="token annotation punctuation">@Delete</span><span class="token punctuation">(</span><span class="token string">"delete from category where id = #&amp;#123;id&amp;#125;"</span><span class="token punctuation">)</span>
+    <span class="token keyword">void</span> <span class="token function">deleteById</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据id修改分类
      * @param category 分类
-     */
-    void update(Category category);
+     */</span>
+    <span class="token keyword">void</span> <span class="token function">update</span><span class="token punctuation">(</span>Category category<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据类型查询分类
      * @param type 分类类型
      * @return 分类列表
-     */
-    List<Category> list(Integer type);
-&#125;
+     */</span>
+    List<span class="token operator">&lt;</span>Category<span class="token operator">></span> <span class="token function">list</span><span class="token punctuation">(</span>Integer type<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">package com.sky.mapper;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>mapper<span class="token punctuation">;</span>
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ibatis<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Mapper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ibatis<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Select<span class="token punctuation">;</span>
 
-@Mapper
-public interface DishMapper &#123;
+<span class="token annotation punctuation">@Mapper</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">DishMapper</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据分类id查询菜品数量
      * @param categoryId 分类Id
      * @return 数量
-     */
-    @Select("select count(id) from dish where category_id = #&#123;categoryId&#125;")
-    Integer countByCategoryId(Long categoryId);
+     */</span>
+    <span class="token annotation punctuation">@Select</span><span class="token punctuation">(</span><span class="token string">"select count(id) from dish where category_id = #&amp;#123;categoryId&amp;#125;"</span><span class="token punctuation">)</span>
+    Integer <span class="token function">countByCategoryId</span><span class="token punctuation">(</span>Long categoryId<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-&#125;
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealMapper.java</strong></p>
-<pre class="line-numbers language-java"><code class="language-java">package com.sky.mapper;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">package</span> com<span class="token punctuation">.</span>sky<span class="token punctuation">.</span>mapper<span class="token punctuation">;</span>
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ibatis<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Mapper<span class="token punctuation">;</span>
+<span class="token keyword">import</span> org<span class="token punctuation">.</span>apache<span class="token punctuation">.</span>ibatis<span class="token punctuation">.</span>annotations<span class="token punctuation">.</span>Select<span class="token punctuation">;</span>
 
-@Mapper
-public interface SetmealMapper &#123;
+<span class="token annotation punctuation">@Mapper</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">SetmealMapper</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>
 
-    /**
+    <span class="token comment" spellcheck="true">/**
      * 根据分类id查询套餐的数量
      * @param id 分类Id
      * @return 数量
-     */
-    @Select("select count(id) from setmeal where category_id = #&#123;categoryId&#125;")
-    Integer countByCategoryId(Long id);
+     */</span>
+    <span class="token annotation punctuation">@Select</span><span class="token punctuation">(</span><span class="token string">"select count(id) from setmeal where category_id = #&amp;#123;categoryId&amp;#125;"</span><span class="token punctuation">)</span>
+    Integer <span class="token function">countByCategoryId</span><span class="token punctuation">(</span>Long id<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-&#125;
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>CategoryMapper.xml</strong></p>
-<pre class="line-numbers language-java"><code class="language-java"><?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.sky.mapper.CategoryMapper">
+<pre class="line-numbers language-java"><code class="language-java"><span class="token operator">&lt;</span><span class="token operator">?</span>xml version<span class="token operator">=</span><span class="token string">"1.0"</span> encoding<span class="token operator">=</span><span class="token string">"UTF-8"</span> <span class="token operator">?</span><span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">!</span>DOCTYPE mapper PUBLIC <span class="token string">"-//mybatis.org//DTD Mapper 3.0//EN"</span>
+        <span class="token string">"http://mybatis.org/dtd/mybatis-3-mapper.dtd"</span> <span class="token operator">></span>
+<span class="token operator">&lt;</span>mapper namespace<span class="token operator">=</span><span class="token string">"com.sky.mapper.CategoryMapper"</span><span class="token operator">></span>
 
-    <select id="pageQuery" resultType="com.sky.entity.Category">
-        select * from category
-        <where>
-            <if test="name != null and name != ''">
-                and name like concat('%',#&#123;name&#125;,'%')
-            </if>
-            <if test="type != null">
-                and type = #&#123;type&#125;
-            </if>
-        </where>
-        order by sort asc , create_time desc
-    </select>
+    <span class="token operator">&lt;</span>select id<span class="token operator">=</span><span class="token string">"pageQuery"</span> resultType<span class="token operator">=</span><span class="token string">"com.sky.entity.Category"</span><span class="token operator">></span>
+        select <span class="token operator">*</span> from category
+        <span class="token operator">&lt;</span>where<span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"name != null and name != ''"</span><span class="token operator">></span>
+                and name like <span class="token function">concat</span><span class="token punctuation">(</span><span class="token string">'%'</span><span class="token punctuation">,</span>#<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>name<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span><span class="token string">'%'</span><span class="token punctuation">)</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"type != null"</span><span class="token operator">></span>
+                and type <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>type<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>where<span class="token operator">></span>
+        order by sort asc <span class="token punctuation">,</span> create_time desc
+    <span class="token operator">&lt;</span><span class="token operator">/</span>select<span class="token operator">></span>
 
-    <update id="update" parameterType="Category">
+    <span class="token operator">&lt;</span>update id<span class="token operator">=</span><span class="token string">"update"</span> parameterType<span class="token operator">=</span><span class="token string">"Category"</span><span class="token operator">></span>
         update category
-        <set>
-            <if test="type != null">
-                type = #&#123;type&#125;,
-            </if>
-            <if test="name != null">
-                name = #&#123;name&#125;,
-            </if>
-            <if test="sort != null">
-                sort = #&#123;sort&#125;,
-            </if>
-            <if test="status != null">
-                status = #&#123;status&#125;,
-            </if>
-            <if test="updateTime != null">
-                update_time = #&#123;updateTime&#125;,
-            </if>
-            <if test="updateUser != null">
-                update_user = #&#123;updateUser&#125;
-            </if>
-        </set>
-        where id = #&#123;id&#125;
-    </update>
+        <span class="token operator">&lt;</span>set<span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"type != null"</span><span class="token operator">></span>
+                type <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>type<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"name != null"</span><span class="token operator">></span>
+                name <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>name<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"sort != null"</span><span class="token operator">></span>
+                sort <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>sort<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"status != null"</span><span class="token operator">></span>
+                status <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>status<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"updateTime != null"</span><span class="token operator">></span>
+                update_time <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>updateTime<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span><span class="token punctuation">,</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+            <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"updateUser != null"</span><span class="token operator">></span>
+                update_user <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>updateUser<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+            <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span>set<span class="token operator">></span>
+        where id <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>id<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>update<span class="token operator">></span>
 
-    <select id="list" resultType="Category">
-        select * from category
-        where status = 1
-        <if test="type != null">
-            and type = #&#123;type&#125;
-        </if>
-        order by sort ,create_time desc
-    </select>
-</mapper>
+    <span class="token operator">&lt;</span>select id<span class="token operator">=</span><span class="token string">"list"</span> resultType<span class="token operator">=</span><span class="token string">"Category"</span><span class="token operator">></span>
+        select <span class="token operator">*</span> from category
+        where status <span class="token operator">=</span> <span class="token number">1</span>
+        <span class="token operator">&lt;</span><span class="token keyword">if</span> test<span class="token operator">=</span><span class="token string">"type != null"</span><span class="token operator">></span>
+            and type <span class="token operator">=</span> #<span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>type<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
+        <span class="token operator">&lt;</span><span class="token operator">/</span><span class="token keyword">if</span><span class="token operator">></span>
+        order by sort <span class="token punctuation">,</span>create_time desc
+    <span class="token operator">&lt;</span><span class="token operator">/</span>select<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>mapper<span class="token operator">></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="附：其他盲区知识补充"><a href="#附：其他盲区知识补充" class="headerlink" title="附：其他盲区知识补充"></a>附：其他盲区知识补充</h2><p>在 Spring MVC 中，<code>@RequestBody</code>注解的核心作用是<strong>将 HTTP 请求体中的数据绑定到控制器方法的参数上</strong>。是否需要添加该注解，主要取决于<strong>参数的数据来源</strong>和<strong>请求的内容格式</strong>。</p>
 <h3 id="一、需要添加-RequestBody的场景"><a href="#一、需要添加-RequestBody的场景" class="headerlink" title="一、需要添加@RequestBody的场景"></a>一、需要添加<code>@RequestBody</code>的场景</h3><p>当参数的数据来自<strong>HTTP 请求体（Request Body）</strong>，且请求体格式为<code>application/json</code>、<code>application/xml</code>等非表单格式时，必须使用<code>@RequestBody</code>。</p>
@@ -814,24 +814,24 @@ public interface SetmealMapper &#123;
 <li><p><strong>前端发送 JSON 格式数据</strong>当前端通过<code>POST</code>、<code>PUT</code>等请求，以<code>JSON</code>格式提交数据（<code>Content-Type: application/json</code>）时，后端需要用<code>@RequestBody</code>接收并将 JSON 转换为 Java 对象。</p>
 <p> 示例：前端请求（JSON 格式）：</p>
 <pre class="line-numbers language-json"><code class="language-json">// 请求体内容
-&#123;
-  "username": "zhangsan",
-  "password": "123456"
-&#125;
+&amp;#<span class="token number">123</span><span class="token punctuation">;</span>
+  <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"zhangsan"</span><span class="token punctuation">,</span>
+  <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"123456"</span>
+&amp;#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p> 后端 Controller 接收：</p>
-<pre class="line-numbers language-java"><code class="language-java">@PostMapping("/login")
-public Result login(@RequestBody User user) &#123;  // 需要@RequestBody将JSON转换为User对象
-    // 处理登录逻辑
-&#125;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/login"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">login</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> User user<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 需要@RequestBody将JSON转换为User对象</span>
+    <span class="token comment" spellcheck="true">// 处理登录逻辑</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 <li><p><strong>接收复杂对象或数组</strong>当参数是复杂 Java 对象（包含多个字段）、集合（如<code>List</code>、<code>Map</code>）或数组时，即使请求体是其他格式（如 XML），也需要<code>@RequestBody</code>绑定数据。</p>
 <p> 示例（接收数组）：</p>
-<pre class="line-numbers language-java"><code class="language-java">@PostMapping("/batch-delete")
-public Result batchDelete(@RequestBody List<Long> ids) &#123;  // 接收JSON数组[1,2,3]
-    // 批量删除逻辑
-&#125;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/batch-delete"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">batchDelete</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestBody</span> List<span class="token operator">&lt;</span>Long<span class="token operator">></span> ids<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 接收JSON数组[1,2,3]</span>
+    <span class="token comment" spellcheck="true">// 批量删除逻辑</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 </ol>
@@ -839,31 +839,31 @@ public Result batchDelete(@RequestBody List<Long> ids) &#123;  // 接收JSON数�
 <p>典型场景：</p>
 <ol>
 <li><p>**参数来自 URL 路径（<code>@PathVariable</code>）**参数嵌在 URL 中（如<code>/user/123</code>中的<code>123</code>），用<code>@PathVariable</code>接收，无需<code>@RequestBody</code>。</p>
-<pre class="line-numbers language-java"><code class="language-java">@GetMapping("/user/&#123;id&#125;")
-public Result getUser(@PathVariable Long id) &#123;  // 从URL路径获取id
-    // 查询用户逻辑
-&#125;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/user/&amp;#123;id&amp;#125;"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">getUser</span><span class="token punctuation">(</span><span class="token annotation punctuation">@PathVariable</span> Long id<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 从URL路径获取id</span>
+    <span class="token comment" spellcheck="true">// 查询用户逻辑</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 <li><p>**参数来自查询参数（<code>@RequestParam</code>）**参数在 URL 末尾（如<code>/search?name=zhangsan&amp;age=20</code>），用<code>@RequestParam</code>接收（简单类型可省略该注解）。</p>
-<pre class="line-numbers language-java"><code class="language-java">@GetMapping("/search")
-public Result search(@RequestParam String name, Integer age) &#123;  // 从查询参数获取
-    // 搜索逻辑
-&#125;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/search"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">search</span><span class="token punctuation">(</span><span class="token annotation punctuation">@RequestParam</span> String name<span class="token punctuation">,</span> Integer age<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 从查询参数获取</span>
+    <span class="token comment" spellcheck="true">// 搜索逻辑</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 <li><p>**表单提交（<code>application/x-www-form-urlencoded</code>）**前端通过表单提交数据（<code>Content-Type: application/x-www-form-urlencoded</code>），此时参数在请求体中，但格式是键值对（非 JSON），无需<code>@RequestBody</code>，Spring 会自动绑定到对象。</p>
 <p> 示例：前端表单：</p>
-<pre class="line-numbers language-html"><code class="language-html"><form method="post" action="/register">
-    <input name="username" value="zhangsan">
-    <input name="password" value="123456">
-</form>
+<pre class="line-numbers language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>form</span> <span class="token attr-name">method</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>post<span class="token punctuation">"</span></span> <span class="token attr-name">action</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>/register<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>username<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>zhangsan<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>input</span> <span class="token attr-name">name</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>password<span class="token punctuation">"</span></span> <span class="token attr-name">value</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>123456<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>form</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p> 后端接收：</p>
-<pre class="line-numbers language-java"><code class="language-java">@PostMapping("/register")
-public Result register(User user) &#123;  // 无需@RequestBody，自动绑定表单字段
-    // 注册逻辑
-&#125;
+<pre class="line-numbers language-java"><code class="language-java"><span class="token annotation punctuation">@PostMapping</span><span class="token punctuation">(</span><span class="token string">"/register"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> Result <span class="token function">register</span><span class="token punctuation">(</span>User user<span class="token punctuation">)</span> <span class="token operator">&amp;</span>#<span class="token number">123</span><span class="token punctuation">;</span>  <span class="token comment" spellcheck="true">// 无需@RequestBody，自动绑定表单字段</span>
+    <span class="token comment" spellcheck="true">// 注册逻辑</span>
+<span class="token operator">&amp;</span>#<span class="token number">125</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 </ol>
@@ -890,23 +890,23 @@ public Result register(User user) &#123;  // 无需@RequestBody，自动绑定�
 <h4 id="1-的问题：比较-“引用地址”-而非-“值相等”"><a href="#1-的问题：比较-“引用地址”-而非-“值相等”" class="headerlink" title="1. == 的问题：比较 “引用地址” 而非 “值相等”"></a>1. <code>==</code> 的问题：比较 “引用地址” 而非 “值相等”</h4><p>包装类（如 <code>Integer</code>）是<strong>对象</strong>，<code>==</code> 比较的是<strong>对象的内存地址是否相同</strong>，而非 “值是否相等”。</p>
 <ul>
 <li><p>示例 1（缓存范围内，看似正常）：</p>
-<pre class="line-numbers language-java"><code class="language-java">Integer a = 127;
-Integer b = 127;
-System.out.println(a == b); // true（因为 Integer 缓存了 -128~127 的对象）
+<pre class="line-numbers language-java"><code class="language-java">Integer a <span class="token operator">=</span> <span class="token number">127</span><span class="token punctuation">;</span>
+Integer b <span class="token operator">=</span> <span class="token number">127</span><span class="token punctuation">;</span>
+System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>a <span class="token operator">==</span> b<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// true（因为 Integer 缓存了 -128~127 的对象）</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 </li>
 <li><p>示例 2（超出缓存范围，逻辑错误）：</p>
-<pre class="line-numbers language-java"><code class="language-java">Integer c = 128;
-Integer d = 128;
-System.out.println(c == d); // false（超出缓存，是两个不同对象）
+<pre class="line-numbers language-java"><code class="language-java">Integer c <span class="token operator">=</span> <span class="token number">128</span><span class="token punctuation">;</span>
+Integer d <span class="token operator">=</span> <span class="token number">128</span><span class="token punctuation">;</span>
+System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>c <span class="token operator">==</span> d<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// false（超出缓存，是两个不同对象）</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <p>  此时 <code>c</code> 和 <code>d</code> 的<strong>值都是 128</strong>，但 <code>==</code> 结果为 <code>false</code>（因为是不同对象实例）。</p>
 </li>
 </ul>
 <h4 id="2-无法安全处理-null"><a href="#2-无法安全处理-null" class="headerlink" title="2. == 无法安全处理 null"></a>2. <code>==</code> 无法安全处理 <code>null</code></h4><p>如果比较的对象包含 <code>null</code>，<code>==</code> 会直接抛出 <code>NullPointerException</code>：</p>
-<pre class="line-numbers language-java"><code class="language-java">Integer a = null;
-Integer b = 10;
-System.out.println(a == b); // 直接抛 NPE
+<pre class="line-numbers language-java"><code class="language-java">Integer a <span class="token operator">=</span> null<span class="token punctuation">;</span>
+Integer b <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>a <span class="token operator">==</span> b<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// 直接抛 NPE</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 <h4 id="推荐用法：Objects-equals"><a href="#推荐用法：Objects-equals" class="headerlink" title="推荐用法：Objects.equals(...)"></a>推荐用法：<code>Objects.equals(...)</code></h4><p><code>java.util.Objects.equals(Object a, Object b)</code> 是最安全的方式，原因：</p>
 <ul>
@@ -914,13 +914,13 @@ System.out.println(a == b); // 直接抛 NPE
 <li>再调用 <code>equals</code> 方法比较<strong>值是否相等</strong>（而非引用地址）。</li>
 </ul>
 <p>示例：</p>
-<pre class="line-numbers language-java"><code class="language-java">Integer a = 128;
-Integer b = 128;
-System.out.println(Objects.equals(a, b)); // true（值相等）
+<pre class="line-numbers language-java"><code class="language-java">Integer a <span class="token operator">=</span> <span class="token number">128</span><span class="token punctuation">;</span>
+Integer b <span class="token operator">=</span> <span class="token number">128</span><span class="token punctuation">;</span>
+System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Objects<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// true（值相等）</span>
 
-Integer c = null;
-Integer d = 10;
-System.out.println(Objects.equals(c, d)); // false（安全，无 NPE）
+Integer c <span class="token operator">=</span> null<span class="token punctuation">;</span>
+Integer d <span class="token operator">=</span> <span class="token number">10</span><span class="token punctuation">;</span>
+System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>Objects<span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>c<span class="token punctuation">,</span> d<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment" spellcheck="true">// false（安全，无 NPE）</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>总结：当需要比较 ** 数字包装类的 “值是否相等”** 时，应避免用 <code>==</code>，推荐使用 <code>Objects.equals(...)</code> 保证逻辑正确且避免空指针。</p>
 <hr>
@@ -930,24 +930,24 @@ System.out.println(Objects.equals(c, d)); // false（安全，无 NPE）
 <li>若 Mapper 接口方法的参数是 <code>Employee</code>（如 <code>void update(Employee employee)</code>），MyBatis 会直接识别参数类型为 <code>Employee</code>，无需显式写 <code>parameterType=&quot;Employee&quot;</code>。</li>
 </ul>
 <p>例如：即使去掉 <code>parameterType</code>，以下 SQL 仍能正常运行：</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><update id="update"> <!-- 省略 parameterType -->
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>update</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>update<span class="token punctuation">"</span></span><span class="token punctuation">></span></span> <span class="token comment" spellcheck="true">&lt;!-- 省略 parameterType --></span>
     update employee
-    <set>
-        <if test="status != null">status = #&#123;status&#125;,</if>
-    </set>
-    where id = #&#123;id&#125;
-</update>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>set</span><span class="token punctuation">></span></span>
+        <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>if</span> <span class="token attr-name">test</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>status !<span class="token punctuation">=</span> null<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>status = #<span class="token entity" title="&#123;">&amp;#123;</span>status<span class="token entity" title="&#125;">&amp;#125;</span>,<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>if</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>set</span><span class="token punctuation">></span></span>
+    where id = #<span class="token entity" title="&#123;">&amp;#123;</span>id<span class="token entity" title="&#125;">&amp;#125;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>update</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="2-参数用-Param-注解显式标记"><a href="#2-参数用-Param-注解显式标记" class="headerlink" title="2. 参数用 @Param 注解显式标记"></a>2. 参数用 <code>@Param</code> 注解显式标记</h4><p>若 Mapper 接口方法用 <code>@Param</code> 指定参数名，MyBatis 会通过 <code>@Param</code> 识别参数，无需 <code>parameterType</code>：</p>
 <ul>
 <li><p>Mapper 接口：</p>
-<pre class="line-numbers language-java"><code class="language-java">void updateStatus(@Param("id") Long id, @Param("status") Integer status);
+<pre class="line-numbers language-java"><code class="language-java"><span class="token keyword">void</span> <span class="token function">updateStatus</span><span class="token punctuation">(</span><span class="token annotation punctuation">@Param</span><span class="token punctuation">(</span><span class="token string">"id"</span><span class="token punctuation">)</span> Long id<span class="token punctuation">,</span> <span class="token annotation punctuation">@Param</span><span class="token punctuation">(</span><span class="token string">"status"</span><span class="token punctuation">)</span> Integer status<span class="token punctuation">)</span><span class="token punctuation">;</span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
 </li>
 <li><p>映射文件（无需parameterType）</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><update id="updateStatus">
-    update employee set status = #&#123;status&#125; where id = #&#123;id&#125;
-</update>
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>update</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>updateStatus<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    update employee set status = #<span class="token entity" title="&#123;">&amp;#123;</span>status<span class="token entity" title="&#125;">&amp;#125;</span> where id = #<span class="token entity" title="&#123;">&amp;#123;</span>id<span class="token entity" title="&#125;">&amp;#125;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>update</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
 </li>
 </ul>
@@ -955,19 +955,19 @@ System.out.println(Objects.equals(c, d)); // false（安全，无 NPE）
 <h4 id="参数类型是「集合-数组-Map」等非-JavaBean-类型"><a href="#参数类型是「集合-数组-Map」等非-JavaBean-类型" class="headerlink" title="参数类型是「集合 &#x2F; 数组 &#x2F; Map」等非 JavaBean 类型"></a>参数类型是「集合 &#x2F; 数组 &#x2F; Map」等非 JavaBean 类型</h4><p>当参数是 <code>List</code>、<code>Array</code>、<code>Map</code> 等特殊类型时，MyBatis 无法通过方法参数自动推断具体类型，必须显式指定 <code>parameterType</code>：</p>
 <ul>
 <li><p>示例 1：批量删除员工（参数是List<Long>)</Long></p>
-<pre class="line-numbers language-xml"><code class="language-xml"><delete id="batchDelete" parameterType="java.util.List">
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>delete</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>batchDelete<span class="token punctuation">"</span></span> <span class="token attr-name">parameterType</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>java.util.List<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
     delete from employee where id in
-    <foreach collection="list" item="id" open="(" separator="," close=")">
-        #&#123;id&#125;
-    </foreach>
-</delete>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>foreach</span> <span class="token attr-name">collection</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>list<span class="token punctuation">"</span></span> <span class="token attr-name">item</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>id<span class="token punctuation">"</span></span> <span class="token attr-name">open</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>(<span class="token punctuation">"</span></span> <span class="token attr-name">separator</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>,<span class="token punctuation">"</span></span> <span class="token attr-name">close</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>)<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+        #<span class="token entity" title="&#123;">&amp;#123;</span>id<span class="token entity" title="&#125;">&amp;#125;</span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>foreach</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>delete</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 <li><p>示例 2：用 Map 传多参数（参数是Map)</p>
-<pre class="line-numbers language-xml"><code class="language-xml"><select id="getByMap" parameterType="java.util.Map" resultType="Employee">
+<pre class="line-numbers language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>select</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>getByMap<span class="token punctuation">"</span></span> <span class="token attr-name">parameterType</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>java.util.Map<span class="token punctuation">"</span></span> <span class="token attr-name">resultType</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Employee<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
     select * from employee 
-    where name = #&#123;name&#125; and status = #&#123;status&#125;
-</select>
+    where name = #<span class="token entity" title="&#123;">&amp;#123;</span>name<span class="token entity" title="&#125;">&amp;#125;</span> and status = #<span class="token entity" title="&#123;">&amp;#123;</span>status<span class="token entity" title="&#125;">&amp;#125;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>select</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 </ul>
