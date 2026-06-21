@@ -287,8 +287,8 @@ Cont"><meta name="twitter:site" content="junnhwan's blog"><meta name="twitter:ti
 <p>application.yml</p>
 <pre class="line-numbers language-yml"><code class="language-yml">sky:
   wechat:
-    appid: $&#123;sky.wechat.appid&#125;
-    secret: $&#123;sky.wechat.secret&#125;
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>配置为微信用户生成jwt令牌时使用的配置项：</strong></p>
 <p>application.yml</p>
@@ -515,7 +515,7 @@ Cont"><meta name="twitter:site" content="junnhwan's blog"><meta name="twitter:ti
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>insert</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>insert<span class="token punctuation">"</span></span> <span class="token attr-name">useGeneratedKeys</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>true<span class="token punctuation">"</span></span> <span class="token attr-name">keyProperty</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>id<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
         insert into user (openid, name, phone, sex, id_number, avatar, create_time)
         values
-        (#<span class="token entity" title="&#123;">&amp;#123;</span>openid<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>name<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>phone<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>sex<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>idNumber<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>avatar<span class="token entity" title="&#125;">&amp;#125;</span>, #<span class="token entity" title="&#123;">&amp;#123;</span>createTime<span class="token entity" title="&#125;">&amp;#125;</span>)
+        (#<span class="token entity" title="{">&amp;#123;</span>openid<span class="token entity" title="}">&amp;#125;</span>, #<span class="token entity" title="{">&amp;#123;</span>name<span class="token entity" title="}">&amp;#125;</span>, #<span class="token entity" title="{">&amp;#123;</span>phone<span class="token entity" title="}">&amp;#125;</span>, #<span class="token entity" title="{">&amp;#123;</span>sex<span class="token entity" title="}">&amp;#125;</span>, #<span class="token entity" title="{">&amp;#123;</span>idNumber<span class="token entity" title="}">&amp;#125;</span>, #<span class="token entity" title="{">&amp;#123;</span>avatar<span class="token entity" title="}">&amp;#125;</span>, #<span class="token entity" title="{">&amp;#123;</span>createTime<span class="token entity" title="}">&amp;#125;</span>)
     <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>insert</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>mapper</span><span class="token punctuation">></span></span>
 <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
