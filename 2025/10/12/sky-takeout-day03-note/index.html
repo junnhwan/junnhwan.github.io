@@ -1,452 +1,11 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author"><title>sky-takeout-day03-note · junnhwan's blog</title><meta name="description" content="Sky-takeout  Day03
 
+【前言】Day03 的 Task 是 公共字段自动填充 与 菜品管理相关功能 的代码开发，主要的菜品管理部分也是基础 CRUD 的练习，另外就是公共字段自动填充这种偏向技术一点的开发技巧的学习。
+公共字段自动填充主要涉及到 枚举、注解、Spring的 AOP "><meta name="og:description" content="Sky-takeout  Day03
 
-<!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
-<head>
-  <meta charset="UTF-8">
-
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
-  <link rel="icon" href="/img/favicon.png">
-  
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="junnhwan">
-  <meta name="keywords" content="Java, Go, back-end, algorithm, coding, infinite progress">
-  
-    <meta name="description" content="Sky-takeout  Day03  【前言】Day03 的 Task 是 公共字段自动填充 与 菜品管理相关功能 的代码开发，主要的菜品管理部分也是基础 CRUD 的练习，另外就是公共字段自动填充这种偏向技术一点的开发技巧的学习。 公共字段自动填充主要涉及到 枚举、注解、Spring的 AOP 、反射 的知识，用自定义注解实现了当执行 insert新增* 与 *update更新  时在Mapp">
-<meta property="og:type" content="article">
-<meta property="og:title" content="sky-takeout-day03-note">
-<meta property="og:url" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/index.html">
-<meta property="og:site_name" content="junnhwan&#39;s blog">
-<meta property="og:description" content="Sky-takeout  Day03  【前言】Day03 的 Task 是 公共字段自动填充 与 菜品管理相关功能 的代码开发，主要的菜品管理部分也是基础 CRUD 的练习，另外就是公共字段自动填充这种偏向技术一点的开发技巧的学习。 公共字段自动填充主要涉及到 枚举、注解、Spring的 AOP 、反射 的知识，用自定义注解实现了当执行 insert新增* 与 *update更新  时在Mapp">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012092311740.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012092427001.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012095830097.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012100810762.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012101400679.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012121509064.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012122838118.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165033612-1760243432816-9.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20221121165043619.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165201319-1760243432816-11.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20221121165215634.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20221121165254961.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/TODO/cqwm/%E8%AE%B2%E4%B9%89/day03/assets/image-20221121165308394.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165322687-1760243432807-7.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012142649962.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012142702849.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012142710484.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012141856723.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012141904531.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012142202054.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012142212893.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012153940610.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012155802631.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20221121202019258.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/TODO/cqwm/%E8%AE%B2%E4%B9%89/day03/assets/image-20221121202033284.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012165640112.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012170915227.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012170933704.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012171359093.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012171525991.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012183851728.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012184023473.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012184045407.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012185442072.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012195244620.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012195254125.png">
-<meta property="article:published_time" content="2025-10-12T11:57:07.000Z">
-<meta property="article:modified_time" content="2026-05-12T05:00:14.715Z">
-<meta property="article:author" content="junnhwan">
-<meta property="article:tag" content="苍穹外卖">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/image-20251012092311740.png">
-  
-  
-    <meta name="referrer" content="no-referrer-when-downgrade">
-  
-  
-  <title>sky-takeout-day03-note - junnhwan&#39;s blog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
-
-
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
-
-
-
-<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
-  
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"junnhwan.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":false,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-
-  
-<meta name="generator" content="Hexo 7.3.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 60vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>junnhwan&#39;s blog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content (desktop) -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/" target="_self">
-                <i class="iconfont icon-home-fill"></i>
-                <span>首页</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/" target="_self">
-                <i class="iconfont icon-archive-fill"></i>
-                <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/tags/" target="_self">
-                <i class="iconfont icon-tags-fill"></i>
-                <span>标签</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/" target="_self">
-                <i class="iconfont icon-user-fill"></i>
-                <span>关于</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="https://github.com/junnhwan" target="_self">
-                <i class="iconfont icon-github-fill"></i>
-                <span>GitHub</span>
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <i class="iconfont icon-search"></i>
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
-              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
-            </a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- Mobile grid menu overlay -->
-<div id="mobile-grid-menu" class="d-lg-none">
-  <div class="mobile-grid-menu-inner">
-    <div class="container">
-      <div class="row">
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-home-fill"></i>
-                  <span>首页</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/archives/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-archive-fill"></i>
-                  <span>归档</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/tags/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-tags-fill"></i>
-                  <span>标签</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/about/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-user-fill"></i>
-                  <span>关于</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="https://github.com/junnhwan" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-github-fill"></i>
-                  <span>GitHub</span>
-                </div>
-              </a>
-            </div>
-          
-        
-        
-          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
-            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <div class="mobile-grid-item">
-                <i class="iconfont icon-search"></i>
-                <span>搜索</span>
-              </div>
-            </a>
-          </div>
-        
-        
-          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
-               data-label-light="开灯"
-               data-label-dark="关灯">
-            <a href="javascript:;" aria-label="Color Toggle">
-              <div class="mobile-grid-item">
-                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
-                <span id="mobile-color-toggle-label">关灯</span>
-              </div>
-            </a>
-          </div>
-        
-      </div>
-    </div>
-  </div>
-</div>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="sky-takeout-day03-note"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-10-12 19:57" pubdate>
-          2025-10-12
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          27k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          69 分钟
-        
-      </span>
-    
-
-    
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <h1 id="seo-header">sky-takeout-day03-note</h1>
-            
-            
-              <div class="markdown-body">
-                
-                <h1 id="Sky-takeout-Day03"><a href="#Sky-takeout-Day03" class="headerlink" title="Sky-takeout  Day03"></a>Sky-takeout  Day03</h1><hr>
+【前言】Day03 的 Task 是 公共字段自动填充 与 菜品管理相关功能 的代码开发，主要的菜品管理部分也是基础 CRUD 的练习，另外就是公共字段自动填充这种偏向技术一点的开发技巧的学习。
+公共字段自动填充主要涉及到 枚举、注解、Spring的 AOP "><meta name="twitter:site" content="junnhwan's blog"><meta name="twitter:title" content="sky-takeout-day03-note"><meta name="twitter:card" content="summary"><meta name="keywords" content="Java, Go, back-end, algorithm, coding, infinite progress"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/copy-code.css"><script src="/js/copy-code.js" defer></script><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 7.3.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body><div class="container" id="stage"><div class="row"><div class="col-sm-3 col-xs-12 side-container invisible" id="side-bar"><div class="vertical-text site-title"><h3 class="site-title-small" tabindex="-1"><a class="a-title" href="/">junnhwan's blog</a></h3><h1 class="site-title-large" tabindex="-1"><a class="a-title" href="/">Be here now</a></h1><!--h6(onclick="triggerSiteNav()") Trigger--></div><br class="visible-lg visible-md visible-sm"><div class="site-title-links" id="site-nav"><ul><li><a href="/">Home</a></li><li><a href="/archives">Archive</a></li><li><a href="/tags">Tags</a></li><li><a href="/categories">Categories</a></li><li><a href="/about/">About</a></li><li class="soc"><a href="https://github.com/junnhwan" target="_blank" rel="noopener noreferrer" aria-label="Github"><i class="fa fa-github">&nbsp;</i></a></li></ul><div class="visible-lg visible-md visible-sm site-nav-footer"><br class="site-nav-footer-br"><footer><p>&copy;&nbsp;2026&nbsp;<a target="_blank" href="https://junnhwan.github.io" rel="noopener noreferrer">junnhwan</a></p><p>Theme&nbsp;<a target="_blank" href="https://github.com/SumiMakito/hexo-theme-typography" rel="noopener noreferrer">Typography</a>&nbsp;by&nbsp;<a target="_blank" href="https://www.keep.moe" rel="noopener noreferrer">Makito</a></p><p>Proudly published with&nbsp;<a target="_blank" href="https://hexo.io" rel="noopener noreferrer">Hexo</a></p></footer></div></div></div><div class="col-sm-9 col-xs-12 main-container invisible" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post-container"><p class="post-title"><a>sky-takeout-day03-note</a></p><p class="post-meta"><span class="date meta-item">Posted at&nbsp;2025-10-12</span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/苍穹外卖/" title="苍穹外卖">苍穹外卖</a><span>&nbsp;</span></span></p><p class="post-abstract"><h1 id="Sky-takeout-Day03"><a href="#Sky-takeout-Day03" class="headerlink" title="Sky-takeout  Day03"></a>Sky-takeout  Day03</h1><hr>
 <blockquote>
 <p>【前言】<br>Day03 的 Task 是 <strong>公共字段自动填充</strong> 与 <strong>菜品管理相关功能</strong> 的代码开发，主要的菜品管理部分也是基础 CRUD 的练习，另外就是公共字段自动填充这种偏向技术一点的开发技巧的学习。</p>
 <p>公共字段自动填充主要涉及到 枚举、注解、Spring的 AOP 、反射 的知识，用<strong>自定义注解</strong>实现了当执行 <em><strong>insert新增* 与 *update更新</strong></em>  时在Mapper层对创建人、创建时间和修改人、修改时间的字段的自动填充，避免了在Service设置属性的冗余重复代码。</p>
@@ -500,8 +59,8 @@
 <p>1). 在新增数据时, 将createTime、updateTime 设置为当前时间, createUser、updateUser设置为当前登录用户ID。</p>
 <p>2). 在更新数据时, 将updateTime 设置为当前时间, updateUser设置为当前登录用户ID。</p>
 <p>代码层面，复制方式如下，通过set属性来设置这些公共字段的值</p>
-<p>Insert时<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012092311740.png" srcset="/img/loading.gif" lazyload alt="image-20251012092311740" style="zoom: 33%;"></p>
-<p>Update时<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012092427001.png" srcset="/img/loading.gif" lazyload alt="image-20251012092427001" style="zoom:33%;"></p>
+<p>Insert时<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012092311740.png" alt="image-20251012092311740" style="zoom: 33%;"></p>
+<p>Update时<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012092427001.png" alt="image-20251012092427001" style="zoom:33%;"></p>
 <p>如果都按照上述的操作方式来处理这些公共字段, 需要在每一个业务方法中进行操作, 编码相对冗余、繁琐，那能不能对于这些公共字段在某个地方统一处理，来简化开发呢？</p>
 <ul>
 <li>答案是可以的，我们使用<strong>AOP切面编程，实现功能增强</strong>，来完成公共字段自动填充功能。</li>
@@ -519,25 +78,136 @@
 <p>实现上述步骤，需掌握以下知识</p>
 <p>**技术点：**枚举、注解、AOP、反射</p>
 <h3 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h3><h4 id="1）编写注解，自定义注解AutoFill"><a href="#1）编写注解，自定义注解AutoFill" class="headerlink" title="1）编写注解，自定义注解AutoFill"></a>1）编写注解，自定义注解AutoFill</h4><p>在sky-server模块，创建com.sky.annotation包。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.annotation;<br><br><span class="hljs-keyword">import</span> com.sky.enumeration.OperationType;<br><br><span class="hljs-keyword">import</span> java.lang.annotation.ElementType;<br><span class="hljs-keyword">import</span> java.lang.annotation.Retention;<br><span class="hljs-keyword">import</span> java.lang.annotation.RetentionPolicy;<br><span class="hljs-keyword">import</span> java.lang.annotation.Target;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 自定义公共字段自动填充注解，用于标记需要自动填充公共字段的方法</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Target(ElementType.METHOD)</span><br><span class="hljs-meta">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> AutoFill &#123;<br><br>    <span class="hljs-comment">// 数据库操作类型，如插入或更新 INSERT, UPDATE</span><br>    OperationType <span class="hljs-title function_">value</span><span class="hljs-params">()</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.annotation;
 
-<p>在初始项目的枚举包中已定义了操作类型枚举<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012095830097.png" srcset="/img/loading.gif" lazyload alt="image-20251012095830097" style="zoom:33%;"></p>
+import com.sky.enumeration.OperationType;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+/**
+ * 自定义公共字段自动填充注解，用于标记需要自动填充公共字段的方法
+ */
+@Target(ElementType.METHOD)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface AutoFill &#123;
+
+    // 数据库操作类型，如插入或更新 INSERT, UPDATE
+    OperationType value();
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在初始项目的枚举包中已定义了操作类型枚举<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012095830097.png" alt="image-20251012095830097" style="zoom:33%;"></p>
 <h4 id="2）编写切面类-自定义AutoFillAspect切面"><a href="#2）编写切面类-自定义AutoFillAspect切面" class="headerlink" title="2）编写切面类, 自定义AutoFillAspect切面"></a>2）编写切面类, 自定义AutoFillAspect切面</h4><p>在sky-server模块，创建com.sky.aspect包。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.aspect;<br><br><span class="hljs-keyword">import</span> com.sky.annotation.AutoFill;<br><span class="hljs-keyword">import</span> com.sky.constant.AutoFillConstant;<br><span class="hljs-keyword">import</span> com.sky.context.BaseContext;<br><span class="hljs-keyword">import</span> com.sky.enumeration.OperationType;<br><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> org.aspectj.lang.JoinPoint;<br><span class="hljs-keyword">import</span> org.aspectj.lang.annotation.Aspect;<br><span class="hljs-keyword">import</span> org.aspectj.lang.annotation.Before;<br><span class="hljs-keyword">import</span> org.aspectj.lang.annotation.Pointcut;<br><span class="hljs-keyword">import</span> org.aspectj.lang.reflect.MethodSignature;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Component;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationTargetException;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><span class="hljs-keyword">import</span> java.time.LocalDateTime;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 自定义切面类，处理公共字段自动填充逻辑</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Aspect</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AutoFillAspect</span> &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 切入点，匹配所有标记了 <span class="hljs-doctag">@AutoFill</span> 注解的方法</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-comment">// 切入点表达式，匹配所有在 com.sky.mapper 包下的方法，并且这些方法上有 @AutoFill 注解</span><br>    <span class="hljs-comment">// execution(* com.sky.mapper.*.*(..)) 匹配 com.sky.mapper 包及其子包下的所有方法</span><br>    <span class="hljs-comment">// &amp;&amp; @annotation(com.sky.annotation.AutoFill) 匹配那些被 @AutoFill 注解标记的方法</span><br>    <span class="hljs-comment">// 这样，任何调用 com.sky.mapper 包下的方法且这些方法被 @AutoFill 注解标记时，</span><br>    <span class="hljs-comment">// 都会触发这个切入点，从而可以在相应的通知中实现自动填充公共字段的逻辑</span><br>    <span class="hljs-meta">@Pointcut(&quot;execution(* com.sky.mapper.*.*(..)) &amp;&amp; @annotation(com.sky.annotation.AutoFill)&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">autoFillPointCut</span><span class="hljs-params">()</span> &#123;&#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 前置通知，在切入点方法执行前，执行通知--进行公共字段自动填充逻辑 (反射 + AOP)</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> joinPoint 连接点信息</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Before(&quot;autoFillPointCut()&quot;)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">autoFill</span><span class="hljs-params">(JoinPoint joinPoint)</span> &#123;<br>        log.info(<span class="hljs-string">&quot;自动填充公共字段...&quot;</span>);<br><br>        <span class="hljs-comment">// 1.获取当前拦截方法的数据库操作类型（插入或更新）</span><br>        <span class="hljs-comment">// 注意这里自动导包的话要导入 org.aspectj.lang.reflect.MethodSignature，</span><br>        <span class="hljs-comment">// 不是 java.lang.reflect.MethodSignature</span><br>        <span class="hljs-comment">// 否则调用不了getMethod()方法</span><br>        <span class="hljs-type">MethodSignature</span> <span class="hljs-variable">signature</span> <span class="hljs-operator">=</span> (MethodSignature) joinPoint.getSignature();  <span class="hljs-comment">// 获取方法签名</span><br>        <span class="hljs-type">AutoFill</span> <span class="hljs-variable">annotation</span> <span class="hljs-operator">=</span> signature.getMethod().getAnnotation(AutoFill.class);<span class="hljs-comment">// 获取方法上的注解</span><br>        <span class="hljs-type">OperationType</span> <span class="hljs-variable">operationType</span> <span class="hljs-operator">=</span> annotation.value(); <span class="hljs-comment">// 获取注解的值（操作类型）</span><br><br>        <span class="hljs-comment">// 2.获取当前拦截方法的参数对象（实体类对象）</span><br>        Object[] args = joinPoint.getArgs(); <span class="hljs-comment">// 获取方法参数</span><br>        <span class="hljs-keyword">if</span> (args == <span class="hljs-literal">null</span> || args.length == <span class="hljs-number">0</span>) &#123;<br>            <span class="hljs-keyword">return</span>; <span class="hljs-comment">// 如果没有参数，直接返回</span><br>        &#125;<br>        <span class="hljs-type">Object</span> <span class="hljs-variable">entity</span> <span class="hljs-operator">=</span> args[<span class="hljs-number">0</span>]; <span class="hljs-comment">// 项目约定第一个参数是实体类对象</span><br><br>        <span class="hljs-comment">// 3.根据操作类型，准备需要填充的公共字段及其值（如创建时间、更新时间、创建人、更新人等）</span><br>        <span class="hljs-type">LocalDateTime</span> <span class="hljs-variable">now</span> <span class="hljs-operator">=</span> LocalDateTime.now();<br>        <span class="hljs-type">Long</span> <span class="hljs-variable">currentId</span> <span class="hljs-operator">=</span> BaseContext.getCurrentId();<br><br>        <span class="hljs-comment">// 4.使用反射机制，给实体类对象的公共字段赋值（如创建时间、更新时间、创建人、更新人等）</span><br>        <span class="hljs-keyword">if</span>(operationType == OperationType.INSERT) &#123;<br>            <span class="hljs-comment">// 插入操作，准备插入时需要填充的字段及其值 (四个字段)</span><br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-comment">// 通过反射获取实体类的公共字段的set方法</span><br>                <span class="hljs-type">Method</span> <span class="hljs-variable">setCreateUser</span> <span class="hljs-operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);<br>                <span class="hljs-type">Method</span> <span class="hljs-variable">setCreateTime</span> <span class="hljs-operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);<br>                <span class="hljs-type">Method</span> <span class="hljs-variable">setUpdateUser</span> <span class="hljs-operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);<br>                <span class="hljs-type">Method</span> <span class="hljs-variable">setUpdateTime</span> <span class="hljs-operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);<br>                <span class="hljs-comment">// 调用set方法，给实体类对象的公共字段赋值</span><br>                setCreateUser.invoke(entity, currentId);<br>                setCreateTime.invoke(entity, now);<br>                setUpdateUser.invoke(entity, currentId);<br>                setUpdateTime.invoke(entity, now);<br>            &#125; <span class="hljs-keyword">catch</span> (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) &#123;<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(e);<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (operationType == OperationType.UPDATE) &#123;<br>            <span class="hljs-comment">// 更新操作，准备更新时需要填充的字段及其值 (两个字段)</span><br>            <span class="hljs-keyword">try</span> &#123;<br>                <span class="hljs-comment">// 通过反射获取实体类的公共字段的set方法</span><br>                <span class="hljs-type">Method</span> <span class="hljs-variable">setUpdateUser</span> <span class="hljs-operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);<br>                <span class="hljs-type">Method</span> <span class="hljs-variable">setUpdateTime</span> <span class="hljs-operator">=</span> entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);<br>                <span class="hljs-comment">// 调用set方法，给实体类对象的公共字段赋值</span><br>                setUpdateUser.invoke(entity, currentId);<br>                setUpdateTime.invoke(entity, now);<br>            &#125; <span class="hljs-keyword">catch</span> (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) &#123;<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RuntimeException</span>(e);<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.aspect;
 
+import com.sky.annotation.AutoFill;
+import com.sky.constant.AutoFillConstant;
+import com.sky.context.BaseContext;
+import com.sky.enumeration.OperationType;
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.stereotype.Component;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 
-<h4 id="3）在Mapper的编辑（插入、更新）相关方法加上注解"><a href="#3）在Mapper的编辑（插入、更新）相关方法加上注解" class="headerlink" title="3）在Mapper的编辑（插入、更新）相关方法加上注解"></a>3）在Mapper的编辑（插入、更新）相关方法加上注解<img src="/2025/10/12/sky-takeout-day03-note/image-20251012100810762.png" srcset="/img/loading.gif" lazyload alt="image-20251012100810762" style="zoom:33%;"></h4><p><strong>同时</strong>，将业务层为公共字段赋值的代码注释掉。</p>
+/**
+ * 自定义切面类，处理公共字段自动填充逻辑
+ */
+@Aspect
+@Component
+@Slf4j
+public class AutoFillAspect &#123;
+
+    /**
+     * 切入点，匹配所有标记了 @AutoFill 注解的方法
+     */
+    // 切入点表达式，匹配所有在 com.sky.mapper 包下的方法，并且这些方法上有 @AutoFill 注解
+    // execution(* com.sky.mapper.*.*(..)) 匹配 com.sky.mapper 包及其子包下的所有方法
+    // && @annotation(com.sky.annotation.AutoFill) 匹配那些被 @AutoFill 注解标记的方法
+    // 这样，任何调用 com.sky.mapper 包下的方法且这些方法被 @AutoFill 注解标记时，
+    // 都会触发这个切入点，从而可以在相应的通知中实现自动填充公共字段的逻辑
+    @Pointcut("execution(* com.sky.mapper.*.*(..)) && @annotation(com.sky.annotation.AutoFill)")
+    public void autoFillPointCut() &#123;&#125;
+
+    /**
+     * 前置通知，在切入点方法执行前，执行通知--进行公共字段自动填充逻辑 (反射 + AOP)
+     * @param joinPoint 连接点信息
+     */
+    @Before("autoFillPointCut()")
+    public void autoFill(JoinPoint joinPoint) &#123;
+        log.info("自动填充公共字段...");
+
+        // 1.获取当前拦截方法的数据库操作类型（插入或更新）
+        // 注意这里自动导包的话要导入 org.aspectj.lang.reflect.MethodSignature，
+        // 不是 java.lang.reflect.MethodSignature
+        // 否则调用不了getMethod()方法
+        MethodSignature signature = (MethodSignature) joinPoint.getSignature();  // 获取方法签名
+        AutoFill annotation = signature.getMethod().getAnnotation(AutoFill.class);// 获取方法上的注解
+        OperationType operationType = annotation.value(); // 获取注解的值（操作类型）
+
+        // 2.获取当前拦截方法的参数对象（实体类对象）
+        Object[] args = joinPoint.getArgs(); // 获取方法参数
+        if (args == null || args.length == 0) &#123;
+            return; // 如果没有参数，直接返回
+        &#125;
+        Object entity = args[0]; // 项目约定第一个参数是实体类对象
+
+        // 3.根据操作类型，准备需要填充的公共字段及其值（如创建时间、更新时间、创建人、更新人等）
+        LocalDateTime now = LocalDateTime.now();
+        Long currentId = BaseContext.getCurrentId();
+
+        // 4.使用反射机制，给实体类对象的公共字段赋值（如创建时间、更新时间、创建人、更新人等）
+        if(operationType == OperationType.INSERT) &#123;
+            // 插入操作，准备插入时需要填充的字段及其值 (四个字段)
+            try &#123;
+                // 通过反射获取实体类的公共字段的set方法
+                Method setCreateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
+                Method setCreateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);
+                Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
+                Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
+                // 调用set方法，给实体类对象的公共字段赋值
+                setCreateUser.invoke(entity, currentId);
+                setCreateTime.invoke(entity, now);
+                setUpdateUser.invoke(entity, currentId);
+                setUpdateTime.invoke(entity, now);
+            &#125; catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) &#123;
+                throw new RuntimeException(e);
+            &#125;
+        &#125; else if (operationType == OperationType.UPDATE) &#123;
+            // 更新操作，准备更新时需要填充的字段及其值 (两个字段)
+            try &#123;
+                // 通过反射获取实体类的公共字段的set方法
+                Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
+                Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
+                // 调用set方法，给实体类对象的公共字段赋值
+                setUpdateUser.invoke(entity, currentId);
+                setUpdateTime.invoke(entity, now);
+            &#125; catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) &#123;
+                throw new RuntimeException(e);
+            &#125;
+        &#125;
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="3）在Mapper的编辑（插入、更新）相关方法加上注解"><a href="#3）在Mapper的编辑（插入、更新）相关方法加上注解" class="headerlink" title="3）在Mapper的编辑（插入、更新）相关方法加上注解"></a>3）在Mapper的编辑（插入、更新）相关方法加上注解<img src="/2025/10/12/sky-takeout-day03-note/image-20251012100810762.png" alt="image-20251012100810762" style="zoom:33%;"></h4><p><strong>同时</strong>，将业务层为公共字段赋值的代码注释掉。</p>
 <p>1). 将员工管理的新增和编辑方法中的公共字段赋值的代码注释。</p>
 <p>2). 将菜品分类管理的新增和修改方法中的公共字段赋值的代码注释。</p>
 <h3 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h3><ul>
 <li><p>初步测试，发现前置通知成功拦截方法</p>
-  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012101400679.png" srcset="/img/loading.gif" lazyload alt="image-20251012101400679" style="zoom:33%;">
+  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012101400679.png" alt="image-20251012101400679" style="zoom:33%;">
 </li>
 <li><p>完善切面类中前置通知的公共字段自动填充逻辑后，进行调试，观察线程和变量捕获情况</p>
-  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012121509064.png" srcset="/img/loading.gif" lazyload alt="image-20251012121509064" style="zoom:50%;"></li>
+  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012121509064.png" alt="image-20251012121509064" style="zoom:50%;"></li>
 </ul>
-<h2 id="2-新增菜品"><a href="#2-新增菜品" class="headerlink" title="2.新增菜品"></a>2.新增菜品</h2><h3 id="需求分析与接口设计"><a href="#需求分析与接口设计" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p>新增菜品的<strong>产品原型</strong>：<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012122838118.png" srcset="/img/loading.gif" lazyload alt="image-20251012122838118" style="zoom: 50%;"></p>
+<h2 id="2-新增菜品"><a href="#2-新增菜品" class="headerlink" title="2.新增菜品"></a>2.新增菜品</h2><h3 id="需求分析与接口设计"><a href="#需求分析与接口设计" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p>新增菜品的<strong>产品原型</strong>：<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012122838118.png" alt="image-20251012122838118" style="zoom: 50%;"></p>
 <p><strong>业务规则：</strong></p>
 <ul>
 <li>菜品名称必须是唯一的</li>
@@ -552,11 +222,11 @@
 <li>新增菜品</li>
 </ul>
 <p><strong>1. 根据类型查询分类</strong></p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165033612-1760243432816-9.png" srcset="/img/loading.gif" lazyload alt="image-20221121165033612" style="zoom:50%;"> <img src="/2025/10/12/sky-takeout-day03-note/image-20221121165043619.png" srcset="/img/loading.gif" lazyload alt="image-20221121165043619" style="zoom:50%;"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165033612-1760243432816-9.png" alt="image-20221121165033612" style="zoom:50%;"> <img src="/2025/10/12/sky-takeout-day03-note/image-20221121165043619.png" alt="image-20221121165043619" style="zoom:50%;"></p>
 <p><strong>2. 文件上传</strong></p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165201319-1760243432816-11.png" srcset="/img/loading.gif" lazyload alt="image-20221121165201319" style="zoom:50%;"><img src="/2025/10/12/sky-takeout-day03-note/image-20221121165215634.png" srcset="/img/loading.gif" lazyload alt="image-20221121165215634" style="zoom:50%;"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165201319-1760243432816-11.png" alt="image-20221121165201319" style="zoom:50%;"><img src="/2025/10/12/sky-takeout-day03-note/image-20221121165215634.png" alt="image-20221121165215634" style="zoom:50%;"></p>
 <p><strong>3. 新增菜品</strong></p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/image-20221121165254961.png" srcset="/img/loading.gif" lazyload alt="image-20221121165254961" style="zoom: 50%;"><img src="/2025/10/12/sky-takeout-day03-note/../../TODO/cqwm/讲义/day03/assets/image-20221121165308394.png" srcset="/img/loading.gif" lazyload alt="image-20221121165308394" style="zoom: 50%;"><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165322687-1760243432807-7.png" srcset="/img/loading.gif" lazyload alt="image-20221121165322687" style="zoom: 50%;"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20221121165254961.png" alt="image-20221121165254961" style="zoom: 50%;"><img src="/2025/10/12/sky-takeout-day03-note/../../TODO/cqwm/讲义/day03/assets/image-20221121165308394.png" alt="image-20221121165308394" style="zoom: 50%;"><img src="/2025/10/12/sky-takeout-day03-note/../../my-note/typora/my-sky-takeout-note/day03.assets/image-20221121165322687-1760243432807-7.png" alt="image-20221121165322687" style="zoom: 50%;"></p>
 <p>**数据库设计：**涉及两张表——dish和dish_flavor，通过逻辑外键建立联系</p>
 <p><strong>1). 菜品表:dish</strong></p>
 <table>
@@ -671,79 +341,331 @@
 </tr>
 </tbody></table>
 <h3 id="代码编写-1"><a href="#代码编写-1" class="headerlink" title="代码编写"></a>代码编写</h3><h4 id="1-文件上传"><a href="#1-文件上传" class="headerlink" title="1. 文件上传"></a>1. 文件上传</h4><p>在项目初始代码已有一部分阿里OSS配置文件<br><strong>AliOssProperties.java</strong>  （阿里云OSS属性配置JavaBean类）</p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142649962.png" srcset="/img/loading.gif" lazyload alt="image-20251012142649962"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142649962.png" alt="image-20251012142649962"></p>
 <p><strong>application.yml</strong> （这里读取了配置属性JavaBean类的字段值）</p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142702849.png" srcset="/img/loading.gif" lazyload alt="image-20251012142702849"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142702849.png" alt="image-20251012142702849"></p>
 <p><strong>AliOssUtil.java</strong> （这里是文件上传的具体实现）</p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142710484.png" srcset="/img/loading.gif" lazyload alt="image-20251012142710484"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142710484.png" alt="image-20251012142710484"></p>
 <p><strong>OssConfiguration.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.config;<br><br><span class="hljs-keyword">import</span> com.sky.properties.AliOssProperties;<br><span class="hljs-keyword">import</span> com.sky.utils.AliOssUtil;<br><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * OSS配置类, 用于创建AliOssUtil对象, 读取配置文件中的OSS相关配置, 并提供给AliOssUtil使用</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Configuration</span> <span class="hljs-comment">// 表示该类是一个配置类, 可以包含Bean定义</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OssConfiguration</span> &#123;<br><br>    <span class="hljs-meta">@Bean</span> <span class="hljs-comment">// 将方法的返回值作为Bean对象注册到Spring容器中</span><br>    <span class="hljs-meta">@ConditionalOnMissingBean</span> <span class="hljs-comment">// 当容器中没有指定类型的Bean时, 才会创建该Bean</span><br>    <span class="hljs-keyword">public</span> AliOssUtil <span class="hljs-title function_">aliOssUtil</span><span class="hljs-params">(AliOssProperties aliOssProperties)</span> &#123;<br>        log.info(<span class="hljs-string">&quot;开始创建阿里云文件上传工具类对象AliOssUtil, &#123;&#125;&quot;</span>, aliOssProperties);<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AliOssUtil</span>(<br>                aliOssProperties.getEndpoint(),<br>                aliOssProperties.getAccessKeyId(),<br>                aliOssProperties.getAccessKeySecret(),<br>                aliOssProperties.getBucketName()<br>        );<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.config;
 
+import com.sky.properties.AliOssProperties;
+import com.sky.utils.AliOssUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * OSS配置类, 用于创建AliOssUtil对象, 读取配置文件中的OSS相关配置, 并提供给AliOssUtil使用
+ */
+@Configuration // 表示该类是一个配置类, 可以包含Bean定义
+@Slf4j
+public class OssConfiguration &#123;
+
+    @Bean // 将方法的返回值作为Bean对象注册到Spring容器中
+    @ConditionalOnMissingBean // 当容器中没有指定类型的Bean时, 才会创建该Bean
+    public AliOssUtil aliOssUtil(AliOssProperties aliOssProperties) &#123;
+        log.info("开始创建阿里云文件上传工具类对象AliOssUtil, &#123;&#125;", aliOssProperties);
+        return new AliOssUtil(
+                aliOssProperties.getEndpoint(),
+                aliOssProperties.getAccessKeyId(),
+                aliOssProperties.getAccessKeySecret(),
+                aliOssProperties.getBucketName()
+        );
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>CommonController.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.controller.admin;<br><br><span class="hljs-keyword">import</span> com.sky.constant.MessageConstant;<br><span class="hljs-keyword">import</span> com.sky.result.Result;<br><span class="hljs-keyword">import</span> com.sky.utils.AliOssUtil;<br><span class="hljs-keyword">import</span> io.swagger.annotations.Api;<br><span class="hljs-keyword">import</span> io.swagger.annotations.ApiOperation;<br><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RestController;<br><span class="hljs-keyword">import</span> org.springframework.web.multipart.MultipartFile;<br><br><span class="hljs-keyword">import</span> java.io.IOException;<br><span class="hljs-keyword">import</span> java.util.UUID;<br><br><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-meta">@RequestMapping(&quot;/admin/common&quot;)</span><br><span class="hljs-meta">@Api(tags = &quot;通用接口&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">CommonController</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> AliOssUtil aliOssUtil;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 文件上传</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> file 文件</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 文件访问路径</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@RequestMapping(&quot;/upload&quot;)</span><br>    <span class="hljs-meta">@ApiOperation(&quot;文件上传&quot;)</span><br>    <span class="hljs-keyword">public</span> Result&lt;String&gt; <span class="hljs-title function_">upload</span><span class="hljs-params">(MultipartFile file)</span> &#123;<br>        log.info(<span class="hljs-string">&quot;文件上传: &#123;&#125;&quot;</span>, file);<br>        <span class="hljs-comment">// 获取原始文件名</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">originalFilename</span> <span class="hljs-operator">=</span> file.getOriginalFilename();<br>        <span class="hljs-comment">// 获取文件后缀名</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">extension</span> <span class="hljs-operator">=</span> originalFilename.substring(originalFilename.lastIndexOf(<span class="hljs-string">&quot;.&quot;</span>));<br>        <span class="hljs-comment">// 构造新文件名(防止文件名重复)</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">objectName</span> <span class="hljs-operator">=</span> UUID.randomUUID().toString() + extension;<br>        <span class="hljs-comment">// 上传文件到OSS, 并接收返回的文件访问路径</span><br>        <span class="hljs-keyword">try</span> &#123;<br>            <span class="hljs-type">String</span> <span class="hljs-variable">fileUrl</span> <span class="hljs-operator">=</span> aliOssUtil.upload(file.getBytes(), objectName);<br>            <span class="hljs-comment">// 返回文件访问路径</span><br>            <span class="hljs-keyword">return</span> Result.success(fileUrl);<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            log.error(<span class="hljs-string">&quot;文件上传失败: &#123;&#125;&quot;</span>, e.getMessage());<br><br>        &#125;<br>        <span class="hljs-keyword">return</span> Result.error(MessageConstant.UPLOAD_FAILED); <span class="hljs-comment">// 上传失败</span><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.controller.admin;
 
+import com.sky.constant.MessageConstant;
+import com.sky.result.Result;
+import com.sky.utils.AliOssUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.UUID;
 
+@RestController
+@Slf4j
+@RequestMapping("/admin/common")
+@Api(tags = "通用接口")
+public class CommonController &#123;
+
+    @Autowired
+    private AliOssUtil aliOssUtil;
+
+    /**
+     * 文件上传
+     *
+     * @param file 文件
+     * @return 文件访问路径
+     */
+    @RequestMapping("/upload")
+    @ApiOperation("文件上传")
+    public Result<String> upload(MultipartFile file) &#123;
+        log.info("文件上传: &#123;&#125;", file);
+        // 获取原始文件名
+        String originalFilename = file.getOriginalFilename();
+        // 获取文件后缀名
+        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        // 构造新文件名(防止文件名重复)
+        String objectName = UUID.randomUUID().toString() + extension;
+        // 上传文件到OSS, 并接收返回的文件访问路径
+        try &#123;
+            String fileUrl = aliOssUtil.upload(file.getBytes(), objectName);
+            // 返回文件访问路径
+            return Result.success(fileUrl);
+        &#125; catch (IOException e) &#123;
+            log.error("文件上传失败: &#123;&#125;", e.getMessage());
+
+        &#125;
+        return Result.error(MessageConstant.UPLOAD_FAILED); // 上传失败
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="2-新增菜品-1"><a href="#2-新增菜品-1" class="headerlink" title="2. 新增菜品"></a>2. 新增菜品</h4><p><strong>DishController.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.controller.admin;<br><br><span class="hljs-keyword">import</span> com.sky.dto.DishDTO;<br><span class="hljs-keyword">import</span> com.sky.result.Result;<br><span class="hljs-keyword">import</span> com.sky.service.DishService;<br><span class="hljs-keyword">import</span> io.swagger.annotations.Api;<br><span class="hljs-keyword">import</span> io.swagger.annotations.ApiOperation;<br><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.*;<br><br><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;/admin/dish&quot;)</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-meta">@Api(tags = &quot;菜品管理&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DishController</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> DishService dishService;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 新增菜品</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> dishDTO 菜品信息</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 操作结果</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@PostMapping</span><br>    <span class="hljs-meta">@ApiOperation(&quot;新增菜品&quot;)</span><br>    <span class="hljs-keyword">public</span> Result&lt;Void&gt; <span class="hljs-title function_">save</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> DishDTO dishDTO)</span> &#123;  <span class="hljs-comment">// 这里DTO信息记得要加RequestBody，否则接受不到数据 @RequestBody 将请求体中的json数据转换为对应的Java对象</span><br>        log.info(<span class="hljs-string">&quot;新增菜品: &#123;&#125;&quot;</span>, dishDTO);<br>        dishService.saveWithFlavor(dishDTO);<br>        <span class="hljs-keyword">return</span> Result.success();<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.controller.admin;
 
+import com.sky.dto.DishDTO;
+import com.sky.result.Result;
+import com.sky.service.DishService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/admin/dish")
+@Slf4j
+@Api(tags = "菜品管理")
+public class DishController &#123;
+
+    @Autowired
+    private DishService dishService;
+
+    /**
+     * 新增菜品
+     * @param dishDTO 菜品信息
+     * @return 操作结果
+     */
+    @PostMapping
+    @ApiOperation("新增菜品")
+    public Result<Void> save(@RequestBody DishDTO dishDTO) &#123;  // 这里DTO信息记得要加RequestBody，否则接受不到数据 @RequestBody 将请求体中的json数据转换为对应的Java对象
+        log.info("新增菜品: &#123;&#125;", dishDTO);
+        dishService.saveWithFlavor(dishDTO);
+        return Result.success();
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishServiceImpl.java</strong></p>
 <p>这里注意涉及多表要<strong>开启事务</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.service.impl;<br><br><span class="hljs-keyword">import</span> com.sky.dto.DishDTO;<br><span class="hljs-keyword">import</span> com.sky.entity.Dish;<br><span class="hljs-keyword">import</span> com.sky.entity.DishFlavor;<br><span class="hljs-keyword">import</span> com.sky.mapper.DishFlavorMapper;<br><span class="hljs-keyword">import</span> com.sky.mapper.DishMapper;<br><span class="hljs-keyword">import</span> com.sky.service.DishService;<br><span class="hljs-keyword">import</span> org.springframework.beans.BeanUtils;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.stereotype.Service;<br><br><span class="hljs-keyword">import</span> java.util.List;<br><br><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DishServiceImpl</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">DishService</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> DishMapper dishMapper;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> DishFlavorMapper dishFlavorMapper;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 新增菜品，同时保存对应的口味数据, 所以方法名字WithFlavor体现出来, 需要操作两张表：dish、dish_flavor, 需要开启事务, 保证数据一致性</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> dishDTO 菜品信息</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-meta">@Transactional</span>  <span class="hljs-comment">// 涉及多表操作，开启事务</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">saveWithFlavor</span><span class="hljs-params">(DishDTO dishDTO)</span> &#123;<br>        <span class="hljs-type">Dish</span> <span class="hljs-variable">dish</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Dish</span>();<br>        BeanUtils.copyProperties(dishDTO, dish);<br><br>        <span class="hljs-comment">// 1. 向菜品表中插入 1 条数据，保存菜品的基本信息到菜品表dish</span><br>        dishMapper.insert(dish);<br><br>        <span class="hljs-comment">// 2. 向菜品口味表中插入 n 条数据（一个菜品可能有0 或多个以上口味），保存菜品的口味数据到菜品口味表dish_flavor</span><br>        <span class="hljs-type">Long</span> <span class="hljs-variable">dishId</span> <span class="hljs-operator">=</span> dish.getId(); <span class="hljs-comment">// 获取菜品id</span><br>        List&lt;DishFlavor&gt; flavors = dishDTO.getFlavors(); <span class="hljs-comment">// 获取口味数据</span><br>        <span class="hljs-comment">// 需要判断flavors是否为空，不为空才进行插入</span><br>        <span class="hljs-keyword">if</span> (flavors != <span class="hljs-literal">null</span> &amp;&amp; !flavors.isEmpty()) &#123;<br>            <span class="hljs-comment">// 遍历口味数据，逐个设置口味对应的菜品id</span><br>            flavors.forEach(flavor -&gt; flavor.setDishId(dishId));<br>            <span class="hljs-comment">// 批量插入口味数据</span><br>            dishFlavorMapper.insertBatch(flavors);<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.service.impl;
 
+import com.sky.dto.DishDTO;
+import com.sky.entity.Dish;
+import com.sky.entity.DishFlavor;
+import com.sky.mapper.DishFlavorMapper;
+import com.sky.mapper.DishMapper;
+import com.sky.service.DishService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class DishServiceImpl implements DishService &#123;
+
+    @Autowired
+    private DishMapper dishMapper;
+    @Autowired
+    private DishFlavorMapper dishFlavorMapper;
+
+    /**
+     * 新增菜品，同时保存对应的口味数据, 所以方法名字WithFlavor体现出来, 需要操作两张表：dish、dish_flavor, 需要开启事务, 保证数据一致性
+     * @param dishDTO 菜品信息
+     */
+    @Override
+    @Transactional  // 涉及多表操作，开启事务
+    public void saveWithFlavor(DishDTO dishDTO) &#123;
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+
+        // 1. 向菜品表中插入 1 条数据，保存菜品的基本信息到菜品表dish
+        dishMapper.insert(dish);
+
+        // 2. 向菜品口味表中插入 n 条数据（一个菜品可能有0 或多个以上口味），保存菜品的口味数据到菜品口味表dish_flavor
+        Long dishId = dish.getId(); // 获取菜品id
+        List<DishFlavor> flavors = dishDTO.getFlavors(); // 获取口味数据
+        // 需要判断flavors是否为空，不为空才进行插入
+        if (flavors != null && !flavors.isEmpty()) &#123;
+            // 遍历口味数据，逐个设置口味对应的菜品id
+            flavors.forEach(flavor -> flavor.setDishId(dishId));
+            // 批量插入口味数据
+            dishFlavorMapper.insertBatch(flavors);
+        &#125;
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.mapper;<br><br><span class="hljs-keyword">import</span> com.sky.annotation.AutoFill;<br><span class="hljs-keyword">import</span> com.sky.entity.Dish;<br><span class="hljs-keyword">import</span> com.sky.enumeration.OperationType;<br><span class="hljs-keyword">import</span> org.apache.ibatis.annotations.Mapper;<br><span class="hljs-keyword">import</span> org.apache.ibatis.annotations.Select;<br><br><span class="hljs-meta">@Mapper</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">DishMapper</span> &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 根据分类id查询菜品数量</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> categoryId 分类Id</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 数量</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@Select(&quot;select count(id) from dish where category_id = #&#123;categoryId&#125;&quot;)</span><br>    Integer <span class="hljs-title function_">countByCategoryId</span><span class="hljs-params">(Long categoryId)</span>;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 插入菜品, 这里记得需要在xml设置属性：useKeyProperty：主键自增, keyProperty：插入后会将生成的主键回填到实体类对象中的id属性</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> dish 菜品</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@AutoFill(OperationType.INSERT)</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">insert</span><span class="hljs-params">(Dish dish)</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.mapper;
 
+import com.sky.annotation.AutoFill;
+import com.sky.entity.Dish;
+import com.sky.enumeration.OperationType;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+@Mapper
+public interface DishMapper &#123;
+
+    /**
+     * 根据分类id查询菜品数量
+     * @param categoryId 分类Id
+     * @return 数量
+     */
+    @Select("select count(id) from dish where category_id = #&#123;categoryId&#125;")
+    Integer countByCategoryId(Long categoryId);
+
+    /**
+     * 插入菜品, 这里记得需要在xml设置属性：useKeyProperty：主键自增, keyProperty：插入后会将生成的主键回填到实体类对象中的id属性
+     * @param dish 菜品
+     */
+    @AutoFill(OperationType.INSERT)
+    void insert(Dish dish);
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishFlavorMapper.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.mapper;<br><br><span class="hljs-keyword">import</span> com.sky.entity.DishFlavor;<br><span class="hljs-keyword">import</span> org.apache.ibatis.annotations.Mapper;<br><br><span class="hljs-keyword">import</span> java.util.List;<br><br><span class="hljs-meta">@Mapper</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">DishFlavorMapper</span> &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 批量插入口味数据</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> flavors 口味数据</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-keyword">void</span> <span class="hljs-title function_">insertBatch</span><span class="hljs-params">(List&lt;DishFlavor&gt; flavors)</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.mapper;
 
+import com.sky.entity.DishFlavor;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+@Mapper
+public interface DishFlavorMapper &#123;
+
+    /**
+     * 批量插入口味数据
+     * @param flavors 口味数据
+     */
+    void insertBatch(List<DishFlavor> flavors);
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.xml</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span> ?&gt;</span><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">mapper</span> <span class="hljs-keyword">PUBLIC</span> <span class="hljs-string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span><br><span class="hljs-meta">        <span class="hljs-string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">mapper</span> <span class="hljs-attr">namespace</span>=<span class="hljs-string">&quot;com.sky.mapper.DishMapper&quot;</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">insert</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;insert&quot;</span> <span class="hljs-attr">useGeneratedKeys</span>=<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-attr">keyProperty</span>=<span class="hljs-string">&quot;id&quot;</span>&gt;</span><br>        insert into dish<br>        (name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)<br>        values<br>        (#&#123;name&#125;, #&#123;categoryId&#125;, #&#123;price&#125;, #&#123;image&#125;, #&#123;description&#125;, #&#123;status&#125;, #&#123;createTime&#125;, #&#123;updateTime&#125;, #&#123;createUser&#125;, #&#123;updateUser&#125;)<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">insert</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mapper</span>&gt;</span><br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-xml"><code class="language-xml"><?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishMapper">
 
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into dish
+        (name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
+        values
+        (#&#123;name&#125;, #&#123;categoryId&#125;, #&#123;price&#125;, #&#123;image&#125;, #&#123;description&#125;, #&#123;status&#125;, #&#123;createTime&#125;, #&#123;updateTime&#125;, #&#123;createUser&#125;, #&#123;updateUser&#125;)
+    </insert>
+</mapper>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishFlavorMapper.xml</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span> ?&gt;</span><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">mapper</span> <span class="hljs-keyword">PUBLIC</span> <span class="hljs-string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span><br><span class="hljs-meta">        <span class="hljs-string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">mapper</span> <span class="hljs-attr">namespace</span>=<span class="hljs-string">&quot;com.sky.mapper.DishFlavorMapper&quot;</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">insert</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;insertBatch&quot;</span>&gt;</span><br>        insert into dish_flavor (dish_id, name, value) values<br>        <span class="hljs-tag">&lt;<span class="hljs-name">foreach</span> <span class="hljs-attr">collection</span>=<span class="hljs-string">&quot;flavors&quot;</span> <span class="hljs-attr">item</span>=<span class="hljs-string">&quot;df&quot;</span> <span class="hljs-attr">separator</span>=<span class="hljs-string">&quot;,&quot;</span>&gt;</span><br>            (#&#123;df.dishId&#125;, #&#123;df.name&#125;, #&#123;df.value&#125;)<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">foreach</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">insert</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mapper</span>&gt;</span><br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-xml"><code class="language-xml"><?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.DishFlavorMapper">
 
-
-
+    <insert id="insertBatch">
+        insert into dish_flavor (dish_id, name, value) values
+        <foreach collection="flavors" item="df" separator=",">
+            (#&#123;df.dishId&#125;, #&#123;df.name&#125;, #&#123;df.value&#125;)
+        </foreach>
+    </insert>
+</mapper>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="Debug问题发现记录"><a href="#Debug问题发现记录" class="headerlink" title="Debug问题发现记录"></a>Debug问题发现记录</h3><h4 id="1）在Controller那里，DTO是json传来的，需要加RequestBody注解，否则会导致接收不到数据，全为null"><a href="#1）在Controller那里，DTO是json传来的，需要加RequestBody注解，否则会导致接收不到数据，全为null" class="headerlink" title="1）在Controller那里，DTO是json传来的，需要加RequestBody注解，否则会导致接收不到数据，全为null"></a>1）在Controller那里，DTO是json传来的，需要加RequestBody注解，否则会导致接收不到数据，全为null</h4><h4 id="2）在dishMapper-xml那里不要忘记加两个属性值配置：useGeneratedKeys-true-和-keyProperty-”id”"><a href="#2）在dishMapper-xml那里不要忘记加两个属性值配置：useGeneratedKeys-true-和-keyProperty-”id”" class="headerlink" title="2）在dishMapper.xml那里不要忘记加两个属性值配置：useGeneratedKeys &#x3D; true 和 keyProperty &#x3D;  ”id”"></a>2）在dishMapper.xml那里不要忘记加两个属性值配置：useGeneratedKeys &#x3D; true 和 keyProperty &#x3D;  ”id”</h4><h4 id="3）dish-flavor表没有公共字段需要填充，不用加AutoFill注解"><a href="#3）dish-flavor表没有公共字段需要填充，不用加AutoFill注解" class="headerlink" title="3）dish_flavor表没有公共字段需要填充，不用加AutoFill注解"></a>3）dish_flavor表没有公共字段需要填充，不用加AutoFill注解</h4><h4 id="4）还有一个Bug是因为dishFlavor中insert-into的字段顺序和foreach里面的顺序没对应上，导致insertBatch操作一直有问题但是没报错，因为一开始那里是用代码补全来写的，后面仔细看才发现顺序没对上😭"><a href="#4）还有一个Bug是因为dishFlavor中insert-into的字段顺序和foreach里面的顺序没对应上，导致insertBatch操作一直有问题但是没报错，因为一开始那里是用代码补全来写的，后面仔细看才发现顺序没对上😭" class="headerlink" title="4）还有一个Bug是因为dishFlavor中insert into的字段顺序和foreach里面的顺序没对应上，导致insertBatch操作一直有问题但是没报错，因为一开始那里是用代码补全来写的，后面仔细看才发现顺序没对上😭"></a>4）还有一个Bug是因为dishFlavor中insert into的字段顺序和foreach里面的顺序没对应上，导致insertBatch操作一直有问题但是没报错，因为一开始那里是用代码补全来写的，后面仔细看才发现顺序没对上😭</h4><h4 id="5）写分页查询发现遗漏了一点，这里做个补充，涉及多表要开启事务-Transactional注解保证原子性（在Service那里）"><a href="#5）写分页查询发现遗漏了一点，这里做个补充，涉及多表要开启事务-Transactional注解保证原子性（在Service那里）" class="headerlink" title="5）写分页查询发现遗漏了一点，这里做个补充，涉及多表要开启事务@Transactional注解保证原子性（在Service那里）"></a>5）写分页查询发现遗漏了一点，这里做个补充，涉及多表要<strong>开启事务</strong>@Transactional注解保证原子性（在Service那里）</h4><h3 id="功能测试-1"><a href="#功能测试-1" class="headerlink" title="功能测试"></a>功能测试</h3><h4 id="文件上传测试"><a href="#文件上传测试" class="headerlink" title="文件上传测试"></a>文件上传测试</h4><p>在文件上传时，若文件成功上传到阿里云，但是前端没有回显，需要在阿里云做如下配置 ：<br>设置文件管理的 “阻止公共访问” 和 ”读写权限”</p>
-<p>1）关闭阻止公共访问<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012141856723.png" srcset="/img/loading.gif" lazyload alt="image-20251012141856723" style="zoom:33%;"></p>
-<p>2）读写权限设为公共读<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012141904531.png" srcset="/img/loading.gif" lazyload alt="image-20251012141904531" style="zoom:33%;"></p>
+<p>1）关闭阻止公共访问<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012141856723.png" alt="image-20251012141856723" style="zoom:33%;"></p>
+<p>2）读写权限设为公共读<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012141904531.png" alt="image-20251012141904531" style="zoom:33%;"></p>
 <p>设置好后发现图片显示就没问题了</p>
-<p>前端图片显示正常<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142202054.png" srcset="/img/loading.gif" lazyload alt="image-20251012142202054" style="zoom: 25%;"></p>
-<p>成功上传到阿里云OSS<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142212893.png" srcset="/img/loading.gif" lazyload alt="image-20251012142212893" style="zoom:25%;"></p>
+<p>前端图片显示正常<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142202054.png" alt="image-20251012142202054" style="zoom: 25%;"></p>
+<p>成功上传到阿里云OSS<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012142212893.png" alt="image-20251012142212893" style="zoom:25%;"></p>
 <h4 id="新增菜品测试"><a href="#新增菜品测试" class="headerlink" title="新增菜品测试"></a>新增菜品测试</h4><p>注意：在测试新增菜品时，名字不要设置成在表中已有的，我一开始拿“北冰洋”来测试发现一直失败，后面才发现是名字要唯一，表中初始自带了北冰洋所以测试不了</p>
 <p>测试成功图，因为还没做分页查询，所以直接查看数据库是否添加成功新数据</p>
-<p>菜品添加成功<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012153940610.png" srcset="/img/loading.gif" lazyload alt="image-20251012153940610"></p>
-<p>口味添加成功<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012155802631.png" srcset="/img/loading.gif" lazyload alt="image-20251012155802631"></p>
+<p>菜品添加成功<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012153940610.png" alt="image-20251012153940610"></p>
+<p>口味添加成功<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012155802631.png" alt="image-20251012155802631"></p>
 <h2 id="3-菜品分页查询"><a href="#3-菜品分页查询" class="headerlink" title="3.菜品分页查询"></a>3.菜品分页查询</h2><h3 id="需求分析与接口设计-1"><a href="#需求分析与接口设计-1" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p><strong>业务规则：</strong></p>
 <ul>
 <li>根据页码展示菜品信息</li>
 <li>每页展示10条数据</li>
 <li>分页查询时可以根据需要输入菜品名称、菜品分类、菜品状态进行查询</li>
 </ul>
-<p><strong>接口设计：</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20221121202019258.png" srcset="/img/loading.gif" lazyload alt="image-20221121202019258" style="zoom:50%;"> <img src="/2025/10/12/sky-takeout-day03-note/../../TODO/cqwm/讲义/day03/assets/image-20221121202033284.png" srcset="/img/loading.gif" lazyload alt="image-20221121202033284" style="zoom:50%;"></p>
+<p><strong>接口设计：</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20221121202019258.png" alt="image-20221121202019258" style="zoom:50%;"> <img src="/2025/10/12/sky-takeout-day03-note/../../TODO/cqwm/讲义/day03/assets/image-20221121202033284.png" alt="image-20221121202033284" style="zoom:50%;"></p>
 <ul>
 <li><p>这里大体上步骤跟前面员工分页查询一致，但是需要注意的是由于前端展示Dish时还需要分类名称，所以多封装了一个 <strong>DishVO</strong> （除了多分类名称，还有口味数组）实体类作为分页结果<strong>Page的泛型</strong>。</p>
-  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012165640112.png" srcset="/img/loading.gif" lazyload alt="image-20251012165640112" style="zoom:33%;">
+  <img src="/2025/10/12/sky-takeout-day03-note/image-20251012165640112.png" alt="image-20251012165640112" style="zoom:33%;">
 </li>
 <li><p>此外就是这个分页查询会涉及到<strong>dish和category两张表</strong>的，用了一个<strong>左外连接</strong>来查询二表信息。</p>
 </li>
 </ul>
 <h3 id="代码编写-2"><a href="#代码编写-2" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>DishController.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 分页查询菜品</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> dishPageQueryDTO 分页查询参数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> 分页查询结果</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@GetMapping(&quot;/page&quot;)</span><br><span class="hljs-meta">@ApiOperation(&quot;分页查询菜品&quot;)</span><br><span class="hljs-keyword">public</span> Result&lt;PageResult&gt; <span class="hljs-title function_">page</span><span class="hljs-params">(DishPageQueryDTO dishPageQueryDTO)</span> &#123;<br>    log.info(<span class="hljs-string">&quot;分页查询菜品: &#123;&#125;&quot;</span>, dishPageQueryDTO);<br>    <span class="hljs-type">PageResult</span> <span class="hljs-variable">pageResult</span> <span class="hljs-operator">=</span> dishService.pageQuery(dishPageQueryDTO);<br>    <span class="hljs-keyword">return</span> Result.success(pageResult);<br>&#125;<br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * 分页查询菜品
+     * @param dishPageQueryDTO 分页查询参数
+     * @return 分页查询结果
+     */
+    @GetMapping("/page")
+    @ApiOperation("分页查询菜品")
+    public Result<PageResult> page(DishPageQueryDTO dishPageQueryDTO) &#123;
+        log.info("分页查询菜品: &#123;&#125;", dishPageQueryDTO);
+        PageResult pageResult = dishService.pageQuery(dishPageQueryDTO);
+        return Result.success(pageResult);
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishServiceImpl.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 分页查询菜品</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> dishPageQueryDTO 分页查询参数</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> 分页查询结果</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> PageResult <span class="hljs-title function_">pageQuery</span><span class="hljs-params">(DishPageQueryDTO dishPageQueryDTO)</span> &#123;<br>    PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());<br>    <span class="hljs-comment">// 需要注意的是这里 Page 的泛型是 DishVO， 因为返回给前端的视图，除了要有菜品信息Dish，还要有分类名称categoryName，而项目中的 DishVO 中已经做好了分类名称的封装</span><br>    <span class="hljs-comment">// 具体分类名称的封装是在 mapper.xml 中通过 left join 关联查询的 (c.name as categoryName), 见 dishMapper.xml</span><br>    Page&lt;DishVO&gt; page = dishMapper.pageQuery(dishPageQueryDTO);<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">PageResult</span>(page.getTotal(), page.getResult());<br>&#125;<br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * 分页查询菜品
+     * @param dishPageQueryDTO 分页查询参数
+     * @return 分页查询结果
+     */
+    @Override
+    public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) &#123;
+        PageHelper.startPage(dishPageQueryDTO.getPage(), dishPageQueryDTO.getPageSize());
+        // 需要注意的是这里 Page 的泛型是 DishVO， 因为返回给前端的视图，除了要有菜品信息Dish，还要有分类名称categoryName，而项目中的 DishVO 中已经做好了分类名称的封装
+        // 具体分类名称的封装是在 mapper.xml 中通过 left join 关联查询的 (c.name as categoryName), 见 dishMapper.xml
+        Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
+        return new PageResult(page.getTotal(), page.getResult());
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.xml</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;pageQuery&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;com.sky.vo.DishVO&quot;</span>&gt;</span><br>        select d.*, c.name ascategoryName<br>        from dish d left outer join category c<br>        on d.category_id = c.id<br>        <span class="hljs-tag">&lt;<span class="hljs-name">where</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;name != null and name != &#x27;&#x27;&quot;</span>&gt;</span><br>                and d.name like concat(&#x27;%&#x27;, #&#123;name&#125;, &#x27;%&#x27;)<br>            <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;categoryId != null&quot;</span>&gt;</span>&gt;<br>                and d.category_id = #&#123;categoryId&#125;<br>            <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;status != null&quot;</span>&gt;</span><br>                and d.status = #&#123;status&#125;<br>            <span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">where</span>&gt;</span><br>        order by d.update_time desc<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
+<pre class="line-numbers language-xml"><code class="language-xml"><select id="pageQuery" resultType="com.sky.vo.DishVO">
+        select d.*, c.name ascategoryName
+        from dish d left outer join category c
+        on d.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                and d.name like concat('%', #&#123;name&#125;, '%')
+            </if>
+            <if test="categoryId != null">>
+                and d.category_id = #&#123;categoryId&#125;
+            </if>
+            <if test="status != null">
+                and d.status = #&#123;status&#125;
+            </if>
+        </where>
+        order by d.update_time desc
+    </select>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试-2"><a href="#功能测试-2" class="headerlink" title="功能测试"></a>功能测试</h3><p>接口文档测试</p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012170915227.png" srcset="/img/loading.gif" lazyload alt="image-20251012170915227"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012170915227.png" alt="image-20251012170915227"></p>
 <p>前后端联调测试（图片不在我的阿里云所以显示不了，这是正常的）</p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012170933704.png" srcset="/img/loading.gif" lazyload alt="image-20251012170933704"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012170933704.png" alt="image-20251012170933704"></p>
 <h2 id="4-删除菜品"><a href="#4-删除菜品" class="headerlink" title="4.删除菜品"></a>4.删除菜品</h2><h3 id="需求分析与接口设计-2"><a href="#需求分析与接口设计-2" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p><strong>业务规则：</strong></p>
 <ul>
 <li>可以一次删除一个菜品，也可以批量删除菜品</li>
@@ -751,10 +673,10 @@
 <li>被套餐关联的菜品不能删除</li>
 <li>删除菜品后，关联的口味数据也需要删除掉</li>
 </ul>
-<p><strong>接口设计:</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012171359093.png" srcset="/img/loading.gif" lazyload alt="image-20251012171359093" style="zoom: 50%;"></p>
+<p><strong>接口设计:</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012171359093.png" alt="image-20251012171359093" style="zoom: 50%;"></p>
 <p>**注意：**删除一个菜品和批量删除菜品共用一个接口，故ids可包含多个菜品id,之间用逗号分隔。</p>
 <p><strong>表设计：</strong></p>
-<p>菜品删除会涉及三张表<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012171525991.png" srcset="/img/loading.gif" lazyload alt="image-20251012171525991" style="zoom:33%;"></p>
+<p>菜品删除会涉及三张表<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012171525991.png" alt="image-20251012171525991" style="zoom:33%;"></p>
 <p><strong>注意事项：</strong></p>
 <ul>
 <li>在dish表中删除菜品基本数据时，同时，也要把关联在dish_flavor表中的数据一块删除。</li>
@@ -763,33 +685,124 @@
 <li>若要删除套餐关联的菜品数据，先解除两者关联，再对菜品进行删除。</li>
 </ul>
 <h3 id="代码编写-3"><a href="#代码编写-3" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>DishController.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * (批量)删除菜品</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> ids 菜品id，多个id用逗号分隔</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> 操作结果</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@DeleteMapping</span><br><span class="hljs-meta">@ApiOperation(&quot;删除菜品&quot;)</span><br><span class="hljs-keyword">public</span> Result&lt;Void&gt; <span class="hljs-title function_">delete</span><span class="hljs-params">(<span class="hljs-meta">@RequestParam(&quot;ids&quot;)</span> List&lt;Long&gt; ids)</span> &#123; <span class="hljs-comment">// 这里用@RequestParam注解接收ids参数</span><br>    log.info(<span class="hljs-string">&quot;(批量)删除菜品: &#123;&#125;&quot;</span>, ids);<br>    dishService.deleteBatch(ids);<br>    <span class="hljs-keyword">return</span> Result.success();<br>&#125;<br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * (批量)删除菜品
+     * @param ids 菜品id，多个id用逗号分隔
+     * @return 操作结果
+     */
+    @DeleteMapping
+    @ApiOperation("删除菜品")
+    public Result<Void> delete(@RequestParam("ids") List<Long> ids) &#123; // 这里用@RequestParam注解接收ids参数
+        log.info("(批量)删除菜品: &#123;&#125;", ids);
+        dishService.deleteBatch(ids);
+        return Result.success();
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishServiceImpl.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * (批量)删除菜品</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> ids 菜品id，多个id用逗号分隔</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-meta">@Transactional</span>  <span class="hljs-comment">// 涉及多表操作，开启事务</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteBatch</span><span class="hljs-params">(List&lt;Long&gt; ids)</span> &#123;<br>    <span class="hljs-comment">// 菜品处于起售状态，不能删除</span><br>    <span class="hljs-keyword">for</span>(Long id : ids) &#123;<br>        <span class="hljs-type">Dish</span> <span class="hljs-variable">dish</span> <span class="hljs-operator">=</span> dishMapper.getById(id);<br>        <span class="hljs-keyword">if</span> (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) &#123;<br>            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DeletionNotAllowedException</span>(MessageConstant.DISH_ON_SALE);<br>        &#125;<br>    &#125;<br>    <span class="hljs-comment">// 菜品被套餐关联，不能删除</span><br>    List&lt;Long&gt; setmealIds = setmealDishMapper.getSetmealIdsByDishIds(ids);<br>    <span class="hljs-keyword">if</span>(setmealIds != <span class="hljs-literal">null</span> &amp;&amp; !setmealIds.isEmpty()) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DeletionNotAllowedException</span>(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);<br>    &#125;<br><br>    <span class="hljs-comment">// 这里有个优化，为了避免循环删除多次sql操作，可以直接批量删除，用in语句 (多次SQL语句执行效率低)</span><br><br>    <span class="hljs-comment">// 删除菜品数据</span><br>    <span class="hljs-comment">// SQL: delete from dish where id in (1, 2, 3);</span><br>    dishMapper.deleteBatchByIds(ids);<br>    <span class="hljs-comment">// 删除菜品关联的口味数据</span><br>    <span class="hljs-comment">// SQL: delete from dish_flavor where dish_id in (1, 2, 3);</span><br>    dishFlavorMapper.deleteBatchByDishIds(ids);<br>&#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * (批量)删除菜品
+     * @param ids 菜品id，多个id用逗号分隔
+     */
+    @Override
+    @Transactional  // 涉及多表操作，开启事务
+    public void deleteBatch(List<Long> ids) &#123;
+        // 菜品处于起售状态，不能删除
+        for(Long id : ids) &#123;
+            Dish dish = dishMapper.getById(id);
+            if (Objects.equals(dish.getStatus(), StatusConstant.ENABLE)) &#123;
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            &#125;
+        &#125;
+        // 菜品被套餐关联，不能删除
+        List<Long> setmealIds = setmealDishMapper.getSetmealIdsByDishIds(ids);
+        if(setmealIds != null && !setmealIds.isEmpty()) &#123;
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
+        &#125;
 
+        // 这里有个优化，为了避免循环删除多次sql操作，可以直接批量删除，用in语句 (多次SQL语句执行效率低)
+
+        // 删除菜品数据
+        // SQL: delete from dish where id in (1, 2, 3);
+        dishMapper.deleteBatchByIds(ids);
+        // 删除菜品关联的口味数据
+        // SQL: delete from dish_flavor where dish_id in (1, 2, 3);
+        dishFlavorMapper.deleteBatchByDishIds(ids);
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 根据id查询菜品</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> id 菜品id</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> 菜品</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Select(&quot;select * from dish where id = #&#123;id&#125;&quot;)</span><br>Dish <span class="hljs-title function_">getById</span><span class="hljs-params">(Long id)</span>;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 批量删除菜品</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> ids 菜品id，多个id用逗号分隔</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteBatchByIds</span><span class="hljs-params">(List&lt;Long&gt; ids)</span>;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * 根据id查询菜品
+     * @param id 菜品id
+     * @return 菜品
+     */
+    @Select("select * from dish where id = #&#123;id&#125;")
+    Dish getById(Long id);
 
+    /**
+     * 批量删除菜品
+     * @param ids 菜品id，多个id用逗号分隔
+     */
+    void deleteBatchByIds(List<Long> ids);
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.xml</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">delete</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;deleteBatchByIds&quot;</span>&gt;</span><br>    delete from dish<br>    where id in<br>    <span class="hljs-tag">&lt;<span class="hljs-name">foreach</span> <span class="hljs-attr">collection</span>=<span class="hljs-string">&quot;ids&quot;</span> <span class="hljs-attr">item</span>=<span class="hljs-string">&quot;id&quot;</span> <span class="hljs-attr">open</span>=<span class="hljs-string">&quot;(&quot;</span> <span class="hljs-attr">separator</span>=<span class="hljs-string">&quot;,&quot;</span> <span class="hljs-attr">close</span>=<span class="hljs-string">&quot;)&quot;</span>&gt;</span><br>        #&#123;id&#125;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">foreach</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">delete</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-xml"><code class="language-xml">    <delete id="deleteBatchByIds">
+        delete from dish
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #&#123;id&#125;
+        </foreach>
+    </delete>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealDishMapper.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.mapper;<br><br><span class="hljs-keyword">import</span> org.apache.ibatis.annotations.Mapper;<br><br><span class="hljs-keyword">import</span> java.util.List;<br><br><span class="hljs-meta">@Mapper</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">SetmealDishMapper</span> &#123;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 根据菜品id查询对应的套餐id</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> dishIds 菜品id</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 套餐id</span><br><span class="hljs-comment">     */</span><br>    List&lt;Long&gt; <span class="hljs-title function_">getSetmealIdsByDishIds</span><span class="hljs-params">(List&lt;Long&gt; dishIds)</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.mapper;
 
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+@Mapper
+public interface SetmealDishMapper &#123;
+
+    /**
+     * 根据菜品id查询对应的套餐id
+     * @param dishIds 菜品id
+     * @return 套餐id
+     */
+    List<Long> getSetmealIdsByDishIds(List<Long> dishIds);
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>SetmealDishMapper.xml</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=<span class="hljs-string">&quot;1.0&quot;</span> encoding=<span class="hljs-string">&quot;UTF-8&quot;</span> ?&gt;</span><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-keyword">mapper</span> <span class="hljs-keyword">PUBLIC</span> <span class="hljs-string">&quot;-//mybatis.org//DTD Mapper 3.0//EN&quot;</span></span><br><span class="hljs-meta">        <span class="hljs-string">&quot;http://mybatis.org/dtd/mybatis-3-mapper.dtd&quot;</span> &gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">mapper</span> <span class="hljs-attr">namespace</span>=<span class="hljs-string">&quot;com.sky.mapper.SetmealDishMapper&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">select</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;getSetmealIdsByDishIds&quot;</span> <span class="hljs-attr">resultType</span>=<span class="hljs-string">&quot;java.lang.Long&quot;</span>&gt;</span><br>        select setmeal_id from setmeal_dish<br>        where dish_id in<br>        <span class="hljs-tag">&lt;<span class="hljs-name">foreach</span> <span class="hljs-attr">collection</span>=<span class="hljs-string">&quot;dishIds&quot;</span> <span class="hljs-attr">item</span>=<span class="hljs-string">&quot;dishId&quot;</span> <span class="hljs-attr">open</span>=<span class="hljs-string">&quot;(&quot;</span> <span class="hljs-attr">separator</span>=<span class="hljs-string">&quot;,&quot;</span> <span class="hljs-attr">close</span>=<span class="hljs-string">&quot;)&quot;</span>&gt;</span><br>            #&#123;dishId&#125;<br>        <span class="hljs-tag">&lt;/<span class="hljs-name">foreach</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">select</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">mapper</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-xml"><code class="language-xml"><?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.SetmealDishMapper">
+    <select id="getSetmealIdsByDishIds" resultType="java.lang.Long">
+        select setmeal_id from setmeal_dish
+        where dish_id in
+        <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
+            #&#123;dishId&#125;
+        </foreach>
+    </select>
+</mapper>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishFlavorMapper.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 根据菜品集合ids批量删除对应的口味数据</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> dishIds 菜品id，多个id用逗号分隔</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">deleteBatchByDishIds</span><span class="hljs-params">(List&lt;Long&gt; dishIds)</span>;<br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * 根据菜品集合ids批量删除对应的口味数据
+     * @param dishIds 菜品id，多个id用逗号分隔
+     */
+    void deleteBatchByDishIds(List<Long> dishIds);
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishFlavorMapper.xml</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">delete</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;deleteBatchByDishIds&quot;</span>&gt;</span><br>    delete from dish_flavor<br>    where dish_id in<br>    <span class="hljs-tag">&lt;<span class="hljs-name">foreach</span> <span class="hljs-attr">collection</span>=<span class="hljs-string">&quot;dishIds&quot;</span> <span class="hljs-attr">item</span>=<span class="hljs-string">&quot;dishId&quot;</span> <span class="hljs-attr">open</span>=<span class="hljs-string">&quot;(&quot;</span> <span class="hljs-attr">separator</span>=<span class="hljs-string">&quot;,&quot;</span> <span class="hljs-attr">close</span>=<span class="hljs-string">&quot;)&quot;</span>&gt;</span><br>        #&#123;dishId&#125;<br>    <span class="hljs-tag">&lt;/<span class="hljs-name">foreach</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">delete</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
+<pre class="line-numbers language-xml"><code class="language-xml">    <delete id="deleteBatchByDishIds">
+        delete from dish_flavor
+        where dish_id in
+        <foreach collection="dishIds" item="dishId" open="(" separator="," close=")">
+            #&#123;dishId&#125;
+        </foreach>
+    </delete>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试-3"><a href="#功能测试-3" class="headerlink" title="功能测试"></a>功能测试</h3><p>略</p>
-<h2 id="5-修改菜品"><a href="#5-修改菜品" class="headerlink" title="5. 修改菜品"></a>5. 修改菜品</h2><h3 id="需求分析与接口设计-3"><a href="#需求分析与接口设计-3" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p><strong>修改菜品原型</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012183851728.png" srcset="/img/loading.gif" lazyload alt="image-20251012183851728" style="zoom: 50%;"></p>
+<h2 id="5-修改菜品"><a href="#5-修改菜品" class="headerlink" title="5. 修改菜品"></a>5. 修改菜品</h2><h3 id="需求分析与接口设计-3"><a href="#需求分析与接口设计-3" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><p><strong>修改菜品原型</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012183851728.png" alt="image-20251012183851728" style="zoom: 50%;"></p>
 <p><strong>接口设计：</strong></p>
 <ul>
 <li>根据id查询菜品</li>
@@ -797,32 +810,88 @@
 <li>文件上传(已实现)</li>
 <li>修改菜品</li>
 </ul>
-<img src="/2025/10/12/sky-takeout-day03-note/image-20251012184023473.png" srcset="/img/loading.gif" lazyload alt="image-20251012184023473" style="zoom: 50%;">
+<img src="/2025/10/12/sky-takeout-day03-note/image-20251012184023473.png" alt="image-20251012184023473" style="zoom: 50%;">
 
-<p>这里要注意修改菜品 ，<strong>id字段是必须的</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012184045407.png" srcset="/img/loading.gif" lazyload alt="image-20251012184045407" style="zoom:50%;"></p>
+<p>这里要注意修改菜品 ，<strong>id字段是必须的</strong><br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012184045407.png" alt="image-20251012184045407" style="zoom:50%;"></p>
 <h3 id="代码编写-4"><a href="#代码编写-4" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>DishController.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 修改菜品, 同时更新对应的口味数据</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> dishDTO 菜品信息</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> 操作结果</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@PutMapping</span><br><span class="hljs-meta">@ApiOperation(&quot;修改菜品&quot;)</span><br><span class="hljs-keyword">public</span> Result&lt;Void&gt; <span class="hljs-title function_">update</span><span class="hljs-params">(<span class="hljs-meta">@RequestBody</span> DishDTO dishDTO)</span> &#123;<br>    log.info(<span class="hljs-string">&quot;修改菜品: &#123;&#125;&quot;</span>, dishDTO);<br>    dishService.updateWithFlavor(dishDTO);<br>    <span class="hljs-keyword">return</span> Result.success();<br>&#125;<br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * 修改菜品, 同时更新对应的口味数据
+     * @param dishDTO 菜品信息
+     * @return 操作结果
+     */
+    @PutMapping
+    @ApiOperation("修改菜品")
+    public Result<Void> update(@RequestBody DishDTO dishDTO) &#123;
+        log.info("修改菜品: &#123;&#125;", dishDTO);
+        dishService.updateWithFlavor(dishDTO);
+        return Result.success();
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishServiceImpl.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 修改菜品，同时更新对应的口味数据</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> dishDTO 菜品信息</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Override</span><br><span class="hljs-meta">@Transactional</span>  <span class="hljs-comment">// 涉及多表操作，开启事务</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">updateWithFlavor</span><span class="hljs-params">(DishDTO dishDTO)</span> &#123;<br>    <span class="hljs-comment">// 1. 更新菜品基本信息到菜品表dish</span><br>    <span class="hljs-type">Dish</span> <span class="hljs-variable">dish</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Dish</span>();<br>    BeanUtils.copyProperties(dishDTO, dish);<br>    dishMapper.update(dish);<br><br>    List&lt;Long&gt; ids = List.of(dishDTO.getId());<br>    <span class="hljs-comment">// 删除原有口味数据</span><br>    dishFlavorMapper.deleteBatchByDishIds(ids);<br><br>    <span class="hljs-comment">// 重新插入口味数据</span><br>    List&lt;DishFlavor&gt; flavors = dishDTO.getFlavors(); <span class="hljs-comment">// 获取口味数据</span><br>    <span class="hljs-comment">// 需要判断flavors是否为空，不为空才进行插入</span><br>    <span class="hljs-keyword">if</span> (flavors != <span class="hljs-literal">null</span> &amp;&amp; !flavors.isEmpty()) &#123;<br>        <span class="hljs-comment">// 遍历口味数据，逐个设置口味对应的菜品id</span><br>        flavors.forEach(flavor -&gt; flavor.setDishId(dishDTO.getId()));<br>        <span class="hljs-comment">// 批量插入口味数据</span><br>        dishFlavorMapper.insertBatch(flavors);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * 修改菜品，同时更新对应的口味数据
+     * @param dishDTO 菜品信息
+     */
+    @Override
+    @Transactional  // 涉及多表操作，开启事务
+    public void updateWithFlavor(DishDTO dishDTO) &#123;
+        // 1. 更新菜品基本信息到菜品表dish
+        Dish dish = new Dish();
+        BeanUtils.copyProperties(dishDTO, dish);
+        dishMapper.update(dish);
 
+        List<Long> ids = List.of(dishDTO.getId());
+        // 删除原有口味数据
+        dishFlavorMapper.deleteBatchByDishIds(ids);
+
+        // 重新插入口味数据
+        List<DishFlavor> flavors = dishDTO.getFlavors(); // 获取口味数据
+        // 需要判断flavors是否为空，不为空才进行插入
+        if (flavors != null && !flavors.isEmpty()) &#123;
+            // 遍历口味数据，逐个设置口味对应的菜品id
+            flavors.forEach(flavor -> flavor.setDishId(dishDTO.getId()));
+            // 批量插入口味数据
+            dishFlavorMapper.insertBatch(flavors);
+        &#125;
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/** </span><br><span class="hljs-comment"> * 修改菜品 </span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> dish 菜品</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@AutoFill(OperationType.UPDATE)</span> <span class="hljs-comment">// 修改操作，自动填充</span><br><span class="hljs-keyword">void</span> <span class="hljs-title function_">update</span><span class="hljs-params">(Dish dish)</span>;<br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-java"><code class="language-java">    /** 
+     * 修改菜品 
+     * @param dish 菜品
+     */
+    @AutoFill(OperationType.UPDATE) // 修改操作，自动填充
+    void update(Dish dish);
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishMapper.xml</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">update</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;update&quot;</span>&gt;</span><br>    update dish<br>    <span class="hljs-tag">&lt;<span class="hljs-name">set</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;name != null&quot;</span>&gt;</span>name = #&#123;name&#125;,<span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;categoryId != null&quot;</span>&gt;</span>category_id = #&#123;categoryId&#125;,<span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;price != null&quot;</span>&gt;</span>price = #&#123;price&#125;,<span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;image != null&quot;</span>&gt;</span>image = #&#123;image&#125;,<span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;description != null&quot;</span>&gt;</span>description = #&#123;description&#125;,<span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;status != null&quot;</span>&gt;</span>status = #&#123;status&#125;,<span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;updateTime != null&quot;</span>&gt;</span>update_time = #&#123;updateTime&#125;,<span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">if</span> <span class="hljs-attr">test</span>=<span class="hljs-string">&quot;updateUser != null&quot;</span>&gt;</span>update_user = #&#123;updateUser&#125;<span class="hljs-tag">&lt;/<span class="hljs-name">if</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">set</span>&gt;</span><br>    where id = #&#123;id&#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">update</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-xml"><code class="language-xml">    <update id="update">
+        update dish
+        <set>
+            <if test="name != null">name = #&#123;name&#125;,</if>
+            <if test="categoryId != null">category_id = #&#123;categoryId&#125;,</if>
+            <if test="price != null">price = #&#123;price&#125;,</if>
+            <if test="image != null">image = #&#123;image&#125;,</if>
+            <if test="description != null">description = #&#123;description&#125;,</if>
+            <if test="status != null">status = #&#123;status&#125;,</if>
+            <if test="updateTime != null">update_time = #&#123;updateTime&#125;,</if>
+            <if test="updateUser != null">update_user = #&#123;updateUser&#125;</if>
+        </set>
+        where id = #&#123;id&#125;
+    </update>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>DishFlavorMapper.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 根据菜品id查询对应的口味数据</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@param</span> dishId 菜品id</span><br><span class="hljs-comment"> * <span class="hljs-doctag">@return</span> 口味数据</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">@Select(&quot;select * from dish_flavor where dish_id = #&#123;dishId&#125;&quot;)</span><br>List&lt;DishFlavor&gt; <span class="hljs-title function_">getByDishId</span><span class="hljs-params">(Long dishId)</span>;<br></code></pre></td></tr></table></figure>
-
-
-
-
-
+<pre class="line-numbers language-java"><code class="language-java">    /**
+     * 根据菜品id查询对应的口味数据
+     * @param dishId 菜品id
+     * @return 口味数据
+     */
+    @Select("select * from dish_flavor where dish_id = #&#123;dishId&#125;")
+    List<DishFlavor> getByDishId(Long dishId);
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试-4"><a href="#功能测试-4" class="headerlink" title="功能测试"></a>功能测试</h3><p>根据id查询菜品功能测试：</p>
-<p>菜品信息及口味信息正常回显<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012185442072.png" srcset="/img/loading.gif" lazyload alt="image-20251012185442072"></p>
-<p>修改菜品信息功能测试：<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012195244620.png" srcset="/img/loading.gif" lazyload alt="image-20251012195244620"></p>
-<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012195254125.png" srcset="/img/loading.gif" lazyload alt="image-20251012195254125"></p>
+<p>菜品信息及口味信息正常回显<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012185442072.png" alt="image-20251012185442072"></p>
+<p>修改菜品信息功能测试：<br><img src="/2025/10/12/sky-takeout-day03-note/image-20251012195244620.png" alt="image-20251012195244620"></p>
+<p><img src="/2025/10/12/sky-takeout-day03-note/image-20251012195254125.png" alt="image-20251012195254125"></p>
 <h2 id="附：其他盲区知识补充"><a href="#附：其他盲区知识补充" class="headerlink" title="附：其他盲区知识补充"></a>附：其他盲区知识补充</h2><h3 id="在阿里云OSS实现文件上传时——关于属性类、工具类、配置类的疑问"><a href="#在阿里云OSS实现文件上传时——关于属性类、工具类、配置类的疑问" class="headerlink" title="在阿里云OSS实现文件上传时——关于属性类、工具类、配置类的疑问"></a>在阿里云OSS实现文件上传时——关于属性类、工具类、配置类的疑问</h3><p>在苍穹外卖项目中，“工具类属性为空，需通过<code>config</code>包下的配置类注入” 的设计既体现了<strong>软件设计的核心思路</strong>，也是 Spring Boot 开发的<strong>固定套路</strong>。以下从 “设计本质”“核心思路”“实际好处” 三个维度详细解释：</p>
 <h4 id="一、本质：解决「配置硬编码」与「环境隔离」的问题"><a href="#一、本质：解决「配置硬编码」与「环境隔离」的问题" class="headerlink" title="一、本质：解决「配置硬编码」与「环境隔离」的问题"></a>一、本质：解决「配置硬编码」与「环境隔离」的问题</h4><p>阿里云 OSS 的配置（<code>endpoint</code>、<code>accessKeyId</code>、<code>accessKeySecret</code>、<code>bucketName</code>）属于<strong>环境敏感信息</strong>（开发 &#x2F; 测试 &#x2F; 生产环境的配置不同），如果直接写死在<code>AliOssUtil</code>工具类中，会导致以下问题：</p>
 <ol>
@@ -834,18 +903,65 @@
 <h5 id="1-配置外置化（把配置从代码中抽离）"><a href="#1-配置外置化（把配置从代码中抽离）" class="headerlink" title="1. 配置外置化（把配置从代码中抽离）"></a>1. 配置外置化（把配置从代码中抽离）</h5><ul>
 <li><p>步骤</p>
 <p>  ：将 OSS 配置写入application.yml （或 application-dev.yml &#x2F; application-prod.yml）：</p>
-  <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">aliyun:</span><br>  <span class="hljs-attr">oss:</span><br>    <span class="hljs-attr">endpoint:</span> <span class="hljs-string">oss-cn-hangzhou.aliyuncs.com</span><br>    <span class="hljs-attr">access-key-id:</span> <span class="hljs-string">LTAI5t9xxxxxxxxx</span><br>    <span class="hljs-attr">access-key-secret:</span> <span class="hljs-string">3dxxxxxxxxx</span><br>    <span class="hljs-attr">bucket-name:</span> <span class="hljs-string">sky-take-out</span><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-yaml"><code class="language-yaml">aliyun:
+  oss:
+    endpoint: oss-cn-hangzhou.aliyuncs.com
+    access-key-id: LTAI5t9xxxxxxxxx
+    access-key-secret: 3dxxxxxxxxx
+    bucket-name: sky-take-out
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 </li>
 <li><p><strong>目的</strong>：配置与代码解耦，修改配置无需动代码，重启服务即可生效。</p>
 </li>
 </ul>
 <h5 id="2-依赖注入（让-Spring-管理工具类的属性）"><a href="#2-依赖注入（让-Spring-管理工具类的属性）" class="headerlink" title="2. 依赖注入（让 Spring 管理工具类的属性）"></a>2. 依赖注入（让 Spring 管理工具类的属性）</h5><p><code>AliOssUtil</code>工具类本身是 “业务逻辑类”（负责文件上传），不应关心 “配置从哪来”。通过<strong>配置类 + <code>@ConfigurationProperties</code></strong> 实现 “配置注入”：</p>
-<h6 id="（1）创建配置类（如OssConfiguration）"><a href="#（1）创建配置类（如OssConfiguration）" class="headerlink" title="（1）创建配置类（如OssConfiguration）"></a>（1）创建配置类（如<code>OssConfiguration</code>）</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span> <span class="hljs-comment">// 标记为Spring配置类</span><br><span class="hljs-meta">@ConfigurationProperties(prefix = &quot;aliyun.oss&quot;)</span> <span class="hljs-comment">// 绑定application.yml中以aliyun.oss开头的配置</span><br><span class="hljs-meta">@Data</span> <span class="hljs-comment">// 自动生成getter/setter</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OssProperties</span> &#123;<br>    <span class="hljs-keyword">private</span> String endpoint;<br>    <span class="hljs-keyword">private</span> String accessKeyId;<br>    <span class="hljs-keyword">private</span> String accessKeySecret;<br>    <span class="hljs-keyword">private</span> String bucketName;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h6 id="（1）创建配置类（如OssConfiguration）"><a href="#（1）创建配置类（如OssConfiguration）" class="headerlink" title="（1）创建配置类（如OssConfiguration）"></a>（1）创建配置类（如<code>OssConfiguration</code>）</h6><pre class="line-numbers language-java"><code class="language-java">@Configuration // 标记为Spring配置类
+@ConfigurationProperties(prefix = "aliyun.oss") // 绑定application.yml中以aliyun.oss开头的配置
+@Data // 自动生成getter/setter
+public class OssProperties &#123;
+    private String endpoint;
+    private String accessKeyId;
+    private String accessKeySecret;
+    private String bucketName;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h6 id="（2）将工具类注册为-Spring-Bean-并注入配置"><a href="#（2）将工具类注册为-Spring-Bean-并注入配置" class="headerlink" title="（2）将工具类注册为 Spring Bean 并注入配置"></a>（2）将工具类注册为 Spring Bean 并注入配置</h6><pre class="line-numbers language-java"><code class="language-java">@Configuration // 配置类
+public class OssConfiguration &#123;
 
-<h6 id="（2）将工具类注册为-Spring-Bean-并注入配置"><a href="#（2）将工具类注册为-Spring-Bean-并注入配置" class="headerlink" title="（2）将工具类注册为 Spring Bean 并注入配置"></a>（2）将工具类注册为 Spring Bean 并注入配置</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span> <span class="hljs-comment">// 配置类</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OssConfiguration</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> OssProperties ossProperties; <span class="hljs-comment">// 注入配置属性</span><br><br>    <span class="hljs-meta">@Bean</span> <span class="hljs-comment">// 将AliOssUtil注册为Spring Bean</span><br>    <span class="hljs-keyword">public</span> AliOssUtil <span class="hljs-title function_">aliOssUtil</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">AliOssUtil</span> <span class="hljs-variable">util</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AliOssUtil</span>();<br>        <span class="hljs-comment">// 给工具类的属性赋值</span><br>        util.setEndpoint(ossProperties.getEndpoint());<br>        util.setAccessKeyId(ossProperties.getAccessKeyId());<br>        util.setAccessKeySecret(ossProperties.getAccessKeySecret());<br>        util.setBucketName(ossProperties.getBucketName());<br>        <span class="hljs-keyword">return</span> util;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+    @Autowired
+    private OssProperties ossProperties; // 注入配置属性
 
-<h6 id="（3）工具类定义（简洁化，只关注业务）"><a href="#（3）工具类定义（简洁化，只关注业务）" class="headerlink" title="（3）工具类定义（简洁化，只关注业务）"></a>（3）工具类定义（简洁化，只关注业务）</h6><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Component</span> <span class="hljs-comment">// 让Spring管理</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AliOssUtil</span> &#123;<br>    <span class="hljs-keyword">private</span> String endpoint;<br>    <span class="hljs-keyword">private</span> String accessKeyId;<br>    <span class="hljs-keyword">private</span> String accessKeySecret;<br>    <span class="hljs-keyword">private</span> String bucketName;<br><br>    <span class="hljs-comment">// setter方法（供配置类注入）</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setEndpoint</span><span class="hljs-params">(String endpoint)</span> &#123; <span class="hljs-built_in">this</span>.endpoint = endpoint; &#125;<br>    <span class="hljs-comment">// 其他setter...</span><br><br>    <span class="hljs-comment">// 业务方法：文件上传</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">upload</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] bytes, String objectName)</span> &#123;<br>        <span class="hljs-comment">// 使用endpoint、accessKeyId等属性完成OSS上传</span><br>        <span class="hljs-type">OSS</span> <span class="hljs-variable">ossClient</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">OSSClientBuilder</span>().build(endpoint, accessKeyId, accessKeySecret);<br>        <span class="hljs-comment">// ... 上传逻辑 ...</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+    @Bean // 将AliOssUtil注册为Spring Bean
+    public AliOssUtil aliOssUtil() &#123;
+        AliOssUtil util = new AliOssUtil();
+        // 给工具类的属性赋值
+        util.setEndpoint(ossProperties.getEndpoint());
+        util.setAccessKeyId(ossProperties.getAccessKeyId());
+        util.setAccessKeySecret(ossProperties.getAccessKeySecret());
+        util.setBucketName(ossProperties.getBucketName());
+        return util;
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h6 id="（3）工具类定义（简洁化，只关注业务）"><a href="#（3）工具类定义（简洁化，只关注业务）" class="headerlink" title="（3）工具类定义（简洁化，只关注业务）"></a>（3）工具类定义（简洁化，只关注业务）</h6><pre class="line-numbers language-java"><code class="language-java">@Component // 让Spring管理
+public class AliOssUtil &#123;
+    private String endpoint;
+    private String accessKeyId;
+    private String accessKeySecret;
+    private String bucketName;
 
+    // setter方法（供配置类注入）
+    public void setEndpoint(String endpoint) &#123; this.endpoint = endpoint; &#125;
+    // 其他setter...
+
+    // 业务方法：文件上传
+    public String upload(byte[] bytes, String objectName) &#123;
+        // 使用endpoint、accessKeyId等属性完成OSS上传
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        // ... 上传逻辑 ...
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h5 id="3-解耦（业务逻辑与配置逻辑分离）"><a href="#3-解耦（业务逻辑与配置逻辑分离）" class="headerlink" title="3. 解耦（业务逻辑与配置逻辑分离）"></a>3. 解耦（业务逻辑与配置逻辑分离）</h5><ul>
 <li><strong>业务逻辑（<code>AliOssUtil</code>）</strong>：只负责 “文件上传”，不关心配置从哪来；</li>
 <li><strong>配置逻辑（<code>OssConfiguration</code> + <code>OssProperties</code>）</strong>：只负责 “读取配置、注入属性”，不关心业务怎么用。</li>
@@ -878,8 +994,13 @@
 <li><p>告诉 Spring：“去配置文件（如<code>application.yml</code>）中找所有以<code>sky.alioss</code>为前缀的配置项，把它们的值赋给当前类的同名字段”。</p>
 </li>
 <li><p>例如，配置文件中若有：</p>
-  <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">sky:</span><br>  <span class="hljs-attr">alioss:</span><br>    <span class="hljs-attr">endpoint:</span> <span class="hljs-string">oss-cn-beijing.aliyuncs.com</span><br>    <span class="hljs-attr">access-key-id:</span> <span class="hljs-string">ABC123</span><br>    <span class="hljs-attr">access-key-secret:</span> <span class="hljs-string">XYZ456</span><br>    <span class="hljs-attr">bucket-name:</span> <span class="hljs-string">my-takeout</span><br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-yaml"><code class="language-yaml">sky:
+  alioss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: ABC123
+    access-key-secret: XYZ456
+    bucket-name: my-takeout
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>  Spring 会自动将这些值分别赋给AliOssProperties的endpoint、accessKeyId等字段。</p>
 </li>
 </ul>
@@ -888,8 +1009,16 @@
 </li>
 </ol>
 <h4 id="为什么需要这个类？"><a href="#为什么需要这个类？" class="headerlink" title="为什么需要这个类？"></a>为什么需要这个类？</h4><p>如果没有<code>AliOssProperties</code>，要获取配置就得手动写代码读取<code>application.yml</code>（比如用<code>@Value</code>注解逐个注入），但当配置项较多时（如这里的 4 个参数），代码会很繁琐：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 不推荐：用@Value逐个注入，配置项多了会很冗余</span><br><span class="hljs-meta">@Component</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">AliOssUtil</span> &#123;<br>    <span class="hljs-meta">@Value(&quot;$&#123;sky.alioss.endpoint&#125;&quot;)</span><br>    <span class="hljs-keyword">private</span> String endpoint;<br>    <span class="hljs-meta">@Value(&quot;$&#123;sky.alioss.access-key-id&#125;&quot;)</span><br>    <span class="hljs-keyword">private</span> String accessKeyId;<br>    <span class="hljs-comment">// ... 其他参数</span><br>&#125;<br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-java"><code class="language-java">// 不推荐：用@Value逐个注入，配置项多了会很冗余
+@Component
+public class AliOssUtil &#123;
+    @Value("$&#123;sky.alioss.endpoint&#125;")
+    private String endpoint;
+    @Value("$&#123;sky.alioss.access-key-id&#125;")
+    private String accessKeyId;
+    // ... 其他参数
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>而<code>AliOssProperties</code>通过<code>@ConfigurationProperties</code>一次性绑定所有配置，更简洁、更易维护。</p>
 <h3 id="二、AliOssUtil：OSS-操作的-“业务工具”"><a href="#二、AliOssUtil：OSS-操作的-“业务工具”" class="headerlink" title="二、AliOssUtil：OSS 操作的 “业务工具”"></a>二、<code>AliOssUtil</code>：OSS 操作的 “业务工具”</h3><p>这个类是 <strong>“实际干活的工具”</strong>，负责调用阿里云 OSS 的 SDK 完成文件上传，它的核心是<code>upload</code>方法。</p>
 <h4 id="关键设计解析"><a href="#关键设计解析" class="headerlink" title="关键设计解析"></a>关键设计解析</h4><ol>
@@ -907,11 +1036,38 @@
 <li>测试困难：单元测试时无法方便地替换为测试环境的配置。</li>
 </ul>
 <h3 id="三、两个类如何-“配合工作”？"><a href="#三、两个类如何-“配合工作”？" class="headerlink" title="三、两个类如何 “配合工作”？"></a>三、两个类如何 “配合工作”？</h3><p>目前你的代码中还缺少一个 <strong>“配置类”</strong>（如<code>OssConfig</code>），它是连接<code>AliOssProperties</code>和<code>AliOssUtil</code>的 “桥梁”。完整流程如下：</p>
-<h4 id="步骤-1：配置类创建AliOssUtil实例并注入配置"><a href="#步骤-1：配置类创建AliOssUtil实例并注入配置" class="headerlink" title="步骤 1：配置类创建AliOssUtil实例并注入配置"></a>步骤 1：配置类创建<code>AliOssUtil</code>实例并注入配置</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span> <span class="hljs-comment">// 标记为Spring配置类</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">OssConfig</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> AliOssProperties aliOssProperties; <span class="hljs-comment">// 注入配置容器</span><br><br>    <span class="hljs-meta">@Bean</span> <span class="hljs-comment">// 将AliOssUtil注册为Spring Bean，供其他组件使用</span><br>    <span class="hljs-keyword">public</span> AliOssUtil <span class="hljs-title function_">aliOssUtil</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-comment">// 调用AliOssUtil的全参构造函数，传入配置参数</span><br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AliOssUtil</span>(<br>            aliOssProperties.getEndpoint(),<br>            aliOssProperties.getAccessKeyId(),<br>            aliOssProperties.getAccessKeySecret(),<br>            aliOssProperties.getBucketName()<br>        );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="步骤-1：配置类创建AliOssUtil实例并注入配置"><a href="#步骤-1：配置类创建AliOssUtil实例并注入配置" class="headerlink" title="步骤 1：配置类创建AliOssUtil实例并注入配置"></a>步骤 1：配置类创建<code>AliOssUtil</code>实例并注入配置</h4><pre class="line-numbers language-java"><code class="language-java">@Configuration // 标记为Spring配置类
+public class OssConfig &#123;
 
+    @Autowired
+    private AliOssProperties aliOssProperties; // 注入配置容器
+
+    @Bean // 将AliOssUtil注册为Spring Bean，供其他组件使用
+    public AliOssUtil aliOssUtil() &#123;
+        // 调用AliOssUtil的全参构造函数，传入配置参数
+        return new AliOssUtil(
+            aliOssProperties.getEndpoint(),
+            aliOssProperties.getAccessKeyId(),
+            aliOssProperties.getAccessKeySecret(),
+            aliOssProperties.getBucketName()
+        );
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h4 id="步骤-2：业务代码中直接使用AliOssUtil"><a href="#步骤-2：业务代码中直接使用AliOssUtil" class="headerlink" title="步骤 2：业务代码中直接使用AliOssUtil"></a>步骤 2：业务代码中直接使用<code>AliOssUtil</code></h4><p>当需要上传文件时，直接注入<code>AliOssUtil</code>即可，无需关心配置细节：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Service</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">FileUploadService</span> &#123;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> AliOssUtil aliOssUtil; <span class="hljs-comment">// 注入工具类</span><br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">uploadFile</span><span class="hljs-params">(MultipartFile file)</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>        <span class="hljs-type">byte</span>[] bytes = file.getBytes();<br>        <span class="hljs-type">String</span> <span class="hljs-variable">fileName</span> <span class="hljs-operator">=</span> UUID.randomUUID().toString() + file.getOriginalFilename();<br>        <span class="hljs-keyword">return</span> aliOssUtil.upload(bytes, fileName); <span class="hljs-comment">// 直接调用上传方法</span><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">@Service
+public class FileUploadService &#123;
 
+    @Autowired
+    private AliOssUtil aliOssUtil; // 注入工具类
+
+    public String uploadFile(MultipartFile file) throws IOException &#123;
+        byte[] bytes = file.getBytes();
+        String fileName = UUID.randomUUID().toString() + file.getOriginalFilename();
+        return aliOssUtil.upload(bytes, fileName); // 直接调用上传方法
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="四、这种设计的核心优势"><a href="#四、这种设计的核心优势" class="headerlink" title="四、这种设计的核心优势"></a>四、这种设计的核心优势</h3><ol>
 <li><strong>配置集中管理</strong>：所有 OSS 参数都在<code>application.yml</code>中，改配置无需动代码。</li>
 <li><strong>业务与配置解耦</strong>：<code>AliOssUtil</code>只负责上传，不关心配置从哪来；<code>AliOssProperties</code>只负责存配置，不关心怎么用。</li>
@@ -940,464 +1096,4 @@
 <li>最后批量插入到<code>dish_flavor</code>表时，所有口味就能通过<code>dishId</code>正确关联到对应的菜品</li>
 </ul>
 <p>举个例子：如果新增一道 “宫保鸡丁”（<code>dishId=100</code>），它有 “微辣” 和 “不辣” 两个口味。循环设置后，两个口味的<code>dishId</code>都会被设为 100，插入到数据库后，就能明确这两个口味都属于 “宫保鸡丁” 这道菜了。</p>
-
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96/" class="category-chain-item">苍穹外卖</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/tags/%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96/" class="print-no-link">#苍穹外卖</a>
-      
-    </div>
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>sky-takeout-day03-note</div>
-      <div>https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>junnhwan</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2025-10-12</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-cc-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
-
-
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2025/10/13/sky-takeout-day04-note/" title="sky-takeout-day04-note">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">sky-takeout-day04-note</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2025/10/11/sky-takeout-day02-note/" title="sky-takeout-day02-note">
-                        <span class="hidden-mobile">sky-takeout-day02-note</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
-            </div>
-
-            
-          </article>
-        </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header">
-    <i class="iconfont icon-list"></i>
-    <span>目录</span>
-  </p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="busuanzi_container_site_pv" style="display: none">
-        总访问量 
-        <span id="busuanzi_value_site_pv"></span>
-         次
-      </span>
-    
-    
-      <span id="busuanzi_container_site_uv" style="display: none">
-        总访客数 
-        <span id="busuanzi_value_site_uv"></span>
-         人
-      </span>
-    
-    
-
-  
-
-</div>
-
-  
-  
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    function isExpandAllEnabled() {
-      return CONFIG.toc && CONFIG.toc.expand_all === true;
-    }
-    function expandAllToc() {
-      if (!isExpandAllEnabled()) { return; }
-      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
-    }
-    function updateTocToggle($li, $childList) {
-      var $toggle = $li.children('.toc-toggle');
-      if ($toggle.length === 0) { return; }
-      var collapsed = $childList.hasClass('tocbot-is-collapsed');
-      $toggle
-        .toggleClass('toc-toggle-collapsed', collapsed)
-        .toggleClass('toc-toggle-expanded', !collapsed);
-    }
-    function bindTocToggle() {
-      if (!isExpandAllEnabled()) { return; }
-      jQuery('#toc-body .toc-list-item').each(function() {
-        var $li = jQuery(this);
-        var $childList = $li.children('ol');
-        if ($childList.length === 0) {
-          if ($li.children('.toc-toggle').length === 0) {
-            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
-          }
-          return;
-        }
-
-        if ($li.children('.toc-toggle').length === 0) {
-          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
-        }
-        updateTocToggle($li, $childList);
-      });
-      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var $li = jQuery(this).parent('.toc-list-item');
-        var $childList = $li.children('ol');
-        if ($childList.length === 0) { return; }
-        $childList.toggleClass('tocbot-is-collapsed');
-        updateTocToggle($li, $childList);
-      });
-      if (!window.__tocToggleObserver) {
-        window.__tocToggleObserver = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
-            var $list = jQuery(mutation.target);
-            var $li = $list.parent('.toc-list-item');
-            if ($li.length === 0) { return; }
-            updateTocToggle($li, $list);
-          });
-        });
-        jQuery('#toc-body ol').each(function() {
-          window.__tocToggleObserver.observe(this, { attributes: true });
-        });
-      }
-    }
-    var tocConfig = Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc);
-    if (isExpandAllEnabled()) {
-      tocConfig.collapseDepth = 6;
-    }
-    window.tocbot.init(tocConfig);
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-    expandAllToc();
-    bindTocToggle();
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-        expandAllToc();
-        bindTocToggle();
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script  src="/js/local-search.js" ></script>
-
-  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-</body>
-</html>
+</p></div><div class="share"><span>Share</span>&nbsp;<span class="soc"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></span><span class="soc"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></span><span class="soc"><a class="fa fa-twitter" target="_blank" rel="noopener" href="http://twitter.com/home?status=https://junnhwan.github.io/2025/10/12/sky-takeout-day03-note/%20junnhwan's blog%20sky-takeout-day03-note"></a></span></div><div class="pagination"><p class="clearfix"><span class="pre pagbuttons"><a role="navigation" href="/2025/10/13/sky-takeout-day04-note/" title="sky-takeout-day04-note"><i class="fa fa-angle-double-left"></i>&nbsp;Previous post: sky-takeout-day04-note</a></span><span>&nbsp;</span><span class="next pagbuttons"><a role="navigation" href="/2025/10/11/sky-takeout-day02-note/" title="sky-takeout-day02-note">Next post: sky-takeout-day02-note&nbsp;<i class="fa fa-angle-double-right"></i></a></span></p></div></div></div></div><div class="visible-xs site-bottom-footer"><footer><p>&copy;&nbsp;2026&nbsp;<a target="_blank" href="https://junnhwan.github.io" rel="noopener noreferrer">junnhwan</a></p><p>Theme&nbsp;<a target="_blank" href="https://github.com/SumiMakito/hexo-theme-typography" rel="noopener noreferrer">Typography</a>&nbsp;by&nbsp;<a target="_blank" href="https://www.keep.moe" rel="noopener noreferrer">Makito</a></p><p>Proudly published with&nbsp;<a target="_blank" href="https://hexo.io" rel="noopener noreferrer">Hexo</a></p></footer></div></div></div></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="/js/typography.js"></script></body></html>

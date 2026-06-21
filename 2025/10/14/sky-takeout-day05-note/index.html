@@ -1,427 +1,25 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author"><title>sky-takeout-day05-note · junnhwan's blog</title><meta name="description" content="Sky-takeout  Day05
 
-
-<!DOCTYPE html>
-<html lang="zh-CN" data-default-color-scheme=auto>
-
-
-
-<head>
-  <meta charset="UTF-8">
-
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
-  <link rel="icon" href="/img/favicon.png">
-  
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
-  <meta http-equiv="x-ua-compatible" content="ie=edge">
-  
-  <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="junnhwan">
-  <meta name="keywords" content="Java, Go, back-end, algorithm, coding, infinite progress">
-  
-    <meta name="description" content="Sky-takeout  Day05  【前言】 Day05 的 Task 是 Redis 的入门，了解 Redis 数据类型、常用命令，如何在Java中使用Redis，以及 Redis 在项目中的应用场景，通过项目案例使用 Redis。">
-<meta property="og:type" content="article">
-<meta property="og:title" content="sky-takeout-day05-note">
-<meta property="og:url" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/index.html">
-<meta property="og:site_name" content="junnhwan&#39;s blog">
-<meta property="og:description" content="Sky-takeout  Day05  【前言】 Day05 的 Task 是 Redis 的入门，了解 Redis 数据类型、常用命令，如何在Java中使用Redis，以及 Redis 在项目中的应用场景，通过项目案例使用 Redis。">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014180847137.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014181653327.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014181952632.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014182121927.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014182128446.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014182134665.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014182318284.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014182641746.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014192349262.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014192442953.png">
-<meta property="og:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014192518244.png">
-<meta property="article:published_time" content="2025-10-14T11:32:28.000Z">
-<meta property="article:modified_time" content="2026-05-12T05:00:14.808Z">
-<meta property="article:author" content="junnhwan">
-<meta property="article:tag" content="苍穹外卖">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/image-20251014180847137.png">
-  
-  
-    <meta name="referrer" content="no-referrer-when-downgrade">
-  
-  
-  <title>sky-takeout-day05-note - junnhwan&#39;s blog</title>
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+【前言】
+Day05 的 Task 是 Redis 的入门，了解 Redis 数据类型、常用命令，如何在Java中使用Redis，以及 Redis 在项目中的应用场景，通过项目案例使用 Redis。
 
 
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+Contents
+Redis入门
+Redis数据类型
+"><meta name="og:description" content="Sky-takeout  Day05
 
-  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
-
-  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
-
-
-
-<!-- 主题依赖的图标库，不要自行修改 -->
-<!-- Do not modify the link that theme dependent icons -->
-
-<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+【前言】
+Day05 的 Task 是 Redis 的入门，了解 Redis 数据类型、常用命令，如何在Java中使用Redis，以及 Redis 在项目中的应用场景，通过项目案例使用 Redis。
 
 
 
-<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
-
-
-<link  rel="stylesheet" href="/css/main.css" />
-
-
-  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
-  
-    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
-  
-
-
-
-
-  <script id="fluid-configs">
-    var Fluid = window.Fluid || {};
-    Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"junnhwan.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":false,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
-
-    if (CONFIG.web_analytics.follow_dnt) {
-      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
-      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
-    }
-  </script>
-  <script  src="/js/utils.js" ></script>
-  <script  src="/js/color-schema.js" ></script>
-  
-
-
-  
-<meta name="generator" content="Hexo 7.3.0"></head>
-
-
-<body>
-  
-
-  <header>
-    
-
-<div class="header-inner" style="height: 60vh;">
-  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
-  <div class="container">
-    <a class="navbar-brand" href="/">
-      <strong>junnhwan&#39;s blog</strong>
-    </a>
-
-    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <div class="animated-icon"><span></span><span></span><span></span></div>
-    </button>
-
-    <!-- Collapsible content (desktop) -->
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav ml-auto text-center">
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/" target="_self">
-                <i class="iconfont icon-home-fill"></i>
-                <span>首页</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/archives/" target="_self">
-                <i class="iconfont icon-archive-fill"></i>
-                <span>归档</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
-                <i class="iconfont icon-category-fill"></i>
-                <span>分类</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/tags/" target="_self">
-                <i class="iconfont icon-tags-fill"></i>
-                <span>标签</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="/about/" target="_self">
-                <i class="iconfont icon-user-fill"></i>
-                <span>关于</span>
-              </a>
-            </li>
-          
-        
-          
-          
-          
-          
-            <li class="nav-item">
-              <a class="nav-link" href="https://github.com/junnhwan" target="_self">
-                <i class="iconfont icon-github-fill"></i>
-                <span>GitHub</span>
-              </a>
-            </li>
-          
-        
-        
-          <li class="nav-item" id="search-btn">
-            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <i class="iconfont icon-search"></i>
-            </a>
-          </li>
-          
-        
-        
-          <li class="nav-item" id="color-toggle-btn">
-            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
-              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
-            </a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<!-- Mobile grid menu overlay -->
-<div id="mobile-grid-menu" class="d-lg-none">
-  <div class="mobile-grid-menu-inner">
-    <div class="container">
-      <div class="row">
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-home-fill"></i>
-                  <span>首页</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/archives/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-archive-fill"></i>
-                  <span>归档</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/tags/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-tags-fill"></i>
-                  <span>标签</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="/about/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-user-fill"></i>
-                  <span>关于</span>
-                </div>
-              </a>
-            </div>
-          
-        
-          
-          
-          
-          
-            <div class="col-4 mobile-grid-cell">
-              <a href="https://github.com/junnhwan" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-github-fill"></i>
-                  <span>GitHub</span>
-                </div>
-              </a>
-            </div>
-          
-        
-        
-          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
-            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
-              <div class="mobile-grid-item">
-                <i class="iconfont icon-search"></i>
-                <span>搜索</span>
-              </div>
-            </a>
-          </div>
-        
-        
-          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
-               data-label-light="开灯"
-               data-label-dark="关灯">
-            <a href="javascript:;" aria-label="Color Toggle">
-              <div class="mobile-grid-item">
-                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
-                <span id="mobile-color-toggle-label">关灯</span>
-              </div>
-            </a>
-          </div>
-        
-      </div>
-    </div>
-  </div>
-</div>
-
-  
-
-<div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
-  <div class="full-bg-img">
-    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
-      <div class="banner-text text-center fade-in-up">
-        <div class="h2">
-          
-            <span id="subtitle" data-typed-text="sky-takeout-day05-note"></span>
-          
-        </div>
-
-        
-          
-  <div class="mt-3">
-    
-    
-      <span class="post-meta">
-        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2025-10-14 19:32" pubdate>
-          2025-10-14
-        </time>
-      </span>
-    
-  </div>
-
-  <div class="mt-1">
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-chart"></i>
-        
-          14k 字
-        
-      </span>
-    
-
-    
-      <span class="post-meta mr-2">
-        <i class="iconfont icon-clock-fill"></i>
-        
-        
-        
-          36 分钟
-        
-      </span>
-    
-
-    
-    
-  </div>
-
-
-        
-      </div>
-
-      
-    </div>
-  </div>
-</div>
-
-
-
-</div>
-
-  </header>
-
-  <main>
-    
-      
-
-<div class="container-fluid nopadding-x">
-  <div class="row nomargin-x">
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-
-    </div>
-
-    <div class="col-lg-8 nopadding-x-md">
-      <div class="container nopadding-x-md" id="board-ctn">
-        <div id="board">
-          <article class="post-content mx-auto">
-            <h1 id="seo-header">sky-takeout-day05-note</h1>
-            
-            
-              <div class="markdown-body">
-                
-                <h1 id="Sky-takeout-Day05"><a href="#Sky-takeout-Day05" class="headerlink" title="Sky-takeout  Day05"></a>Sky-takeout  Day05</h1><hr>
+Contents
+Redis入门
+Redis数据类型
+"><meta name="twitter:site" content="junnhwan's blog"><meta name="twitter:title" content="sky-takeout-day05-note"><meta name="twitter:card" content="summary"><meta name="keywords" content="Java, Go, back-end, algorithm, coding, infinite progress"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="stylesheet" href="/css/copy-code.css"><script src="/js/copy-code.js" defer></script><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 7.3.0"><link rel="stylesheet" href="/css/prism-tomorrow.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body><div class="container" id="stage"><div class="row"><div class="col-sm-3 col-xs-12 side-container invisible" id="side-bar"><div class="vertical-text site-title"><h3 class="site-title-small" tabindex="-1"><a class="a-title" href="/">junnhwan's blog</a></h3><h1 class="site-title-large" tabindex="-1"><a class="a-title" href="/">Be here now</a></h1><!--h6(onclick="triggerSiteNav()") Trigger--></div><br class="visible-lg visible-md visible-sm"><div class="site-title-links" id="site-nav"><ul><li><a href="/">Home</a></li><li><a href="/archives">Archive</a></li><li><a href="/tags">Tags</a></li><li><a href="/categories">Categories</a></li><li><a href="/about/">About</a></li><li class="soc"><a href="https://github.com/junnhwan" target="_blank" rel="noopener noreferrer" aria-label="Github"><i class="fa fa-github">&nbsp;</i></a></li></ul><div class="visible-lg visible-md visible-sm site-nav-footer"><br class="site-nav-footer-br"><footer><p>&copy;&nbsp;2026&nbsp;<a target="_blank" href="https://junnhwan.github.io" rel="noopener noreferrer">junnhwan</a></p><p>Theme&nbsp;<a target="_blank" href="https://github.com/SumiMakito/hexo-theme-typography" rel="noopener noreferrer">Typography</a>&nbsp;by&nbsp;<a target="_blank" href="https://www.keep.moe" rel="noopener noreferrer">Makito</a></p><p>Proudly published with&nbsp;<a target="_blank" href="https://hexo.io" rel="noopener noreferrer">Hexo</a></p></footer></div></div></div><div class="col-sm-9 col-xs-12 main-container invisible" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post-container"><p class="post-title"><a>sky-takeout-day05-note</a></p><p class="post-meta"><span class="date meta-item">Posted at&nbsp;2025-10-14</span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/苍穹外卖/" title="苍穹外卖">苍穹外卖</a><span>&nbsp;</span></span></p><p class="post-abstract"><h1 id="Sky-takeout-Day05"><a href="#Sky-takeout-Day05" class="headerlink" title="Sky-takeout  Day05"></a>Sky-takeout  Day05</h1><hr>
 <blockquote>
 <p>【前言】</p>
 <p>Day05 的 Task 是 Redis 的入门，了解 Redis 数据类型、常用命令，如何在Java中使用Redis，以及 Redis 在项目中的应用场景，通过项目案例使用 Redis。</p>
@@ -467,8 +65,8 @@
 <li><strong>修改Redis配置文件：</strong></li>
 </ol>
 <p>若要设置Redis服务密码，修改redis.windows.conf</p>
-<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">requirepass</span> <span class="hljs-number">123456</span><br></code></pre></td></tr></table></figure>
-
+<pre><code>requirepass 123456
+</code></pre>
 <p><strong>注意：</strong></p>
 <ul>
 <li>修改密码后需要重启Redis服务才能生效</li>
@@ -487,7 +85,7 @@
 <li>有序集合 sorted set &#x2F; zset</li>
 </ul>
 <ol start="2">
-<li><strong>数据类型特点：</strong> <img src="/2025/10/14/sky-takeout-day05-note/image-20251014180847137.png" srcset="/img/loading.gif" lazyload alt="image-20251014180847137" style="zoom:50%;"></li>
+<li><strong>数据类型特点：</strong> <img src="/2025/10/14/sky-takeout-day05-note/image-20251014180847137.png" alt="image-20251014180847137" style="zoom:50%;"></li>
 </ol>
 <p><strong>解释说明：</strong></p>
 <ul>
@@ -547,8 +145,11 @@
 </ul>
 <h2 id="在Java中操作redis"><a href="#在Java中操作redis" class="headerlink" title="在Java中操作redis"></a>在Java中操作redis</h2><h3 id="Redis的Java客户端：Spring-Data-Redis"><a href="#Redis的Java客户端：Spring-Data-Redis" class="headerlink" title="Redis的Java客户端：Spring Data Redis"></a>Redis的Java客户端：Spring Data Redis</h3><p>Spring Data Redis 是 Spring 的一部分，提供了在 Spring 应用中通过简单的配置就可以访问 Redis 服务，对 Redis 底层开发包进行了高度封装。在 Spring 项目中，可以使用Spring Data Redis来简化 Redis 操作。</p>
 <p>Spring Boot提供了对应的Starter，maven坐标：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-xml"><code class="language-xml"> <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-data-redis</artifactId>
+ </dependency>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p>Spring Data Redis中提供了一个高度封装的类：<strong>RedisTemplate</strong>，对相关api进行了归类封装,将同一类型操作封装为operation接口，具体分类如下：</p>
 <ul>
 <li>ValueOperations：string数据操作</li>
@@ -559,25 +160,68 @@
 </ul>
 <h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><p>进入到sky-server模块</p>
 <p><strong>1). 导入Spring Data Redis的maven坐标</strong></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">dependency</span>&gt;</span><br>     <span class="hljs-tag">&lt;<span class="hljs-name">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-name">groupId</span>&gt;</span><br>     <span class="hljs-tag">&lt;<span class="hljs-name">artifactId</span>&gt;</span>spring-boot-starter-data-redis<span class="hljs-tag">&lt;/<span class="hljs-name">artifactId</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">dependency</span>&gt;</span><br></code></pre></td></tr></table></figure>
-
-
-
+<pre class="line-numbers language-xml"><code class="language-xml"><dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>2). 配置Redis数据源</strong></p>
 <p>在application-dev.yml中添加</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">sky:</span><br>  <span class="hljs-attr">redis:</span><br>    <span class="hljs-attr">host:</span> <span class="hljs-string">localhost</span><br>    <span class="hljs-attr">port:</span> <span class="hljs-number">6379</span><br>    <span class="hljs-attr">password:</span> <span class="hljs-number">123456</span><br>    <span class="hljs-attr">database:</span> <span class="hljs-number">10</span><br></code></pre></td></tr></table></figure>
-
+<pre class="line-numbers language-yaml"><code class="language-yaml">sky:
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    database: 10
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>解释说明：</strong></p>
 <p>database:指定使用Redis的哪个数据库，Redis服务启动后默认有16个数据库，编号分别是从0到15。</p>
 <p>可以通过修改Redis配置文件来指定数据库的数量。</p>
 <p>在application.yml中添加读取application-dev.yml中的相关Redis配置</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">spring:</span><br>  <span class="hljs-attr">profiles:</span><br>    <span class="hljs-attr">active:</span> <span class="hljs-string">dev</span><br>  <span class="hljs-attr">redis:</span><br>    <span class="hljs-attr">host:</span> <span class="hljs-string">$&#123;sky.redis.host&#125;</span><br>    <span class="hljs-attr">port:</span> <span class="hljs-string">$&#123;sky.redis.port&#125;</span><br>    <span class="hljs-attr">password:</span> <span class="hljs-string">$&#123;sky.redis.password&#125;</span><br>    <span class="hljs-attr">database:</span> <span class="hljs-string">$&#123;sky.redis.database&#125;</span><br></code></pre></td></tr></table></figure>
-
-
-
+<pre class="line-numbers language-yaml"><code class="language-yaml">spring:
+  profiles:
+    active: dev
+  redis:
+    host: $&#123;sky.redis.host&#125;
+    port: $&#123;sky.redis.port&#125;
+    password: $&#123;sky.redis.password&#125;
+    database: $&#123;sky.redis.database&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>3). 编写配置类，创建RedisTemplate对象</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.config;<br><br><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Bean;<br><span class="hljs-keyword">import</span> org.springframework.context.annotation.Configuration;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.connection.RedisConnectionFactory;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.core.RedisTemplate;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.serializer.StringRedisSerializer;<br><br><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RedisConfiguration</span> &#123;<br><br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-keyword">public</span> RedisTemplate&lt;String, Object&gt; <span class="hljs-title function_">redisTemplate</span><span class="hljs-params">(RedisConnectionFactory redisConnectionFactory)</span> &#123;<br>        log.info(<span class="hljs-string">&quot;开始创建RedisTemplate模板对象...&quot;</span>);<br>        RedisTemplate&lt;String, Object&gt; redisTemplate = <span class="hljs-keyword">new</span> <span class="hljs-title class_">RedisTemplate</span>&lt;&gt;();<br>        redisTemplate.setConnectionFactory(redisConnectionFactory);<br>        <br>        <span class="hljs-comment">// Key序列化器（String类型，避免Key乱码）</span><br>        redisTemplate.setKeySerializer(<span class="hljs-keyword">new</span> <span class="hljs-title class_">StringRedisSerializer</span>());<br>        <span class="hljs-comment">// Value序列化器（JSON格式，支持对象、集合等复杂类型，且可读性好）</span><br>        redisTemplate.setValueSerializer(<span class="hljs-keyword">new</span> <span class="hljs-title class_">GenericJackson2JsonRedisSerializer</span>());<br>        <span class="hljs-comment">// Hash结构的Key序列化器</span><br>        redisTemplate.setHashKeySerializer(<span class="hljs-keyword">new</span> <span class="hljs-title class_">StringRedisSerializer</span>());<br>        <span class="hljs-comment">// Hash结构的Value序列化器</span><br>        redisTemplate.setHashValueSerializer(<span class="hljs-keyword">new</span> <span class="hljs-title class_">GenericJackson2JsonRedisSerializer</span>());<br>        <br>        redisTemplate.afterPropertiesSet(); <span class="hljs-comment">// 初始化RedisTemplate</span><br>        <span class="hljs-keyword">return</span> redisTemplate;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.config;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+@Configuration
+@Slf4j
+public class RedisConfiguration &#123;
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) &#123;
+        log.info("开始创建RedisTemplate模板对象...");
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+        
+        // Key序列化器（String类型，避免Key乱码）
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        // Value序列化器（JSON格式，支持对象、集合等复杂类型，且可读性好）
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        // Hash结构的Key序列化器
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        // Hash结构的Value序列化器
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        
+        redisTemplate.afterPropertiesSet(); // 初始化RedisTemplate
+        return redisTemplate;
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>解释说明：</strong></p>
 <p>当前配置类不是必须的，因为 <strong>Spring Boot 框架会自动装配 RedisTemplate 对象</strong>，但是<strong>默认的key序列化器为</strong></p>
 <p><strong>JdkSerializationRedisSerializer</strong>，导致我们<strong>存到Redis中后的数据和原始数据有差别</strong>，故<strong>设置为</strong></p>
@@ -595,47 +239,170 @@
 </ul>
 <p><strong>4). 通过RedisTemplate对象操作Redis</strong></p>
 <p>在test下新建测试类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.test;<br><br><span class="hljs-keyword">import</span> org.junit.jupiter.api.Test;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.boot.test.context.SpringBootTest;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.core.*;<br><br><span class="hljs-meta">@SpringBootTest</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SpringDataRedisTest</span> &#123;<br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RedisTemplate redisTemplate;<br><br>    <span class="hljs-meta">@Test</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testRedisTemplate</span><span class="hljs-params">()</span>&#123;<br>        System.out.println(redisTemplate);<br>        <span class="hljs-comment">//string数据操作</span><br>        <span class="hljs-type">ValueOperations</span> <span class="hljs-variable">valueOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForValue();<br>        <span class="hljs-comment">//hash类型的数据操作</span><br>        <span class="hljs-type">HashOperations</span> <span class="hljs-variable">hashOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForHash();<br>        <span class="hljs-comment">//list类型的数据操作</span><br>        <span class="hljs-type">ListOperations</span> <span class="hljs-variable">listOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForList();<br>        <span class="hljs-comment">//set类型数据操作</span><br>        <span class="hljs-type">SetOperations</span> <span class="hljs-variable">setOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForSet();<br>        <span class="hljs-comment">//zset类型数据操作</span><br>        <span class="hljs-type">ZSetOperations</span> <span class="hljs-variable">zSetOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForZSet();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.test;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.*;
+
+@SpringBootTest
+public class SpringDataRedisTest &#123;
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Test
+    public void testRedisTemplate()&#123;
+        System.out.println(redisTemplate);
+        //string数据操作
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        //hash类型的数据操作
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        //list类型的数据操作
+        ListOperations listOperations = redisTemplate.opsForList();
+        //set类型数据操作
+        SetOperations setOperations = redisTemplate.opsForSet();
+        //zset类型数据操作
+        ZSetOperations zSetOperations = redisTemplate.opsForZSet();
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p>测试：</p>
-<p><img src="/2025/10/14/sky-takeout-day05-note/image-20251014181653327.png" srcset="/img/loading.gif" lazyload alt="image-20251014181653327"></p>
+<p><img src="/2025/10/14/sky-takeout-day05-note/image-20251014181653327.png" alt="image-20251014181653327"></p>
 <p>说明RedisTemplate对象注入成功，并且通过该RedisTemplate对象获取操作5种数据类型相关对象。</p>
 <h3 id="操作常见类型数据"><a href="#操作常见类型数据" class="headerlink" title="操作常见类型数据"></a>操作常见类型数据</h3><p><strong>1). 操作字符串类型数据</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">    * 操作字符串类型的数据</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-meta">@Test</span><br>   <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testString</span><span class="hljs-params">()</span>&#123;<br>       <span class="hljs-comment">// set get setex setnx</span><br>       redisTemplate.opsForValue().set(<span class="hljs-string">&quot;name&quot;</span>,<span class="hljs-string">&quot;小明&quot;</span>);<br>       <span class="hljs-type">String</span> <span class="hljs-variable">city</span> <span class="hljs-operator">=</span> (String) redisTemplate.opsForValue().get(<span class="hljs-string">&quot;name&quot;</span>);<br>       System.out.println(city);<br>       redisTemplate.opsForValue().set(<span class="hljs-string">&quot;code&quot;</span>,<span class="hljs-string">&quot;1234&quot;</span>,<span class="hljs-number">3</span>, TimeUnit.MINUTES);<br>       redisTemplate.opsForValue().setIfAbsent(<span class="hljs-string">&quot;lock&quot;</span>,<span class="hljs-string">&quot;1&quot;</span>);<br>       redisTemplate.opsForValue().setIfAbsent(<span class="hljs-string">&quot;lock&quot;</span>,<span class="hljs-string">&quot;2&quot;</span>);<br>   &#125;<br></code></pre></td></tr></table></figure>
-
-
-
+<pre class="line-numbers language-java"><code class="language-java">	/**
+     * 操作字符串类型的数据
+     */
+    @Test
+    public void testString()&#123;
+        // set get setex setnx
+        redisTemplate.opsForValue().set("name","小明");
+        String city = (String) redisTemplate.opsForValue().get("name");
+        System.out.println(city);
+        redisTemplate.opsForValue().set("code","1234",3, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().setIfAbsent("lock","1");
+        redisTemplate.opsForValue().setIfAbsent("lock","2");
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>2). 操作哈希类型数据</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">    * 操作哈希类型的数据</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-meta">@Test</span><br>   <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testHash</span><span class="hljs-params">()</span>&#123;<br>       <span class="hljs-comment">//hset hget hdel hkeys hvals</span><br>       <span class="hljs-type">HashOperations</span> <span class="hljs-variable">hashOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForHash();<br><br>       hashOperations.put(<span class="hljs-string">&quot;100&quot;</span>,<span class="hljs-string">&quot;name&quot;</span>,<span class="hljs-string">&quot;tom&quot;</span>);<br>       hashOperations.put(<span class="hljs-string">&quot;100&quot;</span>,<span class="hljs-string">&quot;age&quot;</span>,<span class="hljs-string">&quot;20&quot;</span>);<br><br>       <span class="hljs-type">String</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> (String) hashOperations.get(<span class="hljs-string">&quot;100&quot;</span>, <span class="hljs-string">&quot;name&quot;</span>);<br>       System.out.println(name);<br><br>       <span class="hljs-type">Set</span> <span class="hljs-variable">keys</span> <span class="hljs-operator">=</span> hashOperations.keys(<span class="hljs-string">&quot;100&quot;</span>);<br>       System.out.println(keys);<br><br>       <span class="hljs-type">List</span> <span class="hljs-variable">values</span> <span class="hljs-operator">=</span> hashOperations.values(<span class="hljs-string">&quot;100&quot;</span>);<br>       System.out.println(values);<br><br>       hashOperations.delete(<span class="hljs-string">&quot;100&quot;</span>,<span class="hljs-string">&quot;age&quot;</span>);<br>   &#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">	/**
+     * 操作哈希类型的数据
+     */
+    @Test
+    public void testHash()&#123;
+        //hset hget hdel hkeys hvals
+        HashOperations hashOperations = redisTemplate.opsForHash();
 
+        hashOperations.put("100","name","tom");
+        hashOperations.put("100","age","20");
 
+        String name = (String) hashOperations.get("100", "name");
+        System.out.println(name);
 
+        Set keys = hashOperations.keys("100");
+        System.out.println(keys);
+
+        List values = hashOperations.values("100");
+        System.out.println(values);
+
+        hashOperations.delete("100","age");
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>3). 操作列表类型数据</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">    * 操作列表类型的数据</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-meta">@Test</span><br>   <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testList</span><span class="hljs-params">()</span>&#123;<br>       <span class="hljs-comment">//lpush lrange rpop llen</span><br>       <span class="hljs-type">ListOperations</span> <span class="hljs-variable">listOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForList();<br><br>       listOperations.leftPushAll(<span class="hljs-string">&quot;mylist&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>);<br>       listOperations.leftPush(<span class="hljs-string">&quot;mylist&quot;</span>,<span class="hljs-string">&quot;d&quot;</span>);<br><br>       <span class="hljs-type">List</span> <span class="hljs-variable">mylist</span> <span class="hljs-operator">=</span> listOperations.range(<span class="hljs-string">&quot;mylist&quot;</span>, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>);<br>       System.out.println(mylist);<br><br>       listOperations.rightPop(<span class="hljs-string">&quot;mylist&quot;</span>);<br><br>       <span class="hljs-type">Long</span> <span class="hljs-variable">size</span> <span class="hljs-operator">=</span> listOperations.size(<span class="hljs-string">&quot;mylist&quot;</span>);<br>       System.out.println(size);<br>   &#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">	/**
+     * 操作列表类型的数据
+     */
+    @Test
+    public void testList()&#123;
+        //lpush lrange rpop llen
+        ListOperations listOperations = redisTemplate.opsForList();
 
+        listOperations.leftPushAll("mylist","a","b","c");
+        listOperations.leftPush("mylist","d");
 
+        List mylist = listOperations.range("mylist", 0, -1);
+        System.out.println(mylist);
 
+        listOperations.rightPop("mylist");
+
+        Long size = listOperations.size("mylist");
+        System.out.println(size);
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>4). 操作集合类型数据</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">    * 操作集合类型的数据</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-meta">@Test</span><br>   <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testSet</span><span class="hljs-params">()</span>&#123;<br>       <span class="hljs-comment">//sadd smembers scard sinter sunion srem</span><br>       <span class="hljs-type">SetOperations</span> <span class="hljs-variable">setOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForSet();<br><br>       setOperations.add(<span class="hljs-string">&quot;set1&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>,<span class="hljs-string">&quot;d&quot;</span>);<br>       setOperations.add(<span class="hljs-string">&quot;set2&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-string">&quot;x&quot;</span>,<span class="hljs-string">&quot;y&quot;</span>);<br><br>       <span class="hljs-type">Set</span> <span class="hljs-variable">members</span> <span class="hljs-operator">=</span> setOperations.members(<span class="hljs-string">&quot;set1&quot;</span>);<br>       System.out.println(members);<br><br>       <span class="hljs-type">Long</span> <span class="hljs-variable">size</span> <span class="hljs-operator">=</span> setOperations.size(<span class="hljs-string">&quot;set1&quot;</span>);<br>       System.out.println(size);<br><br>       <span class="hljs-type">Set</span> <span class="hljs-variable">intersect</span> <span class="hljs-operator">=</span> setOperations.intersect(<span class="hljs-string">&quot;set1&quot;</span>, <span class="hljs-string">&quot;set2&quot;</span>);<br>       System.out.println(intersect);<br><br>       <span class="hljs-type">Set</span> <span class="hljs-variable">union</span> <span class="hljs-operator">=</span> setOperations.union(<span class="hljs-string">&quot;set1&quot;</span>, <span class="hljs-string">&quot;set2&quot;</span>);<br>       System.out.println(union);<br><br>       setOperations.remove(<span class="hljs-string">&quot;set1&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>);<br>   &#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">	/**
+     * 操作集合类型的数据
+     */
+    @Test
+    public void testSet()&#123;
+        //sadd smembers scard sinter sunion srem
+        SetOperations setOperations = redisTemplate.opsForSet();
 
+        setOperations.add("set1","a","b","c","d");
+        setOperations.add("set2","a","b","x","y");
 
+        Set members = setOperations.members("set1");
+        System.out.println(members);
 
+        Long size = setOperations.size("set1");
+        System.out.println(size);
+
+        Set intersect = setOperations.intersect("set1", "set2");
+        System.out.println(intersect);
+
+        Set union = setOperations.union("set1", "set2");
+        System.out.println(union);
+
+        setOperations.remove("set1","a","b");
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>5). 操作有序集合类型数据</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">    * 操作有序集合类型的数据</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-meta">@Test</span><br>   <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testZset</span><span class="hljs-params">()</span>&#123;<br>       <span class="hljs-comment">//zadd zrange zincrby zrem</span><br>       <span class="hljs-type">ZSetOperations</span> <span class="hljs-variable">zSetOperations</span> <span class="hljs-operator">=</span> redisTemplate.opsForZSet();<br><br>       zSetOperations.add(<span class="hljs-string">&quot;zset1&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-number">10</span>);<br>       zSetOperations.add(<span class="hljs-string">&quot;zset1&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>,<span class="hljs-number">12</span>);<br>       zSetOperations.add(<span class="hljs-string">&quot;zset1&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>,<span class="hljs-number">9</span>);<br><br>       <span class="hljs-type">Set</span> <span class="hljs-variable">zset1</span> <span class="hljs-operator">=</span> zSetOperations.range(<span class="hljs-string">&quot;zset1&quot;</span>, <span class="hljs-number">0</span>, -<span class="hljs-number">1</span>);<br>       System.out.println(zset1);<br><br>       zSetOperations.incrementScore(<span class="hljs-string">&quot;zset1&quot;</span>,<span class="hljs-string">&quot;c&quot;</span>,<span class="hljs-number">10</span>);<br><br>       zSetOperations.remove(<span class="hljs-string">&quot;zset1&quot;</span>,<span class="hljs-string">&quot;a&quot;</span>,<span class="hljs-string">&quot;b&quot;</span>);<br>   &#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">	/**
+     * 操作有序集合类型的数据
+     */
+    @Test
+    public void testZset()&#123;
+        //zadd zrange zincrby zrem
+        ZSetOperations zSetOperations = redisTemplate.opsForZSet();
 
+        zSetOperations.add("zset1","a",10);
+        zSetOperations.add("zset1","b",12);
+        zSetOperations.add("zset1","c",9);
 
+        Set zset1 = zSetOperations.range("zset1", 0, -1);
+        System.out.println(zset1);
 
+        zSetOperations.incrementScore("zset1","c",10);
+
+        zSetOperations.remove("zset1","a","b");
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>6). 通用命令操作</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/**</span><br><span class="hljs-comment">    * 通用命令操作</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-meta">@Test</span><br>   <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testCommon</span><span class="hljs-params">()</span>&#123;<br>       <span class="hljs-comment">//keys exists type del</span><br>       <span class="hljs-type">Set</span> <span class="hljs-variable">keys</span> <span class="hljs-operator">=</span> redisTemplate.keys(<span class="hljs-string">&quot;*&quot;</span>);<br>       System.out.println(keys);<br><br>       <span class="hljs-type">Boolean</span> <span class="hljs-variable">name</span> <span class="hljs-operator">=</span> redisTemplate.hasKey(<span class="hljs-string">&quot;name&quot;</span>);<br>       <span class="hljs-type">Boolean</span> <span class="hljs-variable">set1</span> <span class="hljs-operator">=</span> redisTemplate.hasKey(<span class="hljs-string">&quot;set1&quot;</span>);<br><br>       <span class="hljs-keyword">for</span> (Object key : keys) &#123;<br>           <span class="hljs-type">DataType</span> <span class="hljs-variable">type</span> <span class="hljs-operator">=</span> redisTemplate.type(key);<br>           System.out.println(type.name());<br>       &#125;<br><br>       redisTemplate.delete(<span class="hljs-string">&quot;mylist&quot;</span>);<br>   &#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">	/**
+     * 通用命令操作
+     */
+    @Test
+    public void testCommon()&#123;
+        //keys exists type del
+        Set keys = redisTemplate.keys("*");
+        System.out.println(keys);
 
+        Boolean name = redisTemplate.hasKey("name");
+        Boolean set1 = redisTemplate.hasKey("set1");
 
+        for (Object key : keys) &#123;
+            DataType type = redisTemplate.type(key);
+            System.out.println(type.name());
+        &#125;
 
-
-
+        redisTemplate.delete("mylist");
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h2 id="店铺营业状态设置"><a href="#店铺营业状态设置" class="headerlink" title="店铺营业状态设置"></a>店铺营业状态设置</h2><h3 id="需求分析与接口设计"><a href="#需求分析与接口设计" class="headerlink" title="需求分析与接口设计"></a>需求分析与接口设计</h3><ul>
 <li>进到苍穹外卖后台，显示餐厅的营业状态，营业状态分为<strong>营业中</strong>和<strong>打烊中</strong>，若当前餐厅处于营业状态，自动接收任何订单，客户可在小程序进行下单操作；若当前餐厅处于打烊状态，不接受任何订单，客户便无法在小程序进行下单操作。</li>
 </ul>
-<p><strong>产品原型：</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014181952632.png" srcset="/img/loading.gif" lazyload alt="image-20251014181952632" style="zoom: 50%;"></p>
+<p><strong>产品原型：</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014181952632.png" alt="image-20251014181952632" style="zoom: 50%;"></p>
 <p><strong>接口设计：</strong></p>
 <ul>
 <li>设置营业状态</li>
@@ -648,489 +415,150 @@
 <li><strong>用户端</strong>发出的请求，统一使用&#x2F;user作为前缀。</li>
 </ul>
 <p>因为访问路径不一致，故分为两个接口实现。</p>
-<p><strong>1). 设置营业状态</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182121927.png" srcset="/img/loading.gif" lazyload alt="image-20251014182121927" style="zoom:50%;"></p>
-<p><strong>2). 管理端营业状态</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182128446.png" srcset="/img/loading.gif" lazyload alt="image-20251014182128446" style="zoom:50%;"></p>
-<p><strong>3). 用户端营业状态</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182134665.png" srcset="/img/loading.gif" lazyload alt="image-20251014182134665" style="zoom:50%;"></p>
+<p><strong>1). 设置营业状态</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182121927.png" alt="image-20251014182121927" style="zoom:50%;"></p>
+<p><strong>2). 管理端营业状态</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182128446.png" alt="image-20251014182128446" style="zoom:50%;"></p>
+<p><strong>3). 用户端营业状态</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182134665.png" alt="image-20251014182134665" style="zoom:50%;"></p>
 <p><strong>营业状态存储方式</strong></p>
 <p>虽然，可以通过一张表来存储营业状态数据，但整个表中只有一个字段，所以意义不大。</p>
-<p>营业状态数据存储方式：基于Redis的字符串来进行存储。**约定：**1表示营业 0表示打烊。<br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182318284.png" srcset="/img/loading.gif" lazyload alt="image-20251014182318284"></p>
+<p>营业状态数据存储方式：基于Redis的字符串来进行存储。**约定：**1表示营业 0表示打烊。<br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182318284.png" alt="image-20251014182318284"></p>
 <h3 id="代码编写"><a href="#代码编写" class="headerlink" title="代码编写"></a>代码编写</h3><p><strong>admin&#x2F;ShopController.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.controller.admin;<br><br><span class="hljs-keyword">import</span> com.sky.result.Result;<br><span class="hljs-keyword">import</span> io.swagger.annotations.Api;<br><span class="hljs-keyword">import</span> io.swagger.annotations.ApiOperation;<br><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.core.RedisTemplate;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.*;<br><br><span class="hljs-meta">@RestController(&quot;adminShopController&quot;)</span><br><span class="hljs-meta">@RequestMapping(&quot;admin/shop&quot;)</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-meta">@Api(tags = &quot;管理端-商铺相关接口&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ShopController</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">static</span> <span class="hljs-type">String</span> <span class="hljs-variable">KEY</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;SHOP_STATUS_&quot;</span>;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RedisTemplate&lt;String, Object&gt; redisTemplate;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 设置店铺营业状态</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@param</span> status 店铺状态 0-打烊 1-营业</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 无</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@PutMapping(&quot;/&#123;status&#125;&quot;)</span><br>    <span class="hljs-meta">@ApiOperation(&quot;设置店铺营业状态&quot;)</span><br>    <span class="hljs-keyword">public</span> Result&lt;Void&gt; <span class="hljs-title function_">setStatus</span><span class="hljs-params">(<span class="hljs-meta">@PathVariable</span> Integer status)</span> &#123;<br>        log.info(<span class="hljs-string">&quot;设置店铺营业状态：&#123;&#125;&quot;</span>, (status == <span class="hljs-number">1</span> ? <span class="hljs-string">&quot;营业&quot;</span> : <span class="hljs-string">&quot;打烊&quot;</span>));<br>        <span class="hljs-comment">// 将店铺状态存入 Redis</span><br>        redisTemplate.opsForValue().set(KEY, status);<br>        <span class="hljs-keyword">return</span> Result.success();<br>    &#125;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取店铺营业状态</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 店铺状态 0-打烊 1-营业</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@ApiOperation(&quot;获取店铺营业状态&quot;)</span><br>    <span class="hljs-meta">@GetMapping(&quot;/status&quot;)</span><br>    <span class="hljs-keyword">public</span> Result&lt;Integer&gt; <span class="hljs-title function_">getStatus</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Integer</span> <span class="hljs-variable">status</span> <span class="hljs-operator">=</span> (Integer) redisTemplate.opsForValue().get(KEY);<br>        log.info(<span class="hljs-string">&quot;获取店铺营业状态：&#123;&#125;&quot;</span>, (status != <span class="hljs-literal">null</span> &amp;&amp; status == <span class="hljs-number">1</span> ? <span class="hljs-string">&quot;营业&quot;</span> : <span class="hljs-string">&quot;打烊&quot;</span>));<br>        <span class="hljs-keyword">return</span> Result.success(status);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.controller.admin;
 
+import com.sky.result.Result;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.*;
+
+@RestController("adminShopController")
+@RequestMapping("admin/shop")
+@Slf4j
+@Api(tags = "管理端-商铺相关接口")
+public class ShopController &#123;
+
+    private final static String KEY = "SHOP_STATUS_";
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    /**
+     * 设置店铺营业状态
+     *
+     * @param status 店铺状态 0-打烊 1-营业
+     * @return 无
+     */
+    @PutMapping("/&#123;status&#125;")
+    @ApiOperation("设置店铺营业状态")
+    public Result<Void> setStatus(@PathVariable Integer status) &#123;
+        log.info("设置店铺营业状态：&#123;&#125;", (status == 1 ? "营业" : "打烊"));
+        // 将店铺状态存入 Redis
+        redisTemplate.opsForValue().set(KEY, status);
+        return Result.success();
+    &#125;
+
+    /**
+     * 获取店铺营业状态
+     *
+     * @return 店铺状态 0-打烊 1-营业
+     */
+    @ApiOperation("获取店铺营业状态")
+    @GetMapping("/status")
+    public Result<Integer> getStatus() &#123;
+        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);
+        log.info("获取店铺营业状态：&#123;&#125;", (status != null && status == 1 ? "营业" : "打烊"));
+        return Result.success(status);
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <p><strong>user&#x2F;ShopController.java</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com.sky.controller.user;<br><br><span class="hljs-keyword">import</span> com.sky.result.Result;<br><span class="hljs-keyword">import</span> io.swagger.annotations.Api;<br><span class="hljs-keyword">import</span> io.swagger.annotations.ApiOperation;<br><span class="hljs-keyword">import</span> lombok.extern.slf4j.Slf4j;<br><span class="hljs-keyword">import</span> org.springframework.beans.factory.annotation.Autowired;<br><span class="hljs-keyword">import</span> org.springframework.data.redis.core.RedisTemplate;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.GetMapping;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RequestMapping;<br><span class="hljs-keyword">import</span> org.springframework.web.bind.annotation.RestController;<br><br><span class="hljs-meta">@RestController</span><br><span class="hljs-meta">@RequestMapping(&quot;user/shop&quot;)</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-meta">@Api(tags = &quot;用户端-商铺相关接口&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">ShopController</span> &#123;<br><br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">String</span> <span class="hljs-variable">KEY</span> <span class="hljs-operator">=</span> <span class="hljs-string">&quot;SHOP_STATUS_&quot;</span>;<br><br>    <span class="hljs-meta">@Autowired</span><br>    <span class="hljs-keyword">private</span> RedisTemplate&lt;String, Object&gt; redisTemplate;<br><br>    <span class="hljs-comment">/**</span><br><span class="hljs-comment">     * 获取店铺营业状态</span><br><span class="hljs-comment">     *</span><br><span class="hljs-comment">     * <span class="hljs-doctag">@return</span> 店铺状态 0-打烊 1-营业</span><br><span class="hljs-comment">     */</span><br>    <span class="hljs-meta">@GetMapping(&quot;/status&quot;)</span><br>    <span class="hljs-meta">@ApiOperation(&quot;获取店铺营业状态&quot;)</span><br>    <span class="hljs-keyword">public</span> Result&lt;Integer&gt; <span class="hljs-title function_">getStatus</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Integer</span> <span class="hljs-variable">status</span> <span class="hljs-operator">=</span> (Integer) redisTemplate.opsForValue().get(KEY);<br>        log.info(<span class="hljs-string">&quot;获取店铺营业状态：&#123;&#125;&quot;</span>, (status != <span class="hljs-literal">null</span> &amp;&amp; status == <span class="hljs-number">1</span> ? <span class="hljs-string">&quot;营业&quot;</span> : <span class="hljs-string">&quot;打烊&quot;</span>));<br>        <span class="hljs-keyword">return</span> Result.success(status);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">package com.sky.controller.user;
 
+import com.sky.result.Result;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+@RequestMapping("user/shop")
+@Slf4j
+@Api(tags = "用户端-商铺相关接口")
+public class ShopController &#123;
 
+    private static final String KEY = "SHOP_STATUS_";
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    /**
+     * 获取店铺营业状态
+     *
+     * @return 店铺状态 0-打烊 1-营业
+     */
+    @GetMapping("/status")
+    @ApiOperation("获取店铺营业状态")
+    public Result<Integer> getStatus() &#123;
+        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);
+        log.info("获取店铺营业状态：&#123;&#125;", (status != null && status == 1 ? "营业" : "打烊"));
+        return Result.success(status);
+    &#125;
+&#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 <h3 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h3><p><strong>注意！：</strong> 测试时记得要把Redis服务开启，否则连接不到Redis，数据都存不了，更别谈测试了。</p>
 <p>在接口文档测试中，管理端和用户端的接口放在一起，不方便区分。</p>
 <p>接下来，我们要实现管理端和用户端接口进行区分。</p>
 <p>在WebMvcConfiguration.java中，分别扫描”com.sky.controller.admin”和”com.sky.controller.user”这两个包。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Bean</span><br>   <span class="hljs-keyword">public</span> Docket <span class="hljs-title function_">docket1</span><span class="hljs-params">()</span>&#123;<br>       log.info(<span class="hljs-string">&quot;准备生成接口文档...&quot;</span>);<br>       <span class="hljs-type">ApiInfo</span> <span class="hljs-variable">apiInfo</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ApiInfoBuilder</span>()<br>               .title(<span class="hljs-string">&quot;苍穹外卖项目接口文档&quot;</span>)<br>               .version(<span class="hljs-string">&quot;2.0&quot;</span>)<br>               .description(<span class="hljs-string">&quot;苍穹外卖项目接口文档&quot;</span>)<br>               .build();<br><br>       <span class="hljs-type">Docket</span> <span class="hljs-variable">docket</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Docket</span>(DocumentationType.SWAGGER_2)<br>               .groupName(<span class="hljs-string">&quot;管理端接口&quot;</span>)<br>               .apiInfo(apiInfo)<br>               .select()<br>               <span class="hljs-comment">//指定生成接口需要扫描的包</span><br>               .apis(RequestHandlerSelectors.basePackage(<span class="hljs-string">&quot;com.sky.controller.admin&quot;</span>))<br>               .paths(PathSelectors.any())<br>               .build();<br><br>       <span class="hljs-keyword">return</span> docket;<br>   &#125;<br><br>   <span class="hljs-meta">@Bean</span><br>   <span class="hljs-keyword">public</span> Docket <span class="hljs-title function_">docket2</span><span class="hljs-params">()</span>&#123;<br>       log.info(<span class="hljs-string">&quot;准备生成接口文档...&quot;</span>);<br>       <span class="hljs-type">ApiInfo</span> <span class="hljs-variable">apiInfo</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ApiInfoBuilder</span>()<br>               .title(<span class="hljs-string">&quot;苍穹外卖项目接口文档&quot;</span>)<br>               .version(<span class="hljs-string">&quot;2.0&quot;</span>)<br>               .description(<span class="hljs-string">&quot;苍穹外卖项目接口文档&quot;</span>)<br>               .build();<br><br>       <span class="hljs-type">Docket</span> <span class="hljs-variable">docket</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Docket</span>(DocumentationType.SWAGGER_2)<br>               .groupName(<span class="hljs-string">&quot;用户端接口&quot;</span>)<br>               .apiInfo(apiInfo)<br>               .select()<br>               <span class="hljs-comment">//指定生成接口需要扫描的包</span><br>               .apis(RequestHandlerSelectors.basePackage(<span class="hljs-string">&quot;com.sky.controller.user&quot;</span>))<br>               .paths(PathSelectors.any())<br>               .build();<br><br>       <span class="hljs-keyword">return</span> docket;<br>   &#125;<br></code></pre></td></tr></table></figure>
+<pre class="line-numbers language-java"><code class="language-java">	@Bean
+    public Docket docket1()&#123;
+        log.info("准备生成接口文档...");
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("苍穹外卖项目接口文档")
+                .version("2.0")
+                .description("苍穹外卖项目接口文档")
+                .build();
 
-<p>重启服务器，再次访问接口文档，可进行选择<strong>用户端接口</strong>或者<strong>管理端接口</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182641746.png" srcset="/img/loading.gif" lazyload alt="image-20251014182641746" style="zoom:50%;"></p>
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .groupName("管理端接口")
+                .apiInfo(apiInfo)
+                .select()
+                //指定生成接口需要扫描的包
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.admin"))
+                .paths(PathSelectors.any())
+                .build();
+
+        return docket;
+    &#125;
+
+    @Bean
+    public Docket docket2()&#123;
+        log.info("准备生成接口文档...");
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("苍穹外卖项目接口文档")
+                .version("2.0")
+                .description("苍穹外卖项目接口文档")
+                .build();
+
+        Docket docket = new Docket(DocumentationType.SWAGGER_2)
+                .groupName("用户端接口")
+                .apiInfo(apiInfo)
+                .select()
+                //指定生成接口需要扫描的包
+                .apis(RequestHandlerSelectors.basePackage("com.sky.controller.user"))
+                .paths(PathSelectors.any())
+                .build();
+
+        return docket;
+    &#125;
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>重启服务器，再次访问接口文档，可进行选择<strong>用户端接口</strong>或者<strong>管理端接口</strong><br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014182641746.png" alt="image-20251014182641746" style="zoom:50%;"></p>
 <p>设置状态测试：</p>
-<p><img src="/2025/10/14/sky-takeout-day05-note/image-20251014192349262.png" srcset="/img/loading.gif" lazyload alt="image-20251014192349262"></p>
-<p>获取状态测试：<br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014192442953.png" srcset="/img/loading.gif" lazyload alt="image-20251014192442953"></p>
-<p>日志查看<br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014192518244.png" srcset="/img/loading.gif" lazyload alt="image-20251014192518244"></p>
-
-                
-              </div>
-            
-            <hr/>
-            <div>
-              <div class="post-metas my-3">
-  
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96/" class="category-chain-item">苍穹外卖</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/tags/%E8%8B%8D%E7%A9%B9%E5%A4%96%E5%8D%96/" class="print-no-link">#苍穹外卖</a>
-      
-    </div>
-  
-</div>
-
-
-              
-  
-
-  <div class="license-box my-3">
-    <div class="license-title">
-      <div>sky-takeout-day05-note</div>
-      <div>https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/</div>
-    </div>
-    <div class="license-meta">
-      
-        <div class="license-meta-item">
-          <div>作者</div>
-          <div>junnhwan</div>
-        </div>
-      
-      
-        <div class="license-meta-item license-meta-date">
-          <div>发布于</div>
-          <div>2025-10-14</div>
-        </div>
-      
-      
-      
-        <div class="license-meta-item">
-          <div>许可协议</div>
-          <div>
-            
-              
-              
-                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
-                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
-                    <i class="iconfont icon-cc-by"></i>
-                  </span>
-                </a>
-              
-            
-          </div>
-        </div>
-      
-    </div>
-    <div class="license-icon iconfont"></div>
-  </div>
-
-
-
-              
-                <div class="post-prevnext my-3">
-                  <article class="post-prev col-6">
-                    
-                    
-                      <a href="/2025/10/15/sky-takeout-day06-note/" title="sky-takeout-day06-note">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">sky-takeout-day06-note</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
-                  </article>
-                  <article class="post-next col-6">
-                    
-                    
-                      <a href="/2025/10/13/sky-takeout-day04-note/" title="sky-takeout-day04-note">
-                        <span class="hidden-mobile">sky-takeout-day04-note</span>
-                        <span class="visible-mobile">下一篇</span>
-                        <i class="iconfont icon-arrowright"></i>
-                      </a>
-                    
-                  </article>
-                </div>
-              
-            </div>
-
-            
-          </article>
-        </div>
-      </div>
-    </div>
-
-    <div class="side-col d-none d-lg-block col-lg-2">
-      
-  <aside class="sidebar" style="margin-left: -1rem">
-    <div id="toc">
-  <p class="toc-header">
-    <i class="iconfont icon-list"></i>
-    <span>目录</span>
-  </p>
-  <div class="toc-body" id="toc-body"></div>
-</div>
-
-
-
-  </aside>
-
-
-    </div>
-  </div>
-</div>
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-
-
-    
-
-    
-      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
-        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
-      </a>
-    
-
-    
-      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
-     aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header text-center">
-        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
-        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body mx-3">
-        <div class="md-form mb-5">
-          <input type="text" id="local-search-input" class="form-control validate">
-          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
-        </div>
-        <div class="list-group" id="local-search-result"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-    
-
-    
-  </main>
-
-  <footer>
-    <div class="footer-inner">
-  
-    <div class="footer-content">
-       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
-    </div>
-  
-  
-    <div class="statistics">
-  
-  
-
-  
-    
-      <span id="busuanzi_container_site_pv" style="display: none">
-        总访问量 
-        <span id="busuanzi_value_site_pv"></span>
-         次
-      </span>
-    
-    
-      <span id="busuanzi_container_site_uv" style="display: none">
-        总访客数 
-        <span id="busuanzi_value_site_uv"></span>
-         人
-      </span>
-    
-    
-
-  
-
-</div>
-
-  
-  
-</div>
-
-  </footer>
-
-  <!-- Scripts -->
-  
-  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
-  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
-
-  <script>
-    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
-    NProgress.start()
-    window.addEventListener('load', function() {
-      NProgress.done();
-    })
-  </script>
-
-
-<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
-<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
-<script  src="/js/events.js" ></script>
-<script  src="/js/plugins.js" ></script>
-
-
-  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
-  <script>
-    (function (window, document) {
-      var typing = Fluid.plugins.typing;
-      var subtitle = document.getElementById('subtitle');
-      if (!subtitle || !typing) {
-        return;
-      }
-      var text = subtitle.getAttribute('data-typed-text');
-      
-        typing(text);
-      
-    })(window, document);
-  </script>
-
-
-
-
-  
-    <script  src="/js/img-lazyload.js" ></script>
-  
-
-
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
-    var toc = jQuery('#toc');
-    if (toc.length === 0 || !window.tocbot) { return; }
-    var boardCtn = jQuery('#board-ctn');
-    var boardTop = boardCtn.offset().top;
-
-    function isExpandAllEnabled() {
-      return CONFIG.toc && CONFIG.toc.expand_all === true;
-    }
-    function expandAllToc() {
-      if (!isExpandAllEnabled()) { return; }
-      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
-    }
-    function updateTocToggle($li, $childList) {
-      var $toggle = $li.children('.toc-toggle');
-      if ($toggle.length === 0) { return; }
-      var collapsed = $childList.hasClass('tocbot-is-collapsed');
-      $toggle
-        .toggleClass('toc-toggle-collapsed', collapsed)
-        .toggleClass('toc-toggle-expanded', !collapsed);
-    }
-    function bindTocToggle() {
-      if (!isExpandAllEnabled()) { return; }
-      jQuery('#toc-body .toc-list-item').each(function() {
-        var $li = jQuery(this);
-        var $childList = $li.children('ol');
-        if ($childList.length === 0) {
-          if ($li.children('.toc-toggle').length === 0) {
-            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
-          }
-          return;
-        }
-
-        if ($li.children('.toc-toggle').length === 0) {
-          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
-        }
-        updateTocToggle($li, $childList);
-      });
-      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        var $li = jQuery(this).parent('.toc-list-item');
-        var $childList = $li.children('ol');
-        if ($childList.length === 0) { return; }
-        $childList.toggleClass('tocbot-is-collapsed');
-        updateTocToggle($li, $childList);
-      });
-      if (!window.__tocToggleObserver) {
-        window.__tocToggleObserver = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
-            var $list = jQuery(mutation.target);
-            var $li = $list.parent('.toc-list-item');
-            if ($li.length === 0) { return; }
-            updateTocToggle($li, $list);
-          });
-        });
-        jQuery('#toc-body ol').each(function() {
-          window.__tocToggleObserver.observe(this, { attributes: true });
-        });
-      }
-    }
-    var tocConfig = Object.assign({
-      tocSelector     : '#toc-body',
-      contentSelector : '.markdown-body',
-      linkClass       : 'tocbot-link',
-      activeLinkClass : 'tocbot-active-link',
-      listClass       : 'tocbot-list',
-      isCollapsedClass: 'tocbot-is-collapsed',
-      collapsibleClass: 'tocbot-is-collapsible',
-      scrollSmooth    : true,
-      includeTitleTags: true,
-      headingsOffset  : -boardTop,
-    }, CONFIG.toc);
-    if (isExpandAllEnabled()) {
-      tocConfig.collapseDepth = 6;
-    }
-    window.tocbot.init(tocConfig);
-    if (toc.find('.toc-list-item').length > 0) {
-      toc.css('visibility', 'visible');
-    }
-    expandAllToc();
-    bindTocToggle();
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('tocbot' in window) {
-        tocbot.refresh();
-        var toc = jQuery('#toc');
-        if (toc.length === 0 || !tocbot) {
-          return;
-        }
-        if (toc.find('.toc-list-item').length > 0) {
-          toc.css('visibility', 'visible');
-        }
-        expandAllToc();
-        bindTocToggle();
-      }
-    });
-  });
-</script>
-
-
-  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
-
-  <script>Fluid.plugins.codeWidget();</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
-    window.anchors.options = {
-      placement: CONFIG.anchorjs.placement,
-      visible  : CONFIG.anchorjs.visible
-    };
-    if (CONFIG.anchorjs.icon) {
-      window.anchors.options.icon = CONFIG.anchorjs.icon;
-    }
-    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-    var res = [];
-    for (var item of el) {
-      res.push('.markdown-body > ' + item.trim());
-    }
-    if (CONFIG.anchorjs.placement === 'left') {
-      window.anchors.options.class = 'anchorjs-link-left';
-    }
-    window.anchors.add(res.join(', '));
-
-    Fluid.events.registerRefreshCallback(function() {
-      if ('anchors' in window) {
-        anchors.removeAll();
-        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
-        var res = [];
-        for (var item of el) {
-          res.push('.markdown-body > ' + item.trim());
-        }
-        if (CONFIG.anchorjs.placement === 'left') {
-          anchors.options.class = 'anchorjs-link-left';
-        }
-        anchors.add(res.join(', '));
-      }
-    });
-  });
-</script>
-
-
-  
-<script>
-  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
-    Fluid.plugins.fancyBox();
-  });
-</script>
-
-
-  <script>Fluid.plugins.imageCaption();</script>
-
-  <script  src="/js/local-search.js" ></script>
-
-  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
-
-
-
-
-
-<!-- 主题的启动项，将它保持在最底部 -->
-<!-- the boot of the theme, keep it at the bottom -->
-<script  src="/js/boot.js" ></script>
-
-
-  
-
-  <noscript>
-    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
-  </noscript>
-</body>
-</html>
+<p><img src="/2025/10/14/sky-takeout-day05-note/image-20251014192349262.png" alt="image-20251014192349262"></p>
+<p>获取状态测试：<br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014192442953.png" alt="image-20251014192442953"></p>
+<p>日志查看<br><img src="/2025/10/14/sky-takeout-day05-note/image-20251014192518244.png" alt="image-20251014192518244"></p>
+</p></div><div class="share"><span>Share</span>&nbsp;<span class="soc"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></span><span class="soc"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></span><span class="soc"><a class="fa fa-twitter" target="_blank" rel="noopener" href="http://twitter.com/home?status=https://junnhwan.github.io/2025/10/14/sky-takeout-day05-note/%20junnhwan's blog%20sky-takeout-day05-note"></a></span></div><div class="pagination"><p class="clearfix"><span class="pre pagbuttons"><a role="navigation" href="/2025/10/15/sky-takeout-day06-note/" title="sky-takeout-day06-note"><i class="fa fa-angle-double-left"></i>&nbsp;Previous post: sky-takeout-day06-note</a></span><span>&nbsp;</span><span class="next pagbuttons"><a role="navigation" href="/2025/10/13/sky-takeout-day04-note/" title="sky-takeout-day04-note">Next post: sky-takeout-day04-note&nbsp;<i class="fa fa-angle-double-right"></i></a></span></p></div></div></div></div><div class="visible-xs site-bottom-footer"><footer><p>&copy;&nbsp;2026&nbsp;<a target="_blank" href="https://junnhwan.github.io" rel="noopener noreferrer">junnhwan</a></p><p>Theme&nbsp;<a target="_blank" href="https://github.com/SumiMakito/hexo-theme-typography" rel="noopener noreferrer">Typography</a>&nbsp;by&nbsp;<a target="_blank" href="https://www.keep.moe" rel="noopener noreferrer">Makito</a></p><p>Proudly published with&nbsp;<a target="_blank" href="https://hexo.io" rel="noopener noreferrer">Hexo</a></p></footer></div></div></div></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="/js/typography.js"></script></body></html>
