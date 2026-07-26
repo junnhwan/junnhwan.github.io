@@ -1,0 +1,258 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author"><title>learn-claude-code 学习记录 · junnhwan's blog</title><meta name="description" content="Prologue这篇blog来记录学习 learn-claude-code 的过程笔记，主要是为了通过学习一个mini coding agent来学习agent开发的一些相关知识点，记录内容主要是一些我自认为比较重要的，如果有比较简略的还需看原网站进行补充。
+整体学习路径总览
+
+s08 Contex"><meta name="og:description" content="Prologue这篇blog来记录学习 learn-claude-code 的过程笔记，主要是为了通过学习一个mini coding agent来学习agent开发的一些相关知识点，记录内容主要是一些我自认为比较重要的，如果有比较简略的还需看原网站进行补充。
+整体学习路径总览
+
+s08 Contex"><meta name="twitter:site" content="junnhwan's blog"><meta name="twitter:title" content="learn-claude-code 学习记录"><meta name="twitter:card" content="summary"><meta name="keywords" content="Java, Go, back-end, algorithm, coding, infinite progress"><meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=1" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="theme-color" content="#f7f5f1"><meta name="color-scheme" content="light"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="preconnect" href="https://fonts.bunny.net" crossorigin=""><link rel="stylesheet" href="https://fonts.bunny.net/css?family=playfair-display:500,600,700|noto-serif-sc:500,600,700|manrope:400,500,600,700,800|jetbrains-mono:400,500,600&amp;display=swap"><link rel="stylesheet" href="/css/editorial.css?v=22"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css"><link rel="stylesheet" href="/css/code-blocks.css?v=7"><link rel="stylesheet" href="/css/copy-code.css?v=4"><script src="/js/copy-code.js?v=3" defer></script><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 7.3.0"></head><body class="theme-canvas"><div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div><div class="site-shell" id="stage"><header class="site-header" id="site-header"><div class="site-header-inner"><a class="site-brand a-title" href="/"><span class="brand-mark">junnhwan</span><span class="brand-sep" aria-hidden="true"></span><span class="brand-tagline">Be here now</span></a><nav class="site-nav" id="site-nav" aria-label="Primary"><ul class="site-nav-list"><li><a href="/"><span class="nav-label">Home</span></a></li><li><a href="/archives"><span class="nav-label">Archive</span></a></li><li><a href="/tags"><span class="nav-label">Tags</span></a></li><li><a href="/categories"><span class="nav-label">Categories</span></a></li><li><a href="/about/"><span class="nav-label">About</span></a></li><li class="soc"><a href="https://github.com/junnhwan" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><i class="lucide lucide-md" data-lucide="github"></i></a></li></ul></nav></div></header><main class="main-container" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-page has-toc"><div class="post-layout has-toc"><aside class="post-toc" id="post-toc" aria-label="目录"><div class="post-toc-card"><div class="post-toc-head"><span class="post-toc-label">目录</span><button class="post-toc-toggle" type="button" aria-expanded="true" aria-controls="post-toc-nav" hidden><span class="post-toc-toggle-text">收起</span></button></div><nav class="post-toc-nav" id="post-toc-nav"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Prologue"><span class="toc-text">Prologue</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s08-Context-Compact"><span class="toc-text">s08 Context Compact</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s09-Memory"><span class="toc-text">s09 Memory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s13-Background-Tasks"><span class="toc-text">s13 Background Tasks</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s15-Agent-Teams"><span class="toc-text">s15 Agent Teams</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s16-Team-Protocols"><span class="toc-text">s16 Team Protocols</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s17-Autonomous-Agents"><span class="toc-text">s17 Autonomous Agents</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s18-Worktree-Isolation"><span class="toc-text">s18 Worktree Isolation</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s19-MCP-Tools"><span class="toc-text">s19 MCP Tools</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#s20-Comprehensive-Agent-Turn"><span class="toc-text">s20 Comprehensive Agent Turn</span></a></li></ol></nav></div></aside><div class="post-main-col"><div class="post-container is-detail"><div class="post-main"><p class="post-kicker"><span class="meta-item date"><i class="lucide lucide-sm" data-lucide="calendar"></i><span>2026.06.21</span></span><span class="meta-item"><i class="lucide lucide-sm" data-lucide="folder"></i><a class="a-tag" href="/categories/项目学习/" title="项目学习">项目学习</a></span><span class="meta-item meta-tags"><i class="lucide lucide-sm" data-lucide="tag"></i><a class="a-tag" href="/tags/Agent/" title="Agent">Agent</a><a class="a-tag" href="/tags/claude-code/" title="claude code">claude code</a></span></p><p class="post-title"><a>learn-claude-code 学习记录</a></p><p class="post-abstract">Prologue这篇blog来记录学习 learn-claude-code 的过程笔记，主要是为了通过学习一个mini coding agent来学习agent开发的一些相关知识点，记录内容主要是一些我自认为比较重要的，如果有比较简略的还需看原网站进行补充。 整体学习路径总览 s08 Context Compact…</p><div class="post-body"><h2 id="Prologue"><a href="#Prologue" class="headerlink" title="Prologue"></a>Prologue</h2><p>这篇blog来记录学习 <a target="_blank" rel="noopener" href="https://learn.shareai.run/">learn-claude-code</a> 的过程笔记，主要是为了通过学习一个mini coding agent来学习agent开发的一些相关知识点，记录内容主要是一些我自认为比较重要的，如果有比较简略的还需看原网站进行补充。</p>
+<p>整体学习路径总览</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622184129156.png" alt="image-20260622184129156"></p>
+<h2 id="s08-Context-Compact"><a href="#s08-Context-Compact" class="headerlink" title="s08 Context Compact"></a>s08 Context Compact</h2><blockquote>
+<p>四层压缩管线策略，先便宜后贵</p>
+</blockquote>
+<p>关于cc的上下文治理</p>
+<ul>
+<li>applyToolResult<strong>Budget</strong>()，先看有没有大的工具结果（超过某个阈值就算大，具体看源码），让大结果落盘不一次性读</li>
+<li><strong>snip</strong>Compact()，裁剪中间消息，举个教学版的例子就是，只保留头部3条以及尾部47条</li>
+<li><strong>micro</strong>Compact()，指的是旧的工具结果用占位表示，如果需要知道这个信息，可以在占位语句提示模型re-run这个tool（例如：Earlier tool result compacted. Re-run if needed）</li>
+<li>context<strong>Collapse</strong>（），上下文折叠</li>
+<li>autoCompact（），就是一次LLM API调用，进行摘要，是最贵的决策，会消耗token</li>
+</ul>
+<p>简单讲就是 budget -&gt; snip -&gt; micro -&gt; collapse，触发阈值就compact_history</p>
+<p>下面附一张网站的讲解，关于cc对read的tradeoff：</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260621173336607.png" alt="image-20260621173336607"></p>
+<p>关于cc的压缩的Prompt：</p>
+<ul>
+<li>强调compact过程<strong>不能调用工具</strong>，只输出文本，在开头和结尾都会强调：<code>CRITICAL: Respond with TEXT ONLY. Do NOT call any tools.</code></li>
+<li>要求模型<strong>先分析再总结</strong>，分析的包裹在&lt;analysis&gt;标签中，正式的摘要在&lt;summary&gt;中，analysis最后会被剥离</li>
+</ul>
+<h2 id="s09-Memory"><a href="#s09-Memory" class="headerlink" title="s09 Memory"></a>s09 Memory</h2><blockquote>
+<p>压缩会丢失细节，但是记忆不会，文件仓库 + 索引 + 按需加载 → 跨压缩、跨会话的知识积累</p>
+</blockquote>
+<p>四类记忆：</p>
+<ul>
+<li>user ，人物画像，你是谁</li>
+<li>feedback，怎么做事，用户提出的什么rules</li>
+<li>project，正在做什么</li>
+<li>reference，在哪找东西</li>
+</ul>
+<p>四种动作：</p>
+<ul>
+<li>存储，.memory &#x2F; *.md文件（yaml frontmatter，name&#x2F;desc&#x2F;type）和 MEMORY.md 索引</li>
+<li>加载，SYSTEM prompt常驻索引MEMORY.md，LLM side-query选文件</li>
+<li>提取，每轮结束LLM提取偏好&#x2F;约束（检索已有，避免重复）</li>
+<li>整理，文件大于某阈值，去重&#x2F;合并&#x2F;剪枝，cc把这种机制叫做Dream，实际的门控是这四层：时间间隔、扫描节流、会话数、文件锁</li>
+</ul>
+<p>下面补充说明一下Dream的四层门控：</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260621192030373.png" alt="image-20260621192030373"></p>
+<h2 id="s13-Background-Tasks"><a href="#s13-Background-Tasks" class="headerlink" title="s13 Background Tasks"></a>s13 Background Tasks</h2><blockquote>
+<p>任务 —— 后台线程跑命令，异步执行，不阻塞主循环，完成后以tool_result的形式注入通知</p>
+</blockquote>
+<p>如何触发：</p>
+<p>在这个教程中，是通过关键词来触发启动后台任务的，如下：</p>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python">def is_slow_operation(tool_name: str, tool_input: dict) -&gt; bool:
+    &quot;&quot;&quot;Fallback heuristic: commands likely to take &gt; 30s.&quot;&quot;&quot;
+    if tool_name !&#x3D; &quot;bash&quot;:
+        return False
+    cmd &#x3D; tool_input.get(&quot;command&quot;, &quot;&quot;).lower()
+    slow_keywords &#x3D; [&quot;install&quot;, &quot;build&quot;, &quot;test&quot;, &quot;deploy&quot;, &quot;compile&quot;,
+                     &quot;docker build&quot;, &quot;pip install&quot;, &quot;npm install&quot;,
+                     &quot;cargo build&quot;, &quot;pytest&quot;, &quot;make&quot;]
+    return any(kw in cmd for kw in slow_keywords)<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>而在cc中，它的Bash工具schema有个<code>run_in_background</code>的bool参数，由模型自己判断是否这个命令要后台运行</p>
+<p>后台执行与生命周期：</p>
+<p>把工具调用包装成一个worker函数，放在<code>daemon</code>线程执行，后台任务都有唯一id，还没完成之前用占位语句来表示：<code>[Background task {bg_id} started] Result will be available when complete.</code></p>
+<blockquote>
+<p>关于<strong>daemon线程</strong>，这个含义是，如果是daemon，主线程退出的同时这个daemon会被强行杀掉；如果不是daemon，主线程退出时会等它跑完，否则不会退。</p>
+<p>其实就是<strong>生命周期</strong>的管理，看整个程序退出时，要不要等这个后台线程跑完</p>
+<p>关于<strong>bg_id</strong>的作用，这个个人认为应该是因为后台执行这个做法把一次工具调用拆成了**“启动started”<strong>和</strong>“完成completed”**两个不连续的事件，所以要一个唯一标识来将二者重新认成同一件事</p>
+</blockquote>
+<p>通知收集：</p>
+<p>后台任务完成，会收集结果并格式化用<code>&lt;task_notification&gt;</code>包裹来通知</p>
+<p>实际运行流程可表示如下：</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622184048805.png" alt="image-20260622184048805"></p>
+<p>关于cc中的实现：</p>
+<p>cc中没有用多线程，是在一个Node.js&#x2F;Bun单线程循环中，其“后台”只是不“await”，是通过stdout&#x2F;stderr重定向到文件，让进程独立运行</p>
+<p>cc中命令队列的通知格式是结构化的xml：</p>
+<pre class="line-numbers language-XML" data-language="XML"><code class="language-XML">&lt;task_notification&gt;
+  &lt;status&gt;completed&lt;&#x2F;status&gt;
+  &lt;summary&gt;Background command &quot;npm test&quot; completed (exit code 0)&lt;&#x2F;summary&gt;
+&lt;&#x2F;task_notification&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="s15-Agent-Teams"><a href="#s15-Agent-Teams" class="headerlink" title="s15 Agent Teams"></a>s15 Agent Teams</h2><blockquote>
+<p>团队 —— 多Agent协作，靠<code>jsonl</code>文件收件箱 + 队友线程</p>
+</blockquote>
+<p>先看一下 这里 Multi-Agent跟之前的SubAgent的区别，见如下表格：</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622184026524.png" alt="image-20260622184026524"></p>
+<p>实现原理：</p>
+<ol>
+<li><code>MessageBus</code>，文件收件箱</li>
+</ol>
+<p>Leader和每个队友都有各自的jsonl文件收件箱，发消息就是往通信对象的jsonl append一行json，读消息就是读取文件+删除（消费式）</p>
+<ol start="2">
+<li><code>spawn_teammate_thread</code>，启动队友</li>
+</ol>
+<p>每个队友抛在daemon线程中，有自己的system prompt、messages、简化的工具集，完成后自动汇报，例如<code>BUS.send(name, &quot;lead&quot;, summary)</code>把结果发给leader</p>
+<ol start="3">
+<li>Lead的inbox注入，每轮主循环结束后Lead检查收件箱有没有新的队友消息</li>
+</ol>
+<p>举个例子有如下Agent协作流程图：</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622184004661.png" alt="image-20260622184004661"></p>
+<hr>
+<p>cc实现：</p>
+<ul>
+<li>cc的实现还有个权限冒泡机制更为严谨，说明如下图：</li>
+</ul>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622183819220-1782124703413-1.png" alt="image-20260622183819220"></p>
+<ul>
+<li>15种结构化消息：</li>
+</ul>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622183738571.png" alt="image-20260622183738571"></p>
+<ul>
+<li><p>没有中央消息总线，就是文件系统：cc的收件箱实现是直接写其他Agent的inbox（路径：<code>~/.claude/teams/{teamName}/inboxes/{agentName}.json</code>），同时要用<strong>文件锁保证并发安全</strong></p>
+</li>
+<li><p>队友生命周期：</p>
+</li>
+</ul>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622183720460.png" alt="image-20260622183720460"></p>
+<ul>
+<li>Team Config团队配置</li>
+</ul>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622183703208.png" alt="image-20260622183703208"></p>
+<h2 id="s16-Team-Protocols"><a href="#s16-Team-Protocols" class="headerlink" title="s16 Team Protocols"></a>s16 Team Protocols</h2><blockquote>
+<p>协议 —— Agent 之间的结构化握手，request-response模式驱动协商</p>
+</blockquote>
+<p>上一节还有个队友生命周期<code>（Lead → 队友）</code>的问题，假设做到一半想要停止队友，有可能队友文件写到一半被杀了，所以就需要关机握手与消息约定，让队友收尾后退出，也就是**团队协议，**每个人都要遵守。还有计划审批<code>（队友 → Lead）</code>，也需要协议来沟通确认。</p>
+<p>这一节新增三个 func，<strong>ProtocolState</strong>（请求状态追踪）、<strong>dispatch_message</strong>（按消息类型路由到处理器）、<strong>match_response</strong>（通过 request_id 关联回复与请求，含类型校验）</p>
+<p>实现原理：</p>
+<ol>
+<li>ProtocolState 请求状态</li>
+</ol>
+<p>这是协议握手的一个核心数据结构，如果了解计网的话对这些字段应该不陌生，是很经典的一个请求-响应的数据模型</p>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python">@dataclass
+class ProtocolState:
+    request_id: str      *# 唯一 ID，如 &quot;req_004281&quot;*
+    type: str            *# &quot;shutdown&quot; | &quot;plan_approval&quot;*
+    sender: str          *# 发起方*
+    target: str          *# 接收方*
+    status: str          *# pending | approved | rejected*
+    payload: str         *# 计划文本或关机原因*
+    created_at: float    *# 时间戳*
+
+pending_requests: dict[str, ProtocolState] &#x3D; {}<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><code>request_id</code>是贯穿一次协议握手的key，请求带出去，回复收回来</p>
+<p>下面是以关机为例的一个完整链路：</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622183603273.png" alt="image-20260622183603273"></p>
+<ol start="2">
+<li>dispatch_messages 按消息类型路由</li>
+</ol>
+<p>新增协议类型的话就新增一个if分支</p>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python">def handle_inbox_message(name, msg, messages):
+    msg_type &#x3D; msg.get(&quot;type&quot;, &quot;message&quot;)
+    req_id &#x3D; msg.get(&quot;metadata&quot;, {}).get(&quot;request_id&quot;, &quot;&quot;)
+
+    if msg_type &#x3D;&#x3D; &quot;shutdown_request&quot;:
+        BUS.send(name, &quot;lead&quot;, &quot;Shutting down.&quot;, &quot;shutdown_response&quot;,
+                 {&quot;request_id&quot;: req_id, &quot;approve&quot;: True})
+        return True   *# 停止循环*
+
+    if msg_type &#x3D;&#x3D; &quot;plan_approval_response&quot;:
+        approve &#x3D; msg[&quot;metadata&quot;].get(&quot;approve&quot;, False)
+        messages.append({&quot;role&quot;: &quot;user&quot;,
+            &quot;content&quot;: &quot;[Plan approved]&quot; if approve else &quot;[Plan rejected]&quot;})
+    return False       *# 继续循环*<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="3">
+<li>match_response 类型校验</li>
+</ol>
+<p>校验响应类型是否匹配请求类型</p>
+<pre class="line-numbers language-Python" data-language="Python"><code class="language-Python">def match_response(response_type, request_id, approve):
+    state &#x3D; pending_requests.get(request_id)
+    if not state:
+        return
+    if state.type &#x3D;&#x3D; &quot;shutdown&quot; and response_type !&#x3D; &quot;shutdown_response&quot;:
+        return  *# type mismatch, skip*
+    if state.type &#x3D;&#x3D; &quot;plan_approval&quot; and response_type !&#x3D; &quot;plan_approval_response&quot;:
+        return
+    if state.status !&#x3D; &quot;pending&quot;:
+        return  *# already resolved, skip duplicate*
+    state.status &#x3D; &quot;approved&quot; if approve else &quot;rejected&quot;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<ol start="4">
+<li><p>consume_lead_inbox 统一inbox消费</p>
+</li>
+<li><p>idle_loop 队友等待（轮询）而不是退出</p>
+</li>
+</ol>
+<p>cc实现：</p>
+<p>如下图：</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622183933510.png" alt="image-20260622183933510"></p>
+<h2 id="s17-Autonomous-Agents"><a href="#s17-Autonomous-Agents" class="headerlink" title="s17 Autonomous Agents"></a>s17 Autonomous Agents</h2><blockquote>
+<p>自治 —— 不依赖Lead分配，空闲时轮询，有活就干</p>
+</blockquote>
+<p>前两节都是要Lead自己分配任务手动assign给队友，这节要实现队友自组织，自己发现、认领、完成</p>
+<h2 id="s18-Worktree-Isolation"><a href="#s18-Worktree-Isolation" class="headerlink" title="s18 Worktree Isolation"></a>s18 Worktree Isolation</h2><blockquote>
+<p>隔离 —— 并行执行的任务隔离，worktree 按ID绑定管目录</p>
+</blockquote>
+<h2 id="s19-MCP-Tools"><a href="#s19-MCP-Tools" class="headerlink" title="s19 MCP Tools"></a>s19 MCP Tools</h2><blockquote>
+<p>插件 —— 外部能力通过标准协议接入，Agent 发现、组装、调用 mcp tools ，不需要知道tools是谁写的</p>
+</blockquote>
+<h2 id="s20-Comprehensive-Agent-Turn"><a href="#s20-Comprehensive-Agent-Turn" class="headerlink" title="s20 Comprehensive Agent Turn"></a>s20 Comprehensive Agent Turn</h2><blockquote>
+<p>综合 —— 将前面学习的综合起来，在<strong>一个</strong>循环中，挂<strong>多个</strong>不同机制：工具、权限、记忆、任务、团队、插件</p>
+</blockquote>
+<p>一个长期工作的coding agent需要：</p>
+<ul>
+<li><p>工具分发和权限边界</p>
+</li>
+<li><p>hooks 扩展点</p>
+</li>
+<li><p>todo 计划和任务图</p>
+</li>
+<li><p>技能、记忆、系统 prompt 组装</p>
+</li>
+<li><p>压缩和错误恢复</p>
+</li>
+<li><p>后台任务和 cron 调度</p>
+</li>
+<li><p>团队、协议、自治认领</p>
+</li>
+<li><p>worktree 隔离</p>
+</li>
+<li><p>MCP 外部工具接入</p>
+</li>
+</ul>
+<p>总览图：</p>
+<p><img src="/2026/06/21/learn-claude-code-%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95/image-20260622183459610.png" alt="image-20260622183459610"></p>
+<pre class="line-numbers language-Plain" data-language="Plain"><div class="caption"><span>Text</span></div><code class="language-Plain">用户输入
+  → UserPromptSubmit hooks
+  → cron&#x2F;background 通知注入
+  → context compact
+  → memory + skills + MCP 状态组装 system prompt
+  → LLM
+  → has tool_use block?
+      否 → Stop hooks → 返回
+      是 → PreToolUse hooks + permission
+          → TOOL_HANDLERS &#x2F; MCP handlers &#x2F; background dispatch
+          → PostToolUse hooks
+          → tool_result &#x2F; task_notification 回 messages
+          → 下一轮<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+</div></div></div><div class="pagination post-pagination"><a class="pag-link pre" role="navigation" href="/2026/07/26/%E8%BF%91%E4%B8%A4%E5%91%A8%E9%9D%A2%E8%AF%95%E5%A4%8D%E7%9B%98-FOSHO%E4%B8%8E%E6%B7%B1%E4%BF%A1%E6%9C%8D/" title="近两周面试复盘：FOSHO（AI 应用开发）&amp; 深信服（Go 后端开发）"><i class="lucide lucide-sm" data-lucide="arrow-left"></i><span>Previous post: 近两周面试复盘：FOSHO（AI 应用开发）& 深信服（Go 后端开发）</span></a><a class="pag-link next" role="navigation" href="/2025/10/15/sky-takeout-day06-note/" title="sky-takeout-day06-note"><span>Next post: sky-takeout-day06-note</span><i class="lucide lucide-sm" data-lucide="arrow-right"></i></a></div></div></div></div></div></div></main><footer class="site-footer"><footer><div class="footer-row"><p class="footer-copy">&copy;&nbsp;2026&nbsp;<a target="_blank" href="https://junnhwan.github.io" rel="noopener noreferrer">junnhwan</a></p><p class="footer-runtime" id="site-runtime"></p></div><p class="footer-stats"><span id="busuanzi_container_site_pv" style="display:none"><i class="lucide lucide-sm" data-lucide="eye"></i>&nbsp;本站总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>&nbsp;次</span><span class="footer-dot" aria-hidden="true">·</span><span id="busuanzi_container_site_uv" style="display:none"><i class="lucide lucide-sm" data-lucide="users"></i>&nbsp;访客数&nbsp;<span id="busuanzi_value_site_uv"></span>&nbsp;人</span></p><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><script>(function () {
+  var start = new Date('2025-10-10T00:00:00+08:00');
+  function up() {
+    var d = new Date() - start;
+    if (d < 0) d = 0;
+    var dd = Math.floor(d / 86400000);
+    var hh = Math.floor((d % 86400000) / 3600000);
+    var mm = Math.floor((d % 3600000) / 60000);
+    var ss = Math.floor((d % 60000) / 1000);
+    var el = document.getElementById('site-runtime');
+    if (el) el.innerHTML = '本站已运行 ' + dd + ' 天 ' + hh + ' 时 ' + mm + ' 分 ' + ss + ' 秒';
+  }
+  up();
+  setInterval(up, 1000);
+})();</script></footer></footer></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script><script src="/js/typography.js?v=3"></script><script src="/js/canvas-motion.js?v=3"></script><script src="/js/post-toc.js?v=1" defer></script></body></html>
