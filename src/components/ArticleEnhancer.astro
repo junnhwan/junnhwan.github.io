@@ -1,0 +1,66 @@
+---
+---
+
+<script>
+  const COPY_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="13" height="13" x="9" y="9" rx="2"/><path d="M5 15a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2"/></svg>`;
+  const DONE_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+  function enhanceCodeBlocks() {
+    document.querySelectorAll<HTMLPreElement>('.prose pre').forEach((pre) => {
+      if (pre.dataset.enhanced) return;
+      pre.dataset.enhanced = 'true';
+
+      // Surface the language for the CSS badge when Shiki didn't set it.
+      if (!pre.getAttribute('data-language')) {
+        const lang = pre.querySelector('code')?.className.match(/language-([\w-]+)/)?.[1];
+        if (lang && lang !== 'plaintext') pre.setAttribute('data-language', lang);
+      }
+
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.setAttribute('aria-label', '复制代码');
+      button.className =
+        'absolute top-2 right-2 grid place-items-center w-7 h-7 rounded-md text-fg-subtle opacity-0 transition hover:text-fg hover:bg-surface-hover focus-visible:opacity-100';
+      button.innerHTML = COPY_ICON;
+
+      const show = () => (button.style.opacity = '1');
+      const hide = () => (button.style.opacity = '0');
+      pre.addEventListener('pointerenter', show);
+      pre.addEventListener('pointerleave', hide);
+
+      button.addEventListener('click', async () => {
+        const code = pre.querySelector('code')?.innerText ?? pre.innerText;
+        try {
+          await navigator.clipboard.writeText(code);
+          button.innerHTML = DONE_ICON;
+          button.style.color = 'var(--accent)';
+          window.setTimeout(() => {
+            button.innerHTML = COPY_ICON;
+            button.style.color = '';
+          }, 1600);
+        } catch {
+          /* clipboard unavailable */
+        }
+      });
+
+      pre.appendChild(button);
+    });
+  }
+
+  function addHeadingAnchors() {
+    document.querySelectorAll<HTMLElement>('.prose h2[id], .prose h3[id]').forEach((heading) => {
+      if (heading.querySelector('.heading-anchor')) return;
+      const anchor = document.createElement('a');
+      anchor.href = `#${heading.id}`;
+      anchor.className = 'heading-anchor';
+      anchor.textContent = '#';
+      anchor.setAttribute('aria-label', `链接到 ${heading.textContent}`);
+      heading.appendChild(anchor);
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    enhanceCodeBlocks();
+    addHeadingAnchors();
+  });
+</script>

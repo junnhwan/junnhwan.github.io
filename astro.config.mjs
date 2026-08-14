@@ -19,8 +19,22 @@ export default defineConfig({
   ],
   markdown: {
     shikiConfig: {
-      theme: 'github-dark-dimmed',
+      themes: {
+        light: 'github-light',
+        dark: 'github-dark-dimmed',
+      },
       wrap: true,
+      transformers: [
+        {
+          // Expose the language so CSS can render a badge on the code block.
+          pre(node) {
+            const lang = this.options.lang;
+            if (lang && lang !== 'plaintext' && lang !== 'text') {
+              node.properties['data-language'] = lang;
+            }
+          },
+        },
+      ],
     },
   },
 });

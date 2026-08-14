@@ -1,10 +1,13 @@
 ---
+import '@fontsource-variable/inter/wght.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { CommandPalette } from '../components/CommandPalette';
 import ReadingProgressBar from '../components/ReadingProgressBar.astro';
-import CodeBlockHelper from '../components/CodeBlockHelper.astro';
+import ArticleEnhancer from '../components/ArticleEnhancer.astro';
 import { getCollection } from 'astro:content';
 
 interface Props {
@@ -17,8 +20,8 @@ interface Props {
 const {
   title = "junnhwan's blog",
   description = "junnhwan's personal blog · Full-stack & AI Agent developer in the making.",
-  keywords = "junnhwan, hwan, 深圳大学, Java, Go, AI Agent, 后端开发, 博客",
-  ogType = "website",
+  keywords = 'junnhwan, hwan, Java, Go, AI Agent, 博客',
+  ogType = 'website',
 } = Astro.props;
 
 const allPosts = await getCollection('blog');
@@ -34,7 +37,7 @@ const searchPosts = allPosts.map((p) => ({
 ---
 
 <!doctype html>
-<html lang="zh-CN" class="dark scroll-smooth">
+<html lang="zh-CN" class="scroll-smooth">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -42,54 +45,158 @@ const searchPosts = allPosts.map((p) => ({
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     <meta name="author" content="junnhwan" />
-    
-    <!-- Open Graph / Facebook -->
+
+    <!-- Applied before first paint so the theme never flashes, and re-applied
+         after a view transition swaps the <html> element's attributes. -->
+    <script is:inline>
+      (() => {
+        const apply = () => {
+          const stored = localStorage.getItem('theme');
+          const theme = stored === 'light' || stored === 'dark' ? stored : 'dark';
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+        };
+        apply();
+        if (!window.__themeBound) {
+          window.__themeBound = true;
+          document.addEventListener('astro:after-swap', apply);
+        }
+      })();
+    </script>
+
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={Astro.url} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content="/avatar.png" />
-    
-    <!-- Twitter -->
+
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content="/avatar.png" />
 
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="/avatar.png" />
 
-    <!-- Google Fonts: Inter & JetBrains Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
-      rel="stylesheet"
-    />
+    <ClientRouter />
   </head>
-  <body class="bg-background text-slate-100 min-h-screen flex flex-col relative selection:bg-cyan-500/30 selection:text-white">
-    <!-- Reading Progress Bar (Top) -->
+  <body class="min-h-screen flex flex-col relative text-fg-muted antialiased">
     <ReadingProgressBar />
 
-    <!-- Ambient Grid & Radial Background -->
-    <div class="fixed inset-0 bg-grid-pattern pointer-events-none opacity-60 -z-20"></div>
-    <div class="fixed inset-0 bg-radial-glow pointer-events-none -z-10"></div>
+    <!-- Ambient layers: grid, pointer light, film grain -->
+    <div class="fixed inset-0 bg-grid-pattern pointer-events-none -z-30"></div>
+    <div id="pointer-glow" class="fixed inset-0 bg-pointer-glow pointer-events-none -z-20"></div>
+    <div class="fixed inset-0 bg-noise pointer-events-none -z-10"></div>
 
-    <!-- Navigation Header -->
     <Header />
 
-    <!-- Main Content Slot -->
-    <main class="flex-1 w-full pt-16">
+    <main class="flex-1 w-full pt-20">
       <slot />
     </main>
 
-    <!-- Global Command Palette -->
     <CommandPalette client:load posts={searchPosts} />
-
-    <!-- Code Block Helpers (Copy Button) -->
-    <CodeBlockHelper />
-
-    <!-- Footer -->
+    <ArticleEnhancer />
     <Footer />
+
+    <div id="lightbox" aria-hidden="true"><img src="" alt="" /></div>
+
+    <script>
+      // Pointer light trails the cursor with heavy damping — felt, not noticed.
+      function setupPointerGlow() {
+        const glow = document.getElementById('pointer-glow');
+        if (!glow || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        let targetX = window.innerWidth / 2;
+        let targetY = 0;
+        let x = targetX;
+        let y = targetY;
+        let raf = 0;
+
+        const onMove = (e: PointerEvent) => {
+          targetX = e.clientX;
+          targetY = e.clientY;
+        };
+
+        const tick = () => {
+          x += (targetX - x) * 0.02;
+          y += (targetY - y) * 0.02;
+          glow.style.setProperty('--px', `${x}px`);
+          glow.style.setProperty('--py', `${y}px`);
+          raf = requestAnimationFrame(tick);
+        };
+
+        window.addEventListener('pointermove', onMove, { passive: true });
+        raf = requestAnimationFrame(tick);
+
+        document.addEventListener(
+          'astro:before-swap',
+          () => {
+            cancelAnimationFrame(raf);
+            window.removeEventListener('pointermove', onMove);
+          },
+          { once: true }
+        );
+      }
+
+      function setupReveal() {
+        const items = document.querySelectorAll('[data-reveal]');
+        if (!items.length) return;
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              const el = entry.target as HTMLElement;
+              const delay = Number(el.dataset.revealDelay || 0);
+              window.setTimeout(() => el.classList.add('is-visible'), delay);
+              observer.unobserve(el);
+            });
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.05 }
+        );
+
+        items.forEach((el) => observer.observe(el));
+      }
+
+      function setupLightbox() {
+        // The overlay is re-rendered on every navigation, so resolve it per event.
+        const overlay = () => document.getElementById('lightbox');
+
+        const close = () => {
+          overlay()?.classList.remove('is-open');
+          document.body.style.overflow = '';
+        };
+
+        document.addEventListener('click', (e) => {
+          const box = overlay();
+          const target = box?.querySelector('img');
+          if (!box || !target) return;
+
+          if (box.classList.contains('is-open')) {
+            close();
+            return;
+          }
+
+          const img = (e.target as HTMLElement)?.closest('.prose img') as HTMLImageElement | null;
+          if (!img) return;
+
+          target.src = img.currentSrc || img.src;
+          target.alt = img.alt;
+          box.classList.add('is-open');
+          document.body.style.overflow = 'hidden';
+        });
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') close();
+        });
+      }
+
+      // Lightbox listeners live on document, so they only need wiring once.
+      setupLightbox();
+
+      // astro:page-load fires on the initial load as well as after every swap.
+      document.addEventListener('astro:page-load', () => {
+        setupPointerGlow();
+        setupReveal();
+      });
+    </script>
   </body>
 </html>

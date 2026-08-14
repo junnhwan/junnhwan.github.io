@@ -16,9 +16,7 @@ const { post } = Astro.props;
 const { Content, headings } = await post.render();
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 const currentIndex = sortedPosts.findIndex((p) => p.slug === post.slug);
 const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
@@ -32,97 +30,96 @@ const readingTime = calculateReadingTime(post.body || '');
   keywords={post.data.tags.join(', ')}
   ogType="article"
 >
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-    <!-- Back to Blog Navigation -->
-    <div class="mb-6">
-      <a
-        href="/blog"
-        class="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-400 transition-colors"
-      >
-        <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
-        <span>返回文章列表</span>
-      </a>
-    </div>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_13rem] gap-12">
+      <article class="min-w-0">
+        <header class="mb-10 animate-rise">
+          <a
+            href="/blog"
+            class="inline-flex items-center gap-1.5 mb-7 text-xs text-fg-subtle hover:text-accent transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="13"
+              height="13"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>文章</span>
+          </a>
 
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-12">
-      <!-- Article Content Main Column (Spans 3 cols) -->
-      <article class="lg:col-span-3 min-w-0">
-        <!-- Header -->
-        <header class="mb-8 pb-6 border-b border-white/10 space-y-3">
-          <div class="flex flex-wrap items-center gap-2.5 text-xs text-slate-400 font-mono">
-            {
-              post.data.category && (
-                <span class="px-2 py-0.5 rounded bg-white/5 text-cyan-400 border border-white/10">
-                  {post.data.category}
-                </span>
-              )
-            }
-            <span>{formatDate(post.data.pubDate)}</span>
-            <span>·</span>
-            <span>{readingTime}</span>
-          </div>
-
-          <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-snug">
+          <h1 class="text-[26px] sm:text-[30px] font-semibold text-fg leading-tight">
             {post.data.title}
           </h1>
 
-          {
-            post.data.tags && post.data.tags.length > 0 && (
-              <div class="flex flex-wrap gap-1.5 pt-1">
-                {post.data.tags.map((tag: string) => (
-                  <span class="text-xs text-slate-400 font-mono">
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            )
-          }
+          <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-fg-subtle">
+            <time>{formatDate(post.data.pubDate)}</time>
+            <span>·</span>
+            <span>{readingTime}</span>
+            {
+              post.data.category && (
+                <>
+                  <span>·</span>
+                  <span>{post.data.category}</span>
+                </>
+              )
+            }
+          </div>
         </header>
 
-        <!-- Markdown Rendered Content with Enhanced Prose Typography -->
         <div class="prose max-w-none">
           <Content />
         </div>
 
-        <!-- Author Bio Card -->
-        <div class="mt-14 p-5 rounded-2xl glass-card border border-white/10 bg-slate-950/80 flex items-center justify-between gap-4">
-          <div class="flex items-center gap-3.5">
+        {
+          post.data.tags && post.data.tags.length > 0 && (
+            <div class="mt-12 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-fg-subtle">
+              {post.data.tags.map((tag: string) => (
+                <span>#{tag}</span>
+              ))}
+            </div>
+          )
+        }
+
+        <div class="mt-10 pt-6 border-t border-line flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
             <img
               src="/avatar.png"
               alt="junnhwan"
-              class="w-11 h-11 rounded-xl object-cover border border-white/15 flex-shrink-0"
+              class="w-9 h-9 rounded-full object-cover border border-line"
+              loading="lazy"
             />
-            <div>
-              <div class="flex items-center gap-2">
-                <h4 class="text-sm font-bold text-white">hwan</h4>
-                <span class="text-xs font-mono text-slate-400">@junnhwan</span>
-              </div>
-              <p class="text-xs text-slate-400">Full-stack & AI Agent developer in the making.</p>
+            <div class="text-[13px]">
+              <div class="text-fg">hwan</div>
+              <div class="text-[11px] text-fg-subtle font-mono">@junnhwan</div>
             </div>
           </div>
           <a
             href="https://github.com/junnhwan"
             target="_blank"
             rel="noopener noreferrer"
-            class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-medium border border-white/10 transition-colors flex-shrink-0"
+            class="h-8 px-3.5 grid place-items-center rounded-full pill text-[12px] text-fg-muted"
           >
             GitHub
           </a>
         </div>
 
-        <!-- Post Footer Navigation -->
-        <div class="mt-8 pt-6 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <nav class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {
             prevPost ? (
               <a
                 href={`/blog/${prevPost.slug}`}
-                class="p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/15 transition-all flex flex-col gap-1"
+                class="group p-4 rounded-xl border border-line hover:border-line-strong hover:bg-surface-hover transition-colors"
               >
-                <span class="text-[11px] text-slate-500 font-mono">← 上一篇</span>
-                <span class="text-xs sm:text-sm font-medium text-slate-200 hover:text-cyan-400 transition-colors line-clamp-1">
+                <span class="block font-mono text-[11px] text-fg-subtle">← 上一篇</span>
+                <span class="mt-1 block text-[13px] text-fg-muted group-hover:text-fg transition-colors line-clamp-1">
                   {prevPost.data.title}
                 </span>
               </a>
@@ -135,10 +132,10 @@ const readingTime = calculateReadingTime(post.body || '');
             nextPost ? (
               <a
                 href={`/blog/${nextPost.slug}`}
-                class="p-4 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/15 transition-all flex flex-col gap-1 text-right"
+                class="group p-4 rounded-xl border border-line hover:border-line-strong hover:bg-surface-hover transition-colors sm:text-right"
               >
-                <span class="text-[11px] text-slate-500 font-mono">下一篇 →</span>
-                <span class="text-xs sm:text-sm font-medium text-slate-200 hover:text-cyan-400 transition-colors line-clamp-1">
+                <span class="block font-mono text-[11px] text-fg-subtle">下一篇 →</span>
+                <span class="mt-1 block text-[13px] text-fg-muted group-hover:text-fg transition-colors line-clamp-1">
                   {nextPost.data.title}
                 </span>
               </a>
@@ -146,11 +143,10 @@ const readingTime = calculateReadingTime(post.body || '');
               <div />
             )
           }
-        </div>
+        </nav>
       </article>
 
-      <!-- TOC Sidebar -->
-      <aside class="hidden lg:block lg:col-span-1">
+      <aside class="hidden lg:block">
         <TableOfContents headings={headings} />
       </aside>
     </div>

@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 · junnhwan" description="页面走丢了">
+  <div class="min-h-[calc(100vh-16rem)] flex flex-col items-center justify-center px-4 text-center">
+    <p class="font-mono text-[11px] text-fg-subtle">HTTP 404</p>
+
+    <pre
+      class="mt-6 mb-7 font-mono text-[11px] sm:text-xs leading-[1.35] text-fg-subtle select-none"
+      aria-hidden="true"><code>{`  ┌──────────────┐
+  │  ·  ·  ·  ·  │
+  │      404     │
+  │  ·  ·  ·  ·  │
+  └──────────────┘`}</code></pre>
+
+    <h1 class="text-lg font-medium text-fg">这里什么都没有</h1>
+    <p class="mt-2 text-[13px] text-fg-subtle">
+      页面可能已经改名、搬走，或者从来就不存在。
+    </p>
+
+    <div class="mt-7 flex items-center gap-2">
+      <a
+        href="/"
+        class="h-9 px-4 inline-flex items-center rounded-full bg-accent-soft text-accent text-[13px] border border-accent-line hover:border-accent transition-colors"
+      >
+        回首页
+      </a>
+      <a
+        href="/blog"
+        class="h-9 px-4 inline-flex items-center rounded-full pill text-fg-muted text-[13px]"
+      >
+        看文章
+      </a>
+    </div>
+
+    <p class="mt-8 font-mono text-[11px] text-fg-subtle">
+      或按 <kbd class="px-1.5 py-0.5 rounded border border-line text-fg-muted">⌘</kbd>
+      <kbd class="px-1.5 py-0.5 rounded border border-line text-fg-muted">K</kbd> 搜索
+    </p>
+  </div>
+</BaseLayout>

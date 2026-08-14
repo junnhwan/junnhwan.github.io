@@ -1,200 +1,115 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const repos = [
+  {
+    name: 'k8sgpt-ai / k8sgpt',
+    url: 'https://github.com/k8sgpt-ai/k8sgpt',
+    description: 'Giving Kubernetes Superpowers to everyone',
+  },
+  {
+    name: 'kubevela / kubevela',
+    url: 'https://github.com/kubevela/kubevela',
+    description: 'The Modern Application Platform',
+  },
+  {
+    name: 'k0sproject / k0smotron',
+    url: 'https://github.com/k0sproject/k0smotron',
+    description: 'Kubernetes in Kubernetes',
+  },
+];
 ---
 
 <BaseLayout
   title="About · junnhwan"
-  description="About junnhwan - CS student at Shenzhen University, full-stack & AI agent developer in the making."
+  description="About junnhwan — CS student at Shenzhen University, full-stack & AI agent developer in the making."
 >
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-    <!-- Profile Card -->
-    <div class="p-6 sm:p-8 rounded-3xl glass-card border border-white/10 bg-slate-950/80 shadow-2xl flex flex-col sm:flex-row items-center sm:items-start gap-6">
-      <div class="relative w-24 h-24 rounded-2xl overflow-hidden border-2 border-white/15 shadow-xl flex-shrink-0 bg-slate-900">
-        <img
-          src="/avatar.png"
-          alt="junnhwan avatar"
-          class="w-full h-full object-cover"
-          loading="eager"
-        />
-      </div>
-
-      <div class="space-y-3 text-center sm:text-left flex-1 min-w-0">
-        <div>
-          <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-white font-sans">
-              hwan
-            </h1>
-            <span class="text-sm font-mono text-slate-400">@junnhwan</span>
-            <span class="px-2 py-0.5 rounded-full text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              Open to Internships
-            </span>
-          </div>
-          <p class="text-xs sm:text-sm text-cyan-400 font-medium mt-1">
-            Full-stack & AI Agent developer in the making.
-          </p>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-12">
+    <header class="flex items-center gap-4" data-reveal>
+      <img
+        src="/avatar.png"
+        alt="junnhwan"
+        class="w-14 h-14 rounded-full object-cover border border-line"
+        loading="eager"
+      />
+      <div class="min-w-0">
+        <div class="flex items-baseline gap-2.5">
+          <h1 class="text-xl font-semibold text-fg">hwan</h1>
+          <span class="font-mono text-xs text-fg-subtle">@junnhwan</span>
         </div>
-
-        <div class="text-xs sm:text-sm text-slate-400 space-y-1">
-          <p>Shenzhen, Guangdong, China</p>
-        </div>
-
-        <!-- Social & Contact Links -->
-        <div class="pt-2 flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
-          <a
-            href="https://github.com/junnhwan"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white text-xs font-mono border border-white/10 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
-              <path d="M9 18c-4.51 2-5-2-7-2"></path>
-            </svg>
-            <span>GitHub</span>
-          </a>
-
-          <a
-            href="mailto:3373484735@qq.com"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-slate-200 hover:text-white text-xs font-mono border border-white/10 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-            </svg>
-            <span>3373484735@qq.com</span>
-          </a>
-
-          <a
-            href="/blog"
-            class="inline-flex items-center gap-1 px-3 py-1.5 text-xs text-cyan-400 hover:underline"
-          >
-            <span>View Posts →</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <!-- Section: Exact README Intro -->
-    <div class="p-6 sm:p-8 rounded-3xl glass-card bg-slate-950/70 border border-white/5 space-y-5">
-      <h2 class="text-xl font-bold text-white flex items-center gap-2">
-        <span>Hi there</span>
-        <span>👋</span>
-      </h2>
-
-      <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
-        <p>
-          I'm <strong>Junnhwan</strong>, majoring in Computer Science at Shenzhen University (Class of 2028).
+        <p class="mt-0.5 text-[13px] text-fg-muted">
+          Full-stack &amp; AI Agent developer in the making.
         </p>
-
-        <p class="text-slate-200">
-          Full-stack & AI Agent developer in the making.
-        </p>
-
-        <p class="text-slate-300">
-          Open to full-stack & AI agent internships.
-        </p>
-
-        <div class="pt-2 space-y-3">
-          <p class="flex items-start gap-2">
-            <span>🚀</span>
-            <span><strong>What I'm into:</strong> Building full-stack apps, and diving into AI agents.</span>
-          </p>
-
-          <p class="flex items-start gap-2">
-            <span>🌱</span>
-            <span>
-              <strong>Open source:</strong> Contributing to{' '}
-              <a href="https://github.com/k8sgpt-ai/k8sgpt" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline font-mono">k8sgpt-ai/k8sgpt</a>,{' '}
-              <a href="https://github.com/kubevela/kubevela" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline font-mono">kubevela/kubevela</a>, and{' '}
-              <a href="https://github.com/k0sproject/k0smotron" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:underline font-mono">k0sproject/k0smotron</a>.
-            </span>
-          </p>
-
-          <p class="flex items-start gap-2">
-            <span>🛠️</span>
-            <span><strong>Languages:</strong> Go · Java · Python · TypeScript</span>
-          </p>
-
-          <p class="flex items-start gap-2">
-            <span>📬</span>
-            <span>
-              <strong>Reach me:</strong>{' '}
-              <a href="mailto:3373484735@qq.com" class="text-cyan-400 hover:underline">3373484735@qq.com</a>
-              {' · '}
-              <strong>Blog:</strong>{' '}
-              <a href="https://junnhwan.github.io/" class="text-cyan-400 hover:underline">https://junnhwan.github.io/</a>
-            </span>
-          </p>
-        </div>
       </div>
-    </div>
+    </header>
 
-    <!-- Section: Open Source Contributions Detail -->
-    <section class="space-y-4">
-      <div class="flex items-center gap-2">
-        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-        <h2 class="text-base sm:text-lg font-bold text-white tracking-tight font-sans">
-          Open Source
-        </h2>
+    <section class="space-y-4 text-[14px] leading-[1.9]" data-reveal data-reveal-delay="60">
+      <p>
+        I'm <span class="text-fg">Junnhwan</span>, majoring in Computer Science at Shenzhen
+        University (Class of 2028).
+      </p>
+      <p>
+        Building full-stack apps, and diving into AI agents. Working mostly in
+        <span class="font-mono text-[13px] text-fg">Go</span>,
+        <span class="font-mono text-[13px] text-fg">Java</span>,
+        <span class="font-mono text-[13px] text-fg">Python</span> and
+        <span class="font-mono text-[13px] text-fg">TypeScript</span>.
+      </p>
+      <p class="text-fg-subtle">Open to full-stack &amp; AI agent internships.</p>
+    </section>
+
+    <section class="space-y-3" data-reveal data-reveal-delay="120">
+      <h2 class="font-mono text-[11px] uppercase tracking-[0.12em] text-fg-subtle">Open Source</h2>
+      <div class="border-t border-line">
+        {
+          repos.map((repo) => (
+            <a
+              href={repo.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="row py-3.5 flex flex-col sm:flex-row sm:items-baseline sm:gap-4"
+            >
+              <span class="row-title font-mono text-[13px] text-fg-muted">{repo.name}</span>
+              <span class="text-[12px] text-fg-subtle">{repo.description}</span>
+            </a>
+          ))
+        }
       </div>
+    </section>
 
-      <div class="space-y-3">
-        <div class="p-4 rounded-2xl glass-card bg-slate-950/70 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <a
-                href="https://github.com/k8sgpt-ai/k8sgpt"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-xs sm:text-sm font-bold text-cyan-300 hover:underline font-mono"
-              >
-                k8sgpt-ai / k8sgpt
-              </a>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/5 text-slate-400">Contributor</span>
-            </div>
-            <p class="text-xs text-slate-400">
-              Giving Kubernetes Superpowers to everyone
-            </p>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl glass-card bg-slate-950/70 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <a
-                href="https://github.com/kubevela/kubevela"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-xs sm:text-sm font-bold text-cyan-300 hover:underline font-mono"
-              >
-                kubevela / kubevela
-              </a>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/5 text-slate-400">Contributor</span>
-            </div>
-            <p class="text-xs text-slate-400">
-              The Modern Application Platform
-            </p>
-          </div>
-        </div>
-
-        <div class="p-4 rounded-2xl glass-card bg-slate-950/70 border border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div class="space-y-1">
-            <div class="flex items-center gap-2">
-              <a
-                href="https://github.com/k0sproject/k0smotron"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-xs sm:text-sm font-bold text-cyan-300 hover:underline font-mono"
-              >
-                k0sproject / k0smotron
-              </a>
-              <span class="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white/5 text-slate-400">Contributor</span>
-            </div>
-            <p class="text-xs text-slate-400">
-              Kubernetes in Kubernetes
-            </p>
-          </div>
-        </div>
+    <section class="space-y-3" data-reveal data-reveal-delay="180">
+      <h2 class="font-mono text-[11px] uppercase tracking-[0.12em] text-fg-subtle">Elsewhere</h2>
+      <div class="flex flex-wrap items-center gap-2">
+        <a
+          href="https://github.com/junnhwan"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="h-8 px-3.5 inline-flex items-center gap-1.5 rounded-full pill text-[12px] text-fg-muted"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.75"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"
+            ></path>
+            <path d="M9 18c-4.51 2-5-2-7-2"></path>
+          </svg>
+          GitHub
+        </a>
+        <a
+          href="mailto:3373484735@qq.com"
+          class="h-8 px-3.5 inline-flex items-center rounded-full pill font-mono text-[12px] text-fg-muted"
+        >
+          3373484735@qq.com
+        </a>
       </div>
     </section>
   </div>

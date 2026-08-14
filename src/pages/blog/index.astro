@@ -5,13 +5,10 @@ import { getCollection } from 'astro:content';
 import { formatDate } from '../../utils/readingTime';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
 const formattedPosts = sortedPosts.map((p) => ({
   slug: p.slug,
-  body: p.body,
   data: {
     title: p.data.title,
     description: p.data.description,
@@ -24,21 +21,17 @@ const formattedPosts = sortedPosts.map((p) => ({
 ---
 
 <BaseLayout
-  title="所有文章 · junnhwan's blog"
-  description="浏览 junnhwan 所有的技术文章、面经复盘、AI Agent 学习笔记与后端架构实战。"
+  title="文章 · junnhwan's blog"
+  description="junnhwan 的技术文章、学习笔记与面经复盘。"
 >
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
-    <!-- Header banner -->
-    <div class="mb-8 space-y-1">
-      <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-        所有文章
-      </h1>
-      <p class="text-xs sm:text-sm text-slate-400">
-        记录学习笔记、面经复盘与技术总结。
-      </p>
-    </div>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+    <header class="mb-10" data-reveal>
+      <h1 class="text-xl font-semibold text-fg">文章</h1>
+      <p class="mt-1 text-[13px] text-fg-subtle">学习笔记、面经复盘与技术总结</p>
+    </header>
 
-    <!-- Client-side Interactive Filter & Search -->
-    <BlogFilter client:load posts={formattedPosts} />
+    <div data-reveal data-reveal-delay="60">
+      <BlogFilter client:load posts={formattedPosts} />
+    </div>
   </div>
 </BaseLayout>

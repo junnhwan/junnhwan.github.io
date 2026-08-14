@@ -10,75 +10,87 @@ interface Props {
 }
 
 const { headings } = Astro.props;
-const filteredHeadings = headings.filter((h) => h.depth > 1 && h.depth < 4);
+const items = headings.filter((h) => h.depth > 1 && h.depth < 4);
 ---
 
 {
-  filteredHeadings.length > 0 && (
-    <div class="sticky top-24 space-y-3">
-      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono">
-        目录 / TOC
-      </p>
-      <nav class="toc-container max-h-[calc(100vh-140px)] overflow-y-auto pr-2 text-xs space-y-1">
-        {filteredHeadings.map((h) => (
-          <a
-            href={`#${h.slug}`}
-            class={`toc-link block py-1 text-slate-400 hover:text-cyan-400 transition-colors truncate ${
-              h.depth === 3 ? 'pl-3 text-[11px] text-slate-500' : 'font-medium'
-            }`}
-            data-slug={h.slug}
-          >
-            {h.text}
-          </a>
-        ))}
-      </nav>
-    </div>
+  items.length > 0 && (
+    <nav class="sticky top-28" aria-label="目录">
+      <div class="relative pl-4">
+        {/* Rail plus a slider that tracks the active section */}
+        <div class="absolute left-0 inset-y-0 w-px bg-line" />
+        <div
+          id="toc-indicator"
+          class="absolute left-0 w-px bg-accent transition-all duration-[400ms]"
+          style="top: 0; height: 0; opacity: 0;"
+        />
+
+        <ul class="space-y-2 max-h-[calc(100vh-11rem)] overflow-y-auto no-scrollbar">
+          {items.map((h) => (
+            <li>
+              <a
+                href={`#${h.slug}`}
+                data-slug={h.slug}
+                class={`toc-link block text-[12px] leading-snug text-fg-subtle hover:text-fg transition-colors line-clamp-2 ${
+                  h.depth === 3 ? 'pl-3' : ''
+                }`}
+              >
+                {h.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
   )
 }
 
 <script>
-  function setupTocScrollSpy() {
-    const links = document.querySelectorAll('.toc-link');
-    if (!links.length) return;
+  let observer: IntersectionObserver | undefined;
 
-    const headingEls: HTMLElement[] = [];
-    links.forEach((link) => {
-      const slug = link.getAttribute('data-slug');
-      if (slug) {
-        const el = document.getElementById(slug);
-        if (el) headingEls.push(el);
-      }
-    });
+  function setupToc() {
+    observer?.disconnect();
 
-    const observer = new IntersectionObserver(
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc-link'));
+    const indicator = document.getElementById('toc-indicator');
+    if (!links.length || !indicator) return;
+
+    const setActive = (slug: string) => {
+      links.forEach((link) => {
+        const active = link.dataset.slug === slug;
+        link.classList.toggle('text-accent', active);
+        link.classList.toggle('text-fg-subtle', !active);
+
+        if (active) {
+          indicator.style.top = `${link.offsetTop}px`;
+          indicator.style.height = `${link.offsetHeight}px`;
+          indicator.style.opacity = '1';
+        }
+      });
+    };
+
+    const visible = new Set<string>();
+
+    observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.getAttribute('id');
-            links.forEach((link) => {
-              if (link.getAttribute('data-slug') === id) {
-                link.classList.add('text-cyan-400', 'font-bold');
-                link.classList.remove('text-slate-400', 'text-slate-500');
-              } else {
-                link.classList.remove('text-cyan-400', 'font-bold');
-                if (link.classList.contains('pl-3')) {
-                  link.classList.add('text-slate-500');
-                } else {
-                  link.classList.add('text-slate-400');
-                }
-              }
-            });
-          }
+          const id = entry.target.id;
+          if (entry.isIntersecting) visible.add(id);
+          else visible.delete(id);
         });
+
+        // Pick the topmost heading currently inside the reading band.
+        const first = links.find((link) => link.dataset.slug && visible.has(link.dataset.slug));
+        if (first?.dataset.slug) setActive(first.dataset.slug);
       },
-      {
-        rootMargin: '0px 0px -70% 0px',
-      }
+      { rootMargin: '-80px 0px -65% 0px' }
     );
 
-    headingEls.forEach((el) => observer.observe(el));
+    links.forEach((link) => {
+      const target = link.dataset.slug ? document.getElementById(link.dataset.slug) : null;
+      if (target) observer!.observe(target);
+    });
   }
 
-  document.addEventListener('DOMContentLoaded', setupTocScrollSpy);
-  setupTocScrollSpy();
+  document.addEventListener('astro:page-load', setupToc);
 </script>

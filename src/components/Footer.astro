@@ -2,51 +2,59 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="mt-20 border-t border-white/5 bg-slate-950/60 backdrop-blur-md py-10">
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6 text-xs text-slate-400">
+<footer class="mt-24 border-t border-line py-9">
+  <div
+    class="max-w-3xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-5 text-[13px]"
+  >
     <div class="flex flex-col items-center md:items-start gap-1">
-      <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-200">junnhwan</span>
-        <span class="text-slate-600">·</span>
-        <span>Be here now</span>
+      <div class="flex items-center gap-2 text-fg">
+        <span class="font-medium">junnhwan</span>
+        <span class="text-fg-subtle">·</span>
+        <span class="text-fg-muted">Be here now</span>
       </div>
-      <p class="text-slate-500 text-[11px]">
-        &copy; {currentYear} junnhwan. All rights reserved. Built with Astro & Tailwind CSS.
+      <p class="text-[11px] text-fg-subtle">
+        &copy; {currentYear} · Built with Astro
       </p>
     </div>
 
-    <!-- Live Runtime Counter -->
-    <div class="flex flex-col items-center md:items-end gap-1 font-mono text-[11px]">
-      <div id="runtime-counter" class="text-cyan-400 flex items-center gap-1.5">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span id="runtime-text">加载运行时间...</span>
-      </div>
-      <div class="flex items-center gap-3 text-slate-500">
-        <a href="https://github.com/junnhwan" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-400 transition-colors">GitHub</a>
-        <span>·</span>
-        <a href="/about" class="hover:text-cyan-400 transition-colors">About</a>
+    <div class="flex flex-col items-center md:items-end gap-1.5 font-mono text-[11px]">
+      <span id="runtime-text" class="text-fg-subtle tabular-nums"></span>
+      <div class="flex items-center gap-3 text-fg-muted">
+        <a
+          href="https://github.com/junnhwan"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-accent transition-colors">GitHub</a
+        >
+        <span class="text-fg-subtle">·</span>
+        <a href="/about" class="hover:text-accent transition-colors">About</a>
       </div>
     </div>
   </div>
 </footer>
 
 <script>
-  function updateRuntime() {
-    const startDate = new Date('2025-10-10T00:00:00+08:00');
-    const now = new Date();
-    const diff = now.getTime() - startDate.getTime();
+  const SITE_START = new Date('2025-10-10T00:00:00+08:00');
+  let timer: number | undefined;
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  function renderRuntime() {
+    const el = document.getElementById('runtime-text');
+    if (!el) return;
 
-    const runtimeEl = document.getElementById('runtime-text');
-    if (runtimeEl) {
-      runtimeEl.textContent = `已稳定运行 ${days}天 ${hours}时 ${minutes}分 ${seconds}秒`;
-    }
+    const diff = Date.now() - SITE_START.getTime();
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const minutes = Math.floor((diff % 3600000) / 60000);
+
+    el.textContent = `运行 ${days} 天 ${hours} 时 ${minutes} 分`;
   }
 
-  updateRuntime();
-  setInterval(updateRuntime, 1000);
+  function setupRuntime() {
+    window.clearInterval(timer);
+    renderRuntime();
+    // Minute resolution: a ticking seconds counter is noise, not information.
+    timer = window.setInterval(renderRuntime, 30000);
+  }
+
+  document.addEventListener('astro:page-load', setupRuntime);
 </script>
