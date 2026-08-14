@@ -5,17 +5,28 @@ const repos = [
   {
     name: 'k8sgpt-ai / k8sgpt',
     url: 'https://github.com/k8sgpt-ai/k8sgpt',
-    description: 'Giving Kubernetes Superpowers to everyone',
+    description: 'Contributor · Kubernetes & AI tooling',
+    prs: [
+      { number: 1737, title: 'inspect Gateway Accepted and Programmed by type', url: 'https://github.com/k8sgpt-ai/k8sgpt/pull/1737' },
+      { number: 1725, title: 'skip failure reports after successful retries', url: 'https://github.com/k8sgpt-ai/k8sgpt/pull/1725' },
+      { number: 1722, title: 'scan init containers for ConfigMap usage', url: 'https://github.com/k8sgpt-ai/k8sgpt/pull/1722' },
+    ],
   },
   {
     name: 'kubevela / kubevela',
     url: 'https://github.com/kubevela/kubevela',
-    description: 'The Modern Application Platform',
+    description: 'Contributor · Cloud-native application platform',
+    prs: [
+      { number: 7303, title: 'enforce TraitDefinition conflictsWith at admission', url: 'https://github.com/kubevela/kubevela/pull/7303' },
+    ],
   },
   {
     name: 'k0sproject / k0smotron',
     url: 'https://github.com/k0sproject/k0smotron',
-    description: 'Kubernetes in Kubernetes',
+    description: 'Contributor · Kubernetes infrastructure',
+    prs: [
+      { number: 1542, title: 'add e2e checks for each upgrade strategy', url: 'https://github.com/k0sproject/k0smotron/pull/1542' },
+    ],
   },
 ];
 ---
@@ -59,19 +70,42 @@ const repos = [
     </section>
 
     <section class="space-y-3" data-reveal data-reveal-delay="120">
-      <h2 class="font-mono text-[11px] uppercase tracking-[0.12em] text-fg-subtle">Open Source</h2>
+      <div class="flex items-baseline justify-between gap-4">
+        <h2 class="font-mono text-[11px] uppercase tracking-[0.12em] text-fg-subtle">
+          Selected Contributions
+        </h2>
+        <span class="text-[11px] text-fg-subtle">Open source</span>
+      </div>
       <div class="border-t border-line">
         {
           repos.map((repo) => (
-            <a
-              href={repo.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="row py-3.5 flex flex-col sm:flex-row sm:items-baseline sm:gap-4"
-            >
-              <span class="row-title font-mono text-[13px] text-fg-muted">{repo.name}</span>
-              <span class="text-[12px] text-fg-subtle">{repo.description}</span>
-            </a>
+            <div class="row py-3.5">
+              <a
+                href={repo.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex flex-col sm:flex-row sm:items-baseline sm:gap-4"
+              >
+                <span class="row-title font-mono text-[13px] text-fg-muted">{repo.name}</span>
+                <span class="text-[12px] text-fg-subtle">{repo.description}</span>
+              </a>
+              <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]">
+                <span class="text-fg-subtle">Merged PRs</span>
+                {
+                  repo.prs.map((pr) => (
+                    <a
+                      href={pr.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={pr.title}
+                      class="font-mono text-accent transition-colors hover:text-accent-hover"
+                    >
+                      #{pr.number}
+                    </a>
+                  ))
+                }
+              </div>
+            </div>
           ))
         }
       </div>
