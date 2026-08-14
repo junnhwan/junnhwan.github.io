@@ -46,20 +46,59 @@ draft: false
 
 **EmployeeController.java**
 
-```
-/**     * 保存员工信息     *     * @param employeeDTO 员工信息DTO     * @return 返回统一的Result封装对象     */    @PostMapping    @ApiOperation(value = "保存(新增)员工信息")    public Result save(@RequestBody EmployeeDTO employeeDTO) {        log.info("保存(新增)员工信息：{}", employeeDTO);        // 调用service层的方法来处理保存逻辑        employeeService.save(employeeDTO);        return Result.success();    }
+```java
+/**
+     * 保存员工信息
+     *
+     * @param employeeDTO 员工信息DTO
+     * @return 返回统一的Result封装对象
+     */
+    @PostMapping
+    @ApiOperation(value = "保存(新增)员工信息")
+    public Result save(@RequestBody EmployeeDTO employeeDTO) {
+        log.info("保存(新增)员工信息：{}", employeeDTO);
+        // 调用service层的方法来处理保存逻辑
+        employeeService.save(employeeDTO);
+        return Result.success();
+    }
 ```
 
 **EmployeeServiceImpl.java**
 
-```
-/** * 保存员工信息 * * @param employeeDTO 员工信息 */@Overridepublic void save(EmployeeDTO employeeDTO) {    // 先将 DTO 转换为实体对象, 再进行保存, 用spring中的BeanUtils的copyProperties方法    Employee employee = new Employee();    BeanUtils.copyProperties(employeeDTO, employee);    // 再将实体类的剩余属性设置好    employee.setStatus(StatusConstant.ENABLE); // 设置默认状态为启用    employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes())); // 设置初始密码123456, 需要进行MD5加密    employee.setCreateTime(LocalDateTime.now());    employee.setUpdateTime(LocalDateTime.now());    employee.setCreateUser(10L); // TODO: 这里先写死，后面改为当前登录用户的id    employee.setUpdateUser(10L); // TODO: 这里先写死，后面改为当前登录用户的id    // 最后调用Mapper层的方法进行保存    employeeMapper.insert(employee);}
+```java
+/**
+ * 保存员工信息
+ *
+ * @param employeeDTO 员工信息
+ */
+@Override
+public void save(EmployeeDTO employeeDTO) {
+    // 先将 DTO 转换为实体对象, 再进行保存, 用spring中的BeanUtils的copyProperties方法
+    Employee employee = new Employee();
+    BeanUtils.copyProperties(employeeDTO, employee);
+    // 再将实体类的剩余属性设置好
+    employee.setStatus(StatusConstant.ENABLE); // 设置默认状态为启用
+    employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes())); // 设置初始密码123456, 需要进行MD5加密
+    employee.setCreateTime(LocalDateTime.now());
+    employee.setUpdateTime(LocalDateTime.now());
+    employee.setCreateUser(10L); // TODO: 这里先写死，后面改为当前登录用户的id
+    employee.setUpdateUser(10L); // TODO: 这里先写死，后面改为当前登录用户的id
+    // 最后调用Mapper层的方法进行保存
+    employeeMapper.insert(employee);
+}
 ```
 
 **EmployeeMapper.java**
 
-```
-/**     * 插入员工信息     * @param employee 员工对象     */    @Insert("insert into employee (username, password, name, phone, sex, id_number, status, create_time, update_time, create_user, update_user)" +            "values" +            "(#{username}, #{password}, #{name}, #{phone}, #{sex}, #{idNumber}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")    void insert(Employee employee);
+```java
+/**
+     * 插入员工信息
+     * @param employee 员工对象
+     */
+    @Insert("insert into employee (username, password, name, phone, sex, id_number, status, create_time, update_time, create_user, update_user)" +
+            "values" +
+            "(#{username}, #{password}, #{name}, #{phone}, #{sex}, #{idNumber}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+    void insert(Employee employee);
 ```
 
 ### 功能测试
@@ -87,8 +126,25 @@ draft: false
 要将抛出的 **SQLIntegrityConstraintViolationException** 异常,加入全局异常处理器中, 返回异常消息给前端, 保证友好性.  
 在GlobalExceptionHandler中添加:
 
-```
-/** * 捕获SQL异常 * @param ex 捕获到的异常对象 * @return 返回封装的异常信息 */@ExceptionHandlerpublic Result exceptionHandler(SQLIntegrityConstraintViolationException ex){    // Duplicate entry 'hwan1' for key 'employee.idx_username';    String message = ex.getMessage();    if(message.contains("Duplicate entry")){        String[] split = message.split(" ");        String username = split[2];        String msg = username + MessageConstant.ALREADY_EXIST;        return Result.error(msg);    } else {        return Result.error(MessageConstant.UNKNOWN_ERROR);    }}
+```java
+/**
+ * 捕获SQL异常
+ * @param ex 捕获到的异常对象
+ * @return 返回封装的异常信息
+ */
+@ExceptionHandler
+public Result exceptionHandler(SQLIntegrityConstraintViolationException ex){
+    // Duplicate entry 'hwan1' for key 'employee.idx_username';
+    String message = ex.getMessage();
+    if(message.contains("Duplicate entry")){
+        String[] split = message.split(" ");
+        String username = split[2];
+        String msg = username + MessageConstant.ALREADY_EXIST;
+        return Result.error(msg);
+    } else {
+        return Result.error(MessageConstant.UNKNOWN_ERROR);
+    }
+}
 ```
 
 #### 解决设置当前用户id的问题
@@ -159,20 +215,51 @@ draft: false
 
 **EmployeeController.java**
 
-```
-/** * 员工分页查询 * * @param employeePageQueryDTO 员工分页查询DTO * @return 返回统一的Result封装对象 */@ApiOperation("员工分页查询")@GetMapping("/page")public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {    log.info("员工分页查询：参数{}", employeePageQueryDTO);    PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);    return Result.success(pageResult);}
+```java
+/**
+ * 员工分页查询
+ *
+ * @param employeePageQueryDTO 员工分页查询DTO
+ * @return 返回统一的Result封装对象
+ */
+@ApiOperation("员工分页查询")
+@GetMapping("/page")
+public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO) {
+    log.info("员工分页查询：参数{}", employeePageQueryDTO);
+    PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
+    return Result.success(pageResult);
+}
 ```
 
 **EmployeeServiceImpl.java**
 
-```
-/** * 员工分页查询 * * @param employeePageQueryDTO 分页查询信息 * @return 分页结果 */@Overridepublic PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {    PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());    Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);    return new PageResult(page.getTotal(), page.getResult());}
+```java
+/**
+ * 员工分页查询
+ *
+ * @param employeePageQueryDTO 分页查询信息
+ * @return 分页结果
+ */
+@Override
+public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+    PageHelper.startPage(employeePageQueryDTO.getPage(), employeePageQueryDTO.getPageSize());
+    Page<Employee> page = employeeMapper.pageQuery(employeePageQueryDTO);
+    return new PageResult(page.getTotal(), page.getResult());
+}
 ```
 
 **EmployeeMapper.xml**
 
-```
-<select id="pageQuery" resultType="com.sky.entity.Employee">    select * from employee    <where>        <if test="name != null and name != ''">            and name like concat('%', #{name}, '%')        </if>    </where>    order by update_time desc</select>
+```xml
+<select id="pageQuery" resultType="com.sky.entity.Employee">
+    select * from employee
+    <where>
+        <if test="name != null and name != ''">
+            and name like concat('%', #{name}, '%')
+        </if>
+    </where>
+    order by update_time desc
+</select>
 ```
 
 ### 解决分页查询时间格式问题
@@ -185,8 +272,18 @@ draft: false
 * 方式一：在属性加上注解，可行，但是需要在每个时间属性上都要加上该注解，使用较麻烦，不能全局处理。
 * 方式二：在 WebMvcConfiguration 中扩展 SpringMVC 的消息转换器，统一对日期类型进行格式处理。
 
-```
-@Overrideprotected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {    log.info("扩展消息转换器...");    // 创建消息转换器对象    MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();    // 设置对象转换器，底层使用Jackson将Java对象转为json    converter.setObjectMapper(new JacksonObjectMapper());    // 将上面的消息转换器对象追加到mvc框架的转换器集合中    // 这里前面的 0 是优先级，设置在最前面，优先使用我们定义的转换器    converters.add(0, converter);}
+```java
+@Override
+protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+    log.info("扩展消息转换器...");
+    // 创建消息转换器对象
+    MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+    // 设置对象转换器，底层使用Jackson将Java对象转为json
+    converter.setObjectMapper(new JacksonObjectMapper());
+    // 将上面的消息转换器对象追加到mvc框架的转换器集合中
+    // 这里前面的 0 是优先级，设置在最前面，优先使用我们定义的转换器
+    converters.add(0, converter);
+}
 ```
 
 **JacksonObjectMapper**中定义了**时间格式**：  
@@ -208,22 +305,62 @@ draft: false
 
 **EmployeeController.java**
 
-```
-/** * 启用禁用员工账号 * * @param status 状态 * @param id     员工id * @return 返回统一的Result封装对象 */@PostMapping("/status/{status}")@ApiOperation("启用禁用员工账号")public Result<Void> startOrStop(@PathVariable Integer status, Long id) {    log.info("启用禁用员工账号：status={}, id={}", status, id);    employeeService.startOrStop(status, id);    return Result.success();}
+```java
+/**
+ * 启用禁用员工账号
+ *
+ * @param status 状态
+ * @param id     员工id
+ * @return 返回统一的Result封装对象
+ */
+@PostMapping("/status/{status}")
+@ApiOperation("启用禁用员工账号")
+public Result<Void> startOrStop(@PathVariable Integer status, Long id) {
+    log.info("启用禁用员工账号：status={}, id={}", status, id);
+    employeeService.startOrStop(status, id);
+    return Result.success();
+}
 ```
 
 **EmployeeServiceImpl.java**
 
-```
-/** * 启用或禁用员工账号 * * @param status 状态 * @param id     员工id */@Overridepublic void startOrStop(Integer status, Long id) {    Employee employee = Employee.builder()            .id(id)            .status(status)            .build();    employeeMapper.updateById(employee);}
+```java
+/**
+ * 启用或禁用员工账号
+ *
+ * @param status 状态
+ * @param id     员工id
+ */
+@Override
+public void startOrStop(Integer status, Long id) {
+    Employee employee = Employee.builder()
+            .id(id)
+            .status(status)
+            .build();
+    employeeMapper.updateById(employee);
+}
 ```
 
 **EmployeeMapper.xml**
 
 根据传入的`Employee`对象中的非空字段，选择性地更新`employee`表中的对应记录。它的核心特点是**只更新需要修改的字段**，避免不必要的数据库操作。
 
-```
-<update id="updateById" parameterType="employee">    update employee    <set>        <if test="name != null">name = #{name},</if>        <if test="username != null">username = #{username},</if>        <if test="password != null">password = #{password},</if>        <if test="phone != null">phone = #{phone},</if>        <if test="sex != null">sex = #{sex},</if>        <if test="idNumber != null">id_Number = #{idNumber},</if>        <if test="updateTime != null">update_Time = #{updateTime},</if>        <if test="updateUser != null">update_User = #{updateUser},</if>        <if test="status != null">status = #{status},</if>    </set>    where id = #{id}</update>
+```xml
+<update id="updateById" parameterType="employee">
+    update employee
+    <set>
+        <if test="name != null">name = #{name},</if>
+        <if test="username != null">username = #{username},</if>
+        <if test="password != null">password = #{password},</if>
+        <if test="phone != null">phone = #{phone},</if>
+        <if test="sex != null">sex = #{sex},</if>
+        <if test="idNumber != null">id_Number = #{idNumber},</if>
+        <if test="updateTime != null">update_Time = #{updateTime},</if>
+        <if test="updateUser != null">update_User = #{updateUser},</if>
+        <if test="status != null">status = #{status},</if>
+    </set>
+    where id = #{id}
+</update>
 ```
 
 > 这里这个功能的实现虽然只需要修改状态值，但是可以把其他需要根据主键动态修改的属性都加上，方便后续复用
@@ -256,20 +393,76 @@ draft: false
 
 **EmployeeController.java**
 
-```
-/** * 根据id查询员工信息 * * @param id 员工id * @return 返回统一的Result封装对象 */@GetMapping("/{id}")@ApiOperation("根据id查询员工信息")public Result<Employee> getById(@PathVariable Long id) {    log.info("根据id查询员工信息：id={}", id);    Employee employee = employeeService.getById(id);    return Result.success(employee);}/** * 修改员工信息 * * @param employeeDTO 员工信息DTO * @return 返回统一的Result封装对象 */@PutMapping@ApiOperation("修改员工信息")public Result<Void> update(@RequestBody EmployeeDTO employeeDTO) {    log.info("修改员工信息：{}", employeeDTO);    employeeService.update(employeeDTO);    return Result.success();}
+```java
+/**
+ * 根据id查询员工信息
+ *
+ * @param id 员工id
+ * @return 返回统一的Result封装对象
+ */
+@GetMapping("/{id}")
+@ApiOperation("根据id查询员工信息")
+public Result<Employee> getById(@PathVariable Long id) {
+    log.info("根据id查询员工信息：id={}", id);
+    Employee employee = employeeService.getById(id);
+    return Result.success(employee);
+}
+
+/**
+ * 修改员工信息
+ *
+ * @param employeeDTO 员工信息DTO
+ * @return 返回统一的Result封装对象
+ */
+@PutMapping
+@ApiOperation("修改员工信息")
+public Result<Void> update(@RequestBody EmployeeDTO employeeDTO) {
+    log.info("修改员工信息：{}", employeeDTO);
+    employeeService.update(employeeDTO);
+    return Result.success();
+}
 ```
 
 **EmployeeServiceImpl.java**
 
-```
-/** * 根据id查询员工信息 * * @param id 员工id * @return 员工信息 */@Overridepublic Employee getById(Long id) {    Employee employee = employeeMapper.getById(id);    if (employee == null) {  // 如果没有查询到员工信息, 则抛出异常        throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);    }    return employee; // 返回员工信息}@Overridepublic void update(EmployeeDTO employeeDTO) {    // 传来的是DTO对象， 要将 DTO 转换为实体对象    Employee employee = new Employee();    BeanUtils.copyProperties(employeeDTO, employee);    // 设置修改相关属性，修改时间和修改人    employee.setUpdateTime(LocalDateTime.now());    employee.setUpdateUser(BaseContext.getCurrentId());    employeeMapper.updateById(employee);  // 更新员工信息 (前面在写启用禁用员工账号时，在Mapper中已经配置了根据id动态更新)}
+```java
+/**
+ * 根据id查询员工信息
+ *
+ * @param id 员工id
+ * @return 员工信息
+ */
+@Override
+public Employee getById(Long id) {
+    Employee employee = employeeMapper.getById(id);
+    if (employee == null) {  // 如果没有查询到员工信息, 则抛出异常
+        throw new AccountNotFoundException(MessageConstant.ACCOUNT_NOT_FOUND);
+    }
+    return employee; // 返回员工信息
+}
+
+@Override
+public void update(EmployeeDTO employeeDTO) {
+    // 传来的是DTO对象， 要将 DTO 转换为实体对象
+    Employee employee = new Employee();
+    BeanUtils.copyProperties(employeeDTO, employee);
+    // 设置修改相关属性，修改时间和修改人
+    employee.setUpdateTime(LocalDateTime.now());
+    employee.setUpdateUser(BaseContext.getCurrentId());
+    employeeMapper.updateById(employee);  // 更新员工信息 (前面在写启用禁用员工账号时，在Mapper中已经配置了根据id动态更新)
+}
 ```
 
 **EmployeeMapper.java**
 
-```
-/** * 根据id查询员工信息 * @param id 员工id * @return 员工对象 */@Select("select * from employee where id = #{id}")Employee getById(Long id);
+```java
+/**
+ * 根据id查询员工信息
+ * @param id 员工id
+ * @return 员工对象
+ */
+@Select("select * from employee where id = #{id}")
+Employee getById(Long id);
 ```
 
 ### 功能测试
@@ -291,7 +484,7 @@ draft: false
 
 * **新增菜品分类：** 当我们在后台系统中添加菜品时需要选择一个菜品分类，在移动端也会按照菜品分类来展示对应的菜品。
 * **菜品分类分页查询：** 系统中的分类很多的时候，如果在一个页面中全部展示出来会显得比较乱，不便于查看，所以一般的系统中都会以分页的方式来展示列表数据。
-* **根据 id 删除菜品分类：** 在分类管理列表页面，可以对某个分类进行删除操作。需要注意的是\*\*\*当分类关联了菜品或者套餐时，此分类不允许删除。\*\*\*
+* **根据 id 删除菜品分类：** 在分类管理列表页面，可以对某个分类进行删除操作。需要注意的是 ***当分类关联了菜品或者套餐时，此分类不允许删除。***
 * **修改菜品分类：** 在分类管理列表页面点击修改按钮，弹出修改窗口，在修改窗口回显分类信息并进行修改，最后点击确定按钮完成修改操作。
 * **启用禁用菜品分类：** 在分类管理列表页面，可以对某个分类进行启用或者禁用操作。
 * **分类类型查询：** 当点击分类类型下拉框时，从数据库中查询所有的菜品分类数据进行展示。
@@ -311,38 +504,402 @@ draft: false
 
 **CategoryController.java**
 
-```
-package com.sky.controller.admin;import com.sky.dto.CategoryDTO;import com.sky.dto.CategoryPageQueryDTO;import com.sky.entity.Category;import com.sky.result.PageResult;import com.sky.result.Result;import com.sky.service.CategoryService;import io.swagger.annotations.Api;import io.swagger.annotations.ApiOperation;import lombok.extern.slf4j.Slf4j;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.web.bind.annotation.*;import java.util.List;/** * 分类管理 */@RestController@RequestMapping("/admin/category")@Api(tags = "分类相关接口")@Slf4jpublic class CategoryController {    @Autowired    private CategoryService categoryService;    /**     * 新增分类     * @param categoryDTO 分类信息     * @return 操作结果     */    @PostMapping    @ApiOperation("新增分类")    public Result<String> save(@RequestBody CategoryDTO categoryDTO){        log.info("新增分类：{}", categoryDTO);        categoryService.save(categoryDTO);        return Result.success();    }    /**     * 分类分页查询     * @param categoryPageQueryDTO  分页查询参数     * @return 分页查询结果     */    @GetMapping("/page")    @ApiOperation("分类分页查询")    public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO){        log.info("分页查询：{}", categoryPageQueryDTO);        PageResult pageResult = categoryService.pageQuery(categoryPageQueryDTO);        return Result.success(pageResult);    }    /**     * 删除分类     * @param id 分类id     * @return 操作结果     */    @DeleteMapping    @ApiOperation("删除分类")    public Result<String> deleteById(Long id){        log.info("删除分类：{}", id);        categoryService.deleteById(id);        return Result.success();    }    /**     * 修改分类     * @param categoryDTO 分类信息     * @return 操作结果     */    @PutMapping    @ApiOperation("修改分类")    public Result<String> update(@RequestBody CategoryDTO categoryDTO){        categoryService.update(categoryDTO);        return Result.success();    }    /**     * 启用、禁用分类     * @param status 0-禁用，1-启用     * @param id 分类id     * @return 操作结果     */    @PostMapping("/status/{status}")    @ApiOperation("启用禁用分类")    public Result<String> startOrStop(@PathVariable("status") Integer status, Long id){        categoryService.startOrStop(status,id);        return Result.success();    }    /**     * 根据类型查询分类     * @param type 分类类型     * @return 分类列表     */    @GetMapping("/list")    @ApiOperation("根据类型查询分类")    public Result<List<Category>> list(Integer type){        List<Category> list = categoryService.list(type);        return Result.success(list);    }}
+```java
+package com.sky.controller.admin;
+
+import com.sky.dto.CategoryDTO;
+import com.sky.dto.CategoryPageQueryDTO;
+import com.sky.entity.Category;
+import com.sky.result.PageResult;
+import com.sky.result.Result;
+import com.sky.service.CategoryService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+/**
+ * 分类管理
+ */
+@RestController
+@RequestMapping("/admin/category")
+@Api(tags = "分类相关接口")
+@Slf4j
+public class CategoryController {
+
+    @Autowired
+    private CategoryService categoryService;
+
+    /**
+     * 新增分类
+     * @param categoryDTO 分类信息
+     * @return 操作结果
+     */
+    @PostMapping
+    @ApiOperation("新增分类")
+    public Result<String> save(@RequestBody CategoryDTO categoryDTO){
+        log.info("新增分类：{}", categoryDTO);
+        categoryService.save(categoryDTO);
+        return Result.success();
+    }
+
+    /**
+     * 分类分页查询
+     * @param categoryPageQueryDTO  分页查询参数
+     * @return 分页查询结果
+     */
+    @GetMapping("/page")
+    @ApiOperation("分类分页查询")
+    public Result<PageResult> page(CategoryPageQueryDTO categoryPageQueryDTO){
+        log.info("分页查询：{}", categoryPageQueryDTO);
+        PageResult pageResult = categoryService.pageQuery(categoryPageQueryDTO);
+        return Result.success(pageResult);
+    }
+
+    /**
+     * 删除分类
+     * @param id 分类id
+     * @return 操作结果
+     */
+    @DeleteMapping
+    @ApiOperation("删除分类")
+    public Result<String> deleteById(Long id){
+        log.info("删除分类：{}", id);
+        categoryService.deleteById(id);
+        return Result.success();
+    }
+
+    /**
+     * 修改分类
+     * @param categoryDTO 分类信息
+     * @return 操作结果
+     */
+    @PutMapping
+    @ApiOperation("修改分类")
+    public Result<String> update(@RequestBody CategoryDTO categoryDTO){
+        categoryService.update(categoryDTO);
+        return Result.success();
+    }
+
+    /**
+     * 启用、禁用分类
+     * @param status 0-禁用，1-启用
+     * @param id 分类id
+     * @return 操作结果
+     */
+    @PostMapping("/status/{status}")
+    @ApiOperation("启用禁用分类")
+    public Result<String> startOrStop(@PathVariable("status") Integer status, Long id){
+        categoryService.startOrStop(status,id);
+        return Result.success();
+    }
+
+    /**
+     * 根据类型查询分类
+     * @param type 分类类型
+     * @return 分类列表
+     */
+    @GetMapping("/list")
+    @ApiOperation("根据类型查询分类")
+    public Result<List<Category>> list(Integer type){
+        List<Category> list = categoryService.list(type);
+        return Result.success(list);
+    }
+}
 ```
 
 **CategoryServiceImpl.java**
 
-```
-package com.sky.service.impl;import com.github.pagehelper.Page;import com.github.pagehelper.PageHelper;import com.sky.constant.MessageConstant;import com.sky.constant.StatusConstant;import com.sky.context.BaseContext;import com.sky.dto.CategoryDTO;import com.sky.dto.CategoryPageQueryDTO;import com.sky.entity.Category;import com.sky.exception.DeletionNotAllowedException;import com.sky.mapper.CategoryMapper;import com.sky.mapper.DishMapper;import com.sky.mapper.SetmealMapper;import com.sky.result.PageResult;import com.sky.service.CategoryService;import lombok.extern.slf4j.Slf4j;import org.springframework.beans.BeanUtils;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.stereotype.Service;import java.time.LocalDateTime;import java.util.List;/** * 分类业务层 */@Service@Slf4jpublic class CategoryServiceImpl implements CategoryService {    @Autowired    private CategoryMapper categoryMapper;    @Autowired    private DishMapper dishMapper;    @Autowired    private SetmealMapper setmealMapper;    /**     * 新增分类     * @param categoryDTO 分类信息     */    public void save(CategoryDTO categoryDTO) {        Category category = new Category();        //属性拷贝        BeanUtils.copyProperties(categoryDTO, category);        //分类状态默认为禁用状态0        category.setStatus(StatusConstant.DISABLE);        //设置创建时间、修改时间、创建人、修改人        category.setCreateTime(LocalDateTime.now());        category.setUpdateTime(LocalDateTime.now());        category.setCreateUser(BaseContext.getCurrentId());        category.setUpdateUser(BaseContext.getCurrentId());        categoryMapper.insert(category);    }    /**     * 分页查询     * @param categoryPageQueryDTO 分页查询参数     * @return 分页结果     */    public PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {        PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());        //下一条sql进行分页，自动加入limit关键字分页        Page<Category> page = categoryMapper.pageQuery(categoryPageQueryDTO);        return new PageResult(page.getTotal(), page.getResult());    }    /**     * 根据id删除分类     * @param id 分类id     */    public void deleteById(Long id) {        //查询当前分类是否关联了菜品，如果关联了就抛出业务异常        Integer count = dishMapper.countByCategoryId(id);        if(count > 0){            //当前分类下有菜品，不能删除            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);        }        //查询当前分类是否关联了套餐，如果关联了就抛出业务异常        count = setmealMapper.countByCategoryId(id);        if(count > 0){            //当前分类下有菜品，不能删除            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);        }        //删除分类数据        categoryMapper.deleteById(id);    }    /**     * 修改分类     * @param categoryDTO 分类信息     */    public void update(CategoryDTO categoryDTO) {        Category category = new Category();        BeanUtils.copyProperties(categoryDTO,category);        //设置修改时间、修改人        category.setUpdateTime(LocalDateTime.now());        category.setUpdateUser(BaseContext.getCurrentId());        categoryMapper.update(category);    }    /**     * 启用、禁用分类     * @param status 分类状态     * @param id 分类id     */    public void startOrStop(Integer status, Long id) {        Category category = Category.builder()                .id(id)                .status(status)                .updateTime(LocalDateTime.now())                .updateUser(BaseContext.getCurrentId())                .build();        categoryMapper.update(category);    }    /**     * 根据类型查询分类     * @param type 分类类型     * @return 分类列表     */    public List<Category> list(Integer type) {        return categoryMapper.list(type);    }}
+```java
+package com.sky.service.impl;
+
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
+import com.sky.dto.CategoryDTO;
+import com.sky.dto.CategoryPageQueryDTO;
+import com.sky.entity.Category;
+import com.sky.exception.DeletionNotAllowedException;
+import com.sky.mapper.CategoryMapper;
+import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealMapper;
+import com.sky.result.PageResult;
+import com.sky.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.List;
+
+/**
+ * 分类业务层
+ */
+@Service
+@Slf4j
+public class CategoryServiceImpl implements CategoryService {
+
+    @Autowired
+    private CategoryMapper categoryMapper;
+    @Autowired
+    private DishMapper dishMapper;
+    @Autowired
+    private SetmealMapper setmealMapper;
+
+    /**
+     * 新增分类
+     * @param categoryDTO 分类信息
+     */
+    public void save(CategoryDTO categoryDTO) {
+        Category category = new Category();
+        //属性拷贝
+        BeanUtils.copyProperties(categoryDTO, category);
+
+        //分类状态默认为禁用状态0
+        category.setStatus(StatusConstant.DISABLE);
+
+        //设置创建时间、修改时间、创建人、修改人
+        category.setCreateTime(LocalDateTime.now());
+        category.setUpdateTime(LocalDateTime.now());
+        category.setCreateUser(BaseContext.getCurrentId());
+        category.setUpdateUser(BaseContext.getCurrentId());
+
+        categoryMapper.insert(category);
+    }
+
+    /**
+     * 分页查询
+     * @param categoryPageQueryDTO 分页查询参数
+     * @return 分页结果
+     */
+    public PageResult pageQuery(CategoryPageQueryDTO categoryPageQueryDTO) {
+        PageHelper.startPage(categoryPageQueryDTO.getPage(),categoryPageQueryDTO.getPageSize());
+        //下一条sql进行分页，自动加入limit关键字分页
+        Page<Category> page = categoryMapper.pageQuery(categoryPageQueryDTO);
+        return new PageResult(page.getTotal(), page.getResult());
+    }
+
+    /**
+     * 根据id删除分类
+     * @param id 分类id
+     */
+    public void deleteById(Long id) {
+        //查询当前分类是否关联了菜品，如果关联了就抛出业务异常
+        Integer count = dishMapper.countByCategoryId(id);
+        if(count > 0){
+            //当前分类下有菜品，不能删除
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
+        }
+
+        //查询当前分类是否关联了套餐，如果关联了就抛出业务异常
+        count = setmealMapper.countByCategoryId(id);
+        if(count > 0){
+            //当前分类下有菜品，不能删除
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
+        }
+
+        //删除分类数据
+        categoryMapper.deleteById(id);
+    }
+
+    /**
+     * 修改分类
+     * @param categoryDTO 分类信息
+     */
+    public void update(CategoryDTO categoryDTO) {
+        Category category = new Category();
+        BeanUtils.copyProperties(categoryDTO,category);
+
+        //设置修改时间、修改人
+        category.setUpdateTime(LocalDateTime.now());
+        category.setUpdateUser(BaseContext.getCurrentId());
+
+        categoryMapper.update(category);
+    }
+
+    /**
+     * 启用、禁用分类
+     * @param status 分类状态
+     * @param id 分类id
+     */
+    public void startOrStop(Integer status, Long id) {
+        Category category = Category.builder()
+                .id(id)
+                .status(status)
+                .updateTime(LocalDateTime.now())
+                .updateUser(BaseContext.getCurrentId())
+                .build();
+        categoryMapper.update(category);
+    }
+
+    /**
+     * 根据类型查询分类
+     * @param type 分类类型
+     * @return 分类列表
+     */
+    public List<Category> list(Integer type) {
+        return categoryMapper.list(type);
+    }
+}
 ```
 
 **CategoryMapper.java**
 
-```
-package com.sky.mapper;import com.github.pagehelper.Page;import com.sky.dto.CategoryPageQueryDTO;import com.sky.entity.Category;import org.apache.ibatis.annotations.Delete;import org.apache.ibatis.annotations.Insert;import org.apache.ibatis.annotations.Mapper;import java.util.List;@Mapperpublic interface CategoryMapper {    /**     * 插入数据     * @param category 分类     */    @Insert("insert into category(type, name, sort, status, create_time, update_time, create_user, update_user)" +            " VALUES" +            " (#{type}, #{name}, #{sort}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")    void insert(Category category);    /**     * 分页查询     * @param categoryPageQueryDTO 分页查询参数     * @return 分页结果     */    Page<Category> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);    /**     * 根据id删除分类     * @param id 分类id     */    @Delete("delete from category where id = #{id}")    void deleteById(Long id);    /**     * 根据id修改分类     * @param category 分类     */    void update(Category category);    /**     * 根据类型查询分类     * @param type 分类类型     * @return 分类列表     */    List<Category> list(Integer type);}
+```java
+package com.sky.mapper;
+
+import com.github.pagehelper.Page;
+import com.sky.dto.CategoryPageQueryDTO;
+import com.sky.entity.Category;
+import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
+
+@Mapper
+public interface CategoryMapper {
+
+    /**
+     * 插入数据
+     * @param category 分类
+     */
+    @Insert("insert into category(type, name, sort, status, create_time, update_time, create_user, update_user)" +
+            " VALUES" +
+            " (#{type}, #{name}, #{sort}, #{status}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})")
+    void insert(Category category);
+
+    /**
+     * 分页查询
+     * @param categoryPageQueryDTO 分页查询参数
+     * @return 分页结果
+     */
+    Page<Category> pageQuery(CategoryPageQueryDTO categoryPageQueryDTO);
+
+    /**
+     * 根据id删除分类
+     * @param id 分类id
+     */
+    @Delete("delete from category where id = #{id}")
+    void deleteById(Long id);
+
+    /**
+     * 根据id修改分类
+     * @param category 分类
+     */
+    void update(Category category);
+
+    /**
+     * 根据类型查询分类
+     * @param type 分类类型
+     * @return 分类列表
+     */
+    List<Category> list(Integer type);
+}
 ```
 
 **DishMapper.java**
 
-```
-package com.sky.mapper;import org.apache.ibatis.annotations.Mapper;import org.apache.ibatis.annotations.Select;@Mapperpublic interface DishMapper {    /**     * 根据分类id查询菜品数量     * @param categoryId 分类Id     * @return 数量     */    @Select("select count(id) from dish where category_id = #{categoryId}")    Integer countByCategoryId(Long categoryId);}
+```java
+package com.sky.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+@Mapper
+public interface DishMapper {
+
+    /**
+     * 根据分类id查询菜品数量
+     * @param categoryId 分类Id
+     * @return 数量
+     */
+    @Select("select count(id) from dish where category_id = #{categoryId}")
+    Integer countByCategoryId(Long categoryId);
+
+}
 ```
 
 **SetmealMapper.java**
 
-```
-package com.sky.mapper;import org.apache.ibatis.annotations.Mapper;import org.apache.ibatis.annotations.Select;@Mapperpublic interface SetmealMapper {    /**     * 根据分类id查询套餐的数量     * @param id 分类Id     * @return 数量     */    @Select("select count(id) from setmeal where category_id = #{categoryId}")    Integer countByCategoryId(Long id);}
+```java
+package com.sky.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+@Mapper
+public interface SetmealMapper {
+
+    /**
+     * 根据分类id查询套餐的数量
+     * @param id 分类Id
+     * @return 数量
+     */
+    @Select("select count(id) from setmeal where category_id = #{categoryId}")
+    Integer countByCategoryId(Long id);
+
+}
 ```
 
 **CategoryMapper.xml**
 
-```
-<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" ><mapper namespace="com.sky.mapper.CategoryMapper">    <select id="pageQuery" resultType="com.sky.entity.Category">        select * from category        <where>            <if test="name != null and name != ''">                and name like concat('%',#{name},'%')            </if>            <if test="type != null">                and type = #{type}            </if>        </where>        order by sort asc , create_time desc    </select>    <update id="update" parameterType="Category">        update category        <set>            <if test="type != null">                type = #{type},            </if>            <if test="name != null">                name = #{name},            </if>            <if test="sort != null">                sort = #{sort},            </if>            <if test="status != null">                status = #{status},            </if>            <if test="updateTime != null">                update_time = #{updateTime},            </if>            <if test="updateUser != null">                update_user = #{updateUser}            </if>        </set>        where id = #{id}    </update>    <select id="list" resultType="Category">        select * from category        where status = 1        <if test="type != null">            and type = #{type}        </if>        order by sort ,create_time desc    </select></mapper>
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.CategoryMapper">
+
+    <select id="pageQuery" resultType="com.sky.entity.Category">
+        select * from category
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        </where>
+        order by sort asc , create_time desc
+    </select>
+
+    <update id="update" parameterType="Category">
+        update category
+        <set>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="sort != null">
+                sort = #{sort},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="updateUser != null">
+                update_user = #{updateUser}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="list" resultType="Category">
+        select * from category
+        where status = 1
+        <if test="type != null">
+            and type = #{type}
+        </if>
+        order by sort ,create_time desc
+    </select>
+</mapper>
 ```
 
 ## 附：其他盲区知识补充
@@ -359,21 +916,31 @@ package com.sky.mapper;import org.apache.ibatis.annotations.Mapper;import org.ap
 
    示例：前端请求（JSON 格式）：
 
-   ```
-   // 请求体内容{  "username": "zhangsan",  "password": "123456"}
+   ```json
+   // 请求体内容
+   {
+     "username": "zhangsan",
+     "password": "123456"
+   }
    ```
 
    后端 Controller 接收：
 
-   ```
-   @PostMapping("/login")public Result login(@RequestBody User user) {  // 需要@RequestBody将JSON转换为User对象    // 处理登录逻辑}
+   ```java
+   @PostMapping("/login")
+   public Result login(@RequestBody User user) {  // 需要@RequestBody将JSON转换为User对象
+       // 处理登录逻辑
+   }
    ```
 2. **接收复杂对象或数组**当参数是复杂 Java 对象（包含多个字段）、集合（如`List`、`Map`）或数组时，即使请求体是其他格式（如 XML），也需要`@RequestBody`绑定数据。
 
    示例（接收数组）：
 
-   ```
-   @PostMapping("/batch-delete")public Result batchDelete(@RequestBody List<Long> ids) {  // 接收JSON数组[1,2,3]    // 批量删除逻辑}
+   ```java
+   @PostMapping("/batch-delete")
+   public Result batchDelete(@RequestBody List<Long> ids) {  // 接收JSON数组[1,2,3]
+       // 批量删除逻辑
+   }
    ```
 
 ### 二、不需要添加`@RequestBody`的场景
@@ -382,28 +949,40 @@ package com.sky.mapper;import org.apache.ibatis.annotations.Mapper;import org.ap
 
 典型场景：
 
-1. \*\*参数来自 URL 路径（`@PathVariable`）\*\*参数嵌在 URL 中（如`/user/123`中的`123`），用`@PathVariable`接收，无需`@RequestBody`。
+1. **参数来自 URL 路径（`@PathVariable`）**参数嵌在 URL 中（如`/user/123`中的`123`），用`@PathVariable`接收，无需`@RequestBody`。
 
+   ```java
+   @GetMapping("/user/{id}")
+   public Result getUser(@PathVariable Long id) {  // 从URL路径获取id
+       // 查询用户逻辑
+   }
    ```
-   @GetMapping("/user/{id}")public Result getUser(@PathVariable Long id) {  // 从URL路径获取id    // 查询用户逻辑}
-   ```
-2. \*\*参数来自查询参数（`@RequestParam`）\*\*参数在 URL 末尾（如`/search?name=zhangsan&age=20`），用`@RequestParam`接收（简单类型可省略该注解）。
+2. **参数来自查询参数（`@RequestParam`）**参数在 URL 末尾（如`/search?name=zhangsan&age=20`），用`@RequestParam`接收（简单类型可省略该注解）。
 
+   ```java
+   @GetMapping("/search")
+   public Result search(@RequestParam String name, Integer age) {  // 从查询参数获取
+       // 搜索逻辑
+   }
    ```
-   @GetMapping("/search")public Result search(@RequestParam String name, Integer age) {  // 从查询参数获取    // 搜索逻辑}
-   ```
-3. \*\*表单提交（`application/x-www-form-urlencoded`）\*\*前端通过表单提交数据（`Content-Type: application/x-www-form-urlencoded`），此时参数在请求体中，但格式是键值对（非 JSON），无需`@RequestBody`，Spring 会自动绑定到对象。
+3. **表单提交（`application/x-www-form-urlencoded`）**前端通过表单提交数据（`Content-Type: application/x-www-form-urlencoded`），此时参数在请求体中，但格式是键值对（非 JSON），无需`@RequestBody`，Spring 会自动绑定到对象。
 
    示例：前端表单：
 
-   ```
-   <form method="post" action="/register">    <input name="username" value="zhangsan">    <input name="password" value="123456"></form>
+   ```xml
+   <form method="post" action="/register">
+       <input name="username" value="zhangsan">
+       <input name="password" value="123456">
+   </form>
    ```
 
    后端接收：
 
-   ```
-   @PostMapping("/register")public Result register(User user) {  // 无需@RequestBody，自动绑定表单字段    // 注册逻辑}
+   ```java
+   @PostMapping("/register")
+   public Result register(User user) {  // 无需@RequestBody，自动绑定表单字段
+       // 注册逻辑
+   }
    ```
 
 ### 三、关键判断依据
@@ -434,13 +1013,17 @@ package com.sky.mapper;import org.apache.ibatis.annotations.Mapper;import org.ap
 
 * 示例 1（缓存范围内，看似正常）：
 
-  ```
-  Integer a = 127;Integer b = 127;System.out.println(a == b); // true（因为 Integer 缓存了 -128~127 的对象）
+  ```java
+  Integer a = 127;
+  Integer b = 127;
+  System.out.println(a == b); // true（因为 Integer 缓存了 -128~127 的对象）
   ```
 * 示例 2（超出缓存范围，逻辑错误）：
 
-  ```
-  Integer c = 128;Integer d = 128;System.out.println(c == d); // false（超出缓存，是两个不同对象）
+  ```java
+  Integer c = 128;
+  Integer d = 128;
+  System.out.println(c == d); // false（超出缓存，是两个不同对象）
   ```
 
   此时 `c` 和 `d` 的**值都是 128**，但 `==` 结果为 `false`（因为是不同对象实例）。
@@ -449,8 +1032,10 @@ package com.sky.mapper;import org.apache.ibatis.annotations.Mapper;import org.ap
 
 如果比较的对象包含 `null`，`==` 会直接抛出 `NullPointerException`：
 
-```
-Integer a = null;Integer b = 10;System.out.println(a == b); // 直接抛 NPE
+```java
+Integer a = null;
+Integer b = 10;
+System.out.println(a == b); // 直接抛 NPE
 ```
 
 #### 推荐用法：`Objects.equals(...)`
@@ -462,11 +1047,17 @@ Integer a = null;Integer b = 10;System.out.println(a == b); // 直接抛 NPE
 
 示例：
 
-```
-Integer a = 128;Integer b = 128;System.out.println(Objects.equals(a, b)); // true（值相等）Integer c = null;Integer d = 10;System.out.println(Objects.equals(c, d)); // false（安全，无 NPE）
+```java
+Integer a = 128;
+Integer b = 128;
+System.out.println(Objects.equals(a, b)); // true（值相等）
+
+Integer c = null;
+Integer d = 10;
+System.out.println(Objects.equals(c, d)); // false（安全，无 NPE）
 ```
 
-总结：当需要比较 \*\* 数字包装类的 “值是否相等”\*\* 时，应避免用 `==`，推荐使用 `Objects.equals(...)` 保证逻辑正确且避免空指针。
+总结：当需要比较 **数字包装类的 “值是否相等”** 时，应避免用 `==`，推荐使用 `Objects.equals(...)` 保证逻辑正确且避免空指针。
 
 ---
 
@@ -482,8 +1073,14 @@ MyBatis 3.4.0 及以上版本（苍穹外卖用的是高版本，如 3.5.x），
 
 例如：即使去掉 `parameterType`，以下 SQL 仍能正常运行：
 
-```
-<update id="update"> <!-- 省略 parameterType -->    update employee    <set>        <if test="status != null">status = #{status},</if>    </set>    where id = #{id}</update>
+```xml
+<update id="update"> <!-- 省略 parameterType -->
+    update employee
+    <set>
+        <if test="status != null">status = #{status},</if>
+    </set>
+    where id = #{id}
+</update>
 ```
 
 #### 2. 参数用 `@Param` 注解显式标记
@@ -492,13 +1089,15 @@ MyBatis 3.4.0 及以上版本（苍穹外卖用的是高版本，如 3.5.x），
 
 * Mapper 接口：
 
-  ```
+  ```java
   void updateStatus(@Param("id") Long id, @Param("status") Integer status);
   ```
 * 映射文件（无需parameterType）
 
-  ```
-  <update id="updateStatus">    update employee set status = #{status} where id = #{id}</update>
+  ```xml
+  <update id="updateStatus">
+      update employee set status = #{status} where id = #{id}
+  </update>
   ```
 
 ### 六、什么时候xml映射文件「必须指定」`parameterType`
@@ -511,11 +1110,19 @@ MyBatis 3.4.0 及以上版本（苍穹外卖用的是高版本，如 3.5.x），
 
 * 示例 1：批量删除员工（参数是List)
 
-  ```
-  <delete id="batchDelete" parameterType="java.util.List">    delete from employee where id in    <foreach collection="list" item="id" open="(" separator="," close=")">        #{id}    </foreach></delete>
+  ```xml
+  <delete id="batchDelete" parameterType="java.util.List">
+      delete from employee where id in
+      <foreach collection="list" item="id" open="(" separator="," close=")">
+          #{id}
+      </foreach>
+  </delete>
   ```
 * 示例 2：用 Map 传多参数（参数是Map)
 
-  ```
-  <select id="getByMap" parameterType="java.util.Map" resultType="Employee">    select * from employee     where name = #{name} and status = #{status}</select>
+  ```xml
+  <select id="getByMap" parameterType="java.util.Map" resultType="Employee">
+      select * from employee
+      where name = #{name} and status = #{status}
+  </select>
   ```

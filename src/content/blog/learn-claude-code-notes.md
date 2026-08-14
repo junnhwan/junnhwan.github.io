@@ -69,8 +69,16 @@ draft: false
 
 在这个教程中，是通过关键词来触发启动后台任务的，如下：
 
-```
-def is_slow_operation(tool_name: str, tool_input: dict) -> bool:    """Fallback heuristic: commands likely to take > 30s."""    if tool_name != "bash":        return False    cmd = tool_input.get("command", "").lower()    slow_keywords = ["install", "build", "test", "deploy", "compile",                     "docker build", "pip install", "npm install",                     "cargo build", "pytest", "make"]    return any(kw in cmd for kw in slow_keywords)
+```python
+def is_slow_operation(tool_name: str, tool_input: dict) -> bool:
+    """Fallback heuristic: commands likely to take > 30s."""
+    if tool_name != "bash":
+        return False
+    cmd = tool_input.get("command", "").lower()
+    slow_keywords = ["install", "build", "test", "deploy", "compile",
+                     "docker build", "pip install", "npm install",
+                     "cargo build", "pytest", "make"]
+    return any(kw in cmd for kw in slow_keywords)
 ```
 
 而在cc中，它的Bash工具schema有个`run_in_background`的bool参数，由模型自己判断是否这个命令要后台运行
@@ -83,7 +91,7 @@ def is_slow_operation(tool_name: str, tool_input: dict) -> bool:    """Fallback 
 >
 > 其实就是**生命周期**的管理，看整个程序退出时，要不要等这个后台线程跑完
 >
-> 关于**bg\_id**的作用，这个个人认为应该是因为后台执行这个做法把一次工具调用拆成了\*\*“启动started”**和**“完成completed”\*\*两个不连续的事件，所以要一个唯一标识来将二者重新认成同一件事
+> 关于**bg\_id**的作用，这个个人认为应该是因为后台执行这个做法把一次工具调用拆成了**“启动started”**和**“完成completed”**两个不连续的事件，所以要一个唯一标识来将二者重新认成同一件事
 
 通知收集：
 
@@ -99,8 +107,11 @@ cc中没有用多线程，是在一个Node.js/Bun单线程循环中，其“后�
 
 cc中命令队列的通知格式是结构化的xml：
 
-```
-<task_notification>  <status>completed</status>  <summary>Background command "npm test" completed (exit code 0)</summary></task_notification>
+```xml
+<task_notification>
+  <status>completed</status>
+  <summary>Background command "npm test" completed (exit code 0)</summary>
+</task_notification>
 ```
 
 ## s15 Agent Teams
@@ -152,7 +163,7 @@ cc实现：
 
 > 协议 —— Agent 之间的结构化握手，request-response模式驱动协商
 
-上一节还有个队友生命周期`（Lead → 队友）`的问题，假设做到一半想要停止队友，有可能队友文件写到一半被杀了，所以就需要关机握手与消息约定，让队友收尾后退出，也就是\*\*团队协议，\*\*每个人都要遵守。还有计划审批`（队友 → Lead）`，也需要协议来沟通确认。
+上一节还有个队友生命周期`（Lead → 队友）`的问题，假设做到一半想要停止队友，有可能队友文件写到一半被杀了，所以就需要关机握手与消息约定，让队友收尾后退出，也就是**团队协议**，每个人都要遵守。还有计划审批`（队友 → Lead）`，也需要协议来沟通确认。
 
 这一节新增三个 func，**ProtocolState**（请求状态追踪）、**dispatch\_message**（按消息类型路由到处理器）、**match\_response**（通过 request\_id 关联回复与请求，含类型校验）
 
@@ -162,8 +173,18 @@ cc实现：
 
 这是协议握手的一个核心数据结构，如果了解计网的话对这些字段应该不陌生，是很经典的一个请求-响应的数据模型
 
-```
-@dataclassclass ProtocolState:    request_id: str      *# 唯一 ID，如 "req_004281"*    type: str            *# "shutdown" | "plan_approval"*    sender: str          *# 发起方*    target: str          *# 接收方*    status: str          *# pending | approved | rejected*    payload: str         *# 计划文本或关机原因*    created_at: float    *# 时间戳*pending_requests: dict[str, ProtocolState] = {}
+```python
+@dataclass
+class ProtocolState:
+    request_id: str      *# 唯一 ID，如 "req_004281"*
+    type: str            *# "shutdown" | "plan_approval"*
+    sender: str          *# 发起方*
+    target: str          *# 接收方*
+    status: str          *# pending | approved | rejected*
+    payload: str         *# 计划文本或关机原因*
+    created_at: float    *# 时间戳*
+
+pending_requests: dict[str, ProtocolState] = {}
 ```
 
 `request_id`是贯穿一次协议握手的key，请求带出去，回复收回来
@@ -176,16 +197,39 @@ cc实现：
 
 新增协议类型的话就新增一个if分支
 
-```
-def handle_inbox_message(name, msg, messages):    msg_type = msg.get("type", "message")    req_id = msg.get("metadata", {}).get("request_id", "")    if msg_type == "shutdown_request":        BUS.send(name, "lead", "Shutting down.", "shutdown_response",                 {"request_id": req_id, "approve": True})        return True   *# 停止循环*    if msg_type == "plan_approval_response":        approve = msg["metadata"].get("approve", False)        messages.append({"role": "user",            "content": "[Plan approved]" if approve else "[Plan rejected]"})    return False       *# 继续循环*
+```python
+def handle_inbox_message(name, msg, messages):
+    msg_type = msg.get("type", "message")
+    req_id = msg.get("metadata", {}).get("request_id", "")
+
+    if msg_type == "shutdown_request":
+        BUS.send(name, "lead", "Shutting down.", "shutdown_response",
+                 {"request_id": req_id, "approve": True})
+        return True   *# 停止循环*
+
+    if msg_type == "plan_approval_response":
+        approve = msg["metadata"].get("approve", False)
+        messages.append({"role": "user",
+            "content": "[Plan approved]" if approve else "[Plan rejected]"})
+    return False       *# 继续循环*
 ```
 
 3. match\_response 类型校验
 
 校验响应类型是否匹配请求类型
 
-```
-def match_response(response_type, request_id, approve):    state = pending_requests.get(request_id)    if not state:        return    if state.type == "shutdown" and response_type != "shutdown_response":        return  *# type mismatch, skip*    if state.type == "plan_approval" and response_type != "plan_approval_response":        return    if state.status != "pending":        return  *# already resolved, skip duplicate*    state.status = "approved" if approve else "rejected"
+```python
+def match_response(response_type, request_id, approve):
+    state = pending_requests.get(request_id)
+    if not state:
+        return
+    if state.type == "shutdown" and response_type != "shutdown_response":
+        return  *# type mismatch, skip*
+    if state.type == "plan_approval" and response_type != "plan_approval_response":
+        return
+    if state.status != "pending":
+        return  *# already resolved, skip duplicate*
+    state.status = "approved" if approve else "rejected"
 ```
 
 4. consume\_lead\_inbox 统一inbox消费
@@ -232,7 +276,17 @@ cc实现：
 ![image-20260622183459610](/images/posts/image-20260622183459610.png)
 
 ```
-Text
-
-用户输入  → UserPromptSubmit hooks  → cron/background 通知注入  → context compact  → memory + skills + MCP 状态组装 system prompt  → LLM  → has tool_use block?      否 → Stop hooks → 返回      是 → PreToolUse hooks + permission          → TOOL_HANDLERS / MCP handlers / background dispatch          → PostToolUse hooks          → tool_result / task_notification 回 messages          → 下一轮
+Text用户输入
+  → UserPromptSubmit hooks
+  → cron/background 通知注入
+  → context compact
+  → memory + skills + MCP 状态组装 system prompt
+  → LLM
+  → has tool_use block?
+      否 → Stop hooks → 返回
+      是 → PreToolUse hooks + permission
+          → TOOL_HANDLERS / MCP handlers / background dispatch
+          → PostToolUse hooks
+          → tool_result / task_notification 回 messages
+          → 下一轮
 ```

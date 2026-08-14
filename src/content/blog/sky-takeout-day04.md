@@ -94,66 +94,213 @@ setmeal\_dish 表为套餐菜品关系表，用于存储套餐和菜品的关联
 
 **DishController.java**
 
-```
-/** * 根据分类条件查询列出菜品 * @param categoryId 分类id * @return 菜品列表 */@GetMapping("/list")@ApiOperation("根据分类条件查询并列出菜品")public Result<List<Dish>> list(Long categoryId) {    log.info("根据分类条件查询并列出菜品: {}", categoryId);    List<Dish> dishList = dishService.list(categoryId);    return Result.success(dishList);}
+```java
+/**
+ * 根据分类条件查询列出菜品
+ * @param categoryId 分类id
+ * @return 菜品列表
+ */
+@GetMapping("/list")
+@ApiOperation("根据分类条件查询并列出菜品")
+public Result<List<Dish>> list(Long categoryId) {
+    log.info("根据分类条件查询并列出菜品: {}", categoryId);
+    List<Dish> dishList = dishService.list(categoryId);
+    return Result.success(dishList);
+}
 ```
 
 **DishServiceImpl.java**
 
 这里注意 status **状态是 ENABLE**，一开始写成 DISABLE 了，没有菜品列出，后面发现是状态设置错了。
 
-```
-/** * 根据分类条件查询列出菜品 * @param categoryId 分类id * @return 菜品列表 */@Overridepublic List<Dish> list(Long categoryId) {    Dish dish = Dish.builder()            .status(StatusConstant.ENABLE) // 注意这里是只查询起售状态的菜品            .categoryId(categoryId)            .build();    return dishMapper.list(dish);}
+```java
+/**
+ * 根据分类条件查询列出菜品
+ * @param categoryId 分类id
+ * @return 菜品列表
+ */
+@Override
+public List<Dish> list(Long categoryId) {
+    Dish dish = Dish.builder()
+            .status(StatusConstant.ENABLE) // 注意这里是只查询起售状态的菜品
+            .categoryId(categoryId)
+            .build();
+    return dishMapper.list(dish);
+}
 ```
 
 **DishMapper.java**
 
-```
-/** * 动态条件查询菜品 * @param dish 条件 * @return 菜品列表 */List<Dish> list(Dish dish);
+```java
+/**
+ * 动态条件查询菜品
+ * @param dish 条件
+ * @return 菜品列表
+ */
+List<Dish> list(Dish dish);
 ```
 
 **DishMapper.xml**
 
-```
-<select id="list" resultType="com.sky.entity.Dish">    select * from dish    <where>        <if test="name != null and name != ''">            and name like concat('%', #{name}, '%')        </if>        <if test="categoryId != null">            and category_id = #{categoryId}        </if>        <if test="status != null">            and status = #{status}        </if>    </where>    order by create_time desc</select>
+```xml
+<select id="list" resultType="com.sky.entity.Dish">
+    select * from dish
+    <where>
+        <if test="name != null and name != ''">
+            and name like concat('%', #{name}, '%')
+        </if>
+        <if test="categoryId != null">
+            and category_id = #{categoryId}
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+    </where>
+    order by create_time desc
+</select>
 ```
 
 #### 2）新增套餐
 
 SetmealController.java
 
-```
-package com.sky.controller.admin;import com.sky.dto.SetmealDTO;import com.sky.result.Result;import com.sky.service.SetmealService;import io.swagger.annotations.Api;import io.swagger.annotations.ApiOperation;import lombok.extern.slf4j.Slf4j;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.web.bind.annotation.PostMapping;import org.springframework.web.bind.annotation.RequestBody;import org.springframework.web.bind.annotation.RequestMapping;import org.springframework.web.bind.annotation.RestController;@RestController@Api(tags = "套餐管理")@RequestMapping("admin/setmeal")@Slf4jpublic class SetmealController {    @Autowired    private SetmealService setmealService;    /**     * 新增套餐     * @param setmealDTO 套餐信息     * @return 结果     */    @PostMapping    @ApiOperation("新增套餐")    public Result<Void> save(@RequestBody SetmealDTO setmealDTO) { // 这里要加 @RequestBody 将前端传递的json数据转换为java对象        log.info("新增套餐: {}", setmealDTO);        setmealService.saveWithDish(setmealDTO);        return Result.success();    }}
+```java
+package com.sky.controller.admin;
+
+import com.sky.dto.SetmealDTO;
+import com.sky.result.Result;
+import com.sky.service.SetmealService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@Api(tags = "套餐管理")
+@RequestMapping("admin/setmeal")
+@Slf4j
+public class SetmealController {
+
+    @Autowired
+    private SetmealService setmealService;
+
+    /**
+     * 新增套餐
+     * @param setmealDTO 套餐信息
+     * @return 结果
+     */
+    @PostMapping
+    @ApiOperation("新增套餐")
+    public Result<Void> save(@RequestBody SetmealDTO setmealDTO) { // 这里要加 @RequestBody 将前端传递的json数据转换为java对象
+        log.info("新增套餐: {}", setmealDTO);
+        setmealService.saveWithDish(setmealDTO);
+        return Result.success();
+    }
+}
 ```
 
 SetmealServiceImpl.java
 
-```
-package com.sky.service.impl;import com.sky.dto.SetmealDTO;import com.sky.entity.Setmeal;import com.sky.entity.SetmealDish;import com.sky.mapper.SetmealDishMapper;import com.sky.mapper.SetmealMapper;import com.sky.service.SetmealService;import org.springframework.beans.BeanUtils;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.stereotype.Service;import java.util.List;@Servicepublic class SetmealServiceImpl implements SetmealService {    @Autowired    private SetmealMapper setmealMapper;    @Autowired    private SetmealDishMapper setmealDishMapper;    /**     * 新增套餐     * @param setmealDTO 套餐信息     */    @Override    public void saveWithDish(SetmealDTO setmealDTO) {        Setmeal setmeal = new Setmeal();        BeanUtils.copyProperties(setmealDTO, setmeal);        // 1. 向setmeal表插入套餐        setmealMapper.insert(setmeal);        // 2. 向setmeal_dish表插入套餐和菜品的关联关系        // 先获取套餐id        Long setmealId = setmeal.getId();        // 再获取套餐和菜品的关联关系        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();        // 设置套餐id        setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));        // 批量插入套餐和菜品的关联关系        setmealDishMapper.insertBatch(setmealDishes);    }}
+```java
+package com.sky.service.impl;
+
+import com.sky.dto.SetmealDTO;
+import com.sky.entity.Setmeal;
+import com.sky.entity.SetmealDish;
+import com.sky.mapper.SetmealDishMapper;
+import com.sky.mapper.SetmealMapper;
+import com.sky.service.SetmealService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class SetmealServiceImpl implements SetmealService {
+
+    @Autowired
+    private SetmealMapper setmealMapper;
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
+
+    /**
+     * 新增套餐
+     * @param setmealDTO 套餐信息
+     */
+    @Override
+    public void saveWithDish(SetmealDTO setmealDTO) {
+        Setmeal setmeal = new Setmeal();
+        BeanUtils.copyProperties(setmealDTO, setmeal);
+
+        // 1. 向setmeal表插入套餐
+        setmealMapper.insert(setmeal);
+
+        // 2. 向setmeal_dish表插入套餐和菜品的关联关系
+        // 先获取套餐id
+        Long setmealId = setmeal.getId();
+        // 再获取套餐和菜品的关联关系
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+        // 设置套餐id
+        setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
+        // 批量插入套餐和菜品的关联关系
+        setmealDishMapper.insertBatch(setmealDishes);
+    }
+}
 ```
 
 SetmealMapper.java
 
-```
-/** * 插入套餐, 并且将主键回填到实体类对象中 (useGeneratedKeys = true, keyProperty = "id") * @param setmeal 套餐 */@AutoFill(value = OperationType.INSERT)void insert(Setmeal setmeal);
+```java
+/**
+ * 插入套餐, 并且将主键回填到实体类对象中 (useGeneratedKeys = true, keyProperty = "id")
+ * @param setmeal 套餐
+ */
+@AutoFill(value = OperationType.INSERT)
+void insert(Setmeal setmeal);
 ```
 
 SetmealMapper.xml
 
-```
-<?xml version="1.0" encoding="UTF-8" ?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" ><mapper namespace="com.sky.mapper.SetmealMapper">    <insert id="insert" useGeneratedKeys="true" keyProperty="id">        insert into setmeal (category_id, name, price, description, image, create_time, update_time, create_user, update_user)        values        (#{categoryId}, #{name}, #{price}, #{description}, #{image}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})    </insert></mapper>
+```xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.SetmealMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into setmeal (category_id, name, price, description, image, create_time, update_time, create_user, update_user)
+        values
+        (#{categoryId}, #{name}, #{price}, #{description}, #{image}, #{createTime}, #{updateTime}, #{createUser}, #{updateUser})
+    </insert>
+
+</mapper>
 ```
 
 SetmealDishMapper.java
 
-```
-/** * 批量插入套餐和菜品的关联关系 * @param setmealDishes 套餐和菜品的关联关系 */void insertBatch(List<SetmealDish> setmealDishes);
+```java
+/**
+ * 批量插入套餐和菜品的关联关系
+ * @param setmealDishes 套餐和菜品的关联关系
+ */
+void insertBatch(List<SetmealDish> setmealDishes);
 ```
 
 SetmealDishMapper.xml
 
-```
-<insert id="insertBatch">    insert into setmeal_dish (setmeal_id, dish_id, name, price, copies)    values    <foreach collection="setmealDishes" item="sd" separator=",">        (#{sd.setmealId}, #{sd.dishId}, #{sd.name}, #{sd.price}, #{sd.copies})    </foreach></insert>
+```xml
+<insert id="insertBatch">
+    insert into setmeal_dish (setmeal_id, dish_id, name, price, copies)
+    values
+    <foreach collection="setmealDishes" item="sd" separator=",">
+        (#{sd.setmealId}, #{sd.dishId}, #{sd.name}, #{sd.price}, #{sd.copies})
+    </foreach>
+</insert>
 ```
 
 ### 功能测试
@@ -193,26 +340,67 @@ SetmealDishMapper.xml
 
 **SetmealController.java**
 
-```
-/** * 分页查询套餐 * @param setmealPageQueryDTO 分页查询参数 * @return 套餐分页结果 */@GetMapping("/page")@ApiOperation("分页查询套餐")public Result<PageResult> page(SetmealPageQueryDTO setmealPageQueryDTO) {    log.info("分页查询套餐: {}", setmealPageQueryDTO);    PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);    return Result.success(pageResult);}
+```java
+/**
+ * 分页查询套餐
+ * @param setmealPageQueryDTO 分页查询参数
+ * @return 套餐分页结果
+ */
+@GetMapping("/page")
+@ApiOperation("分页查询套餐")
+public Result<PageResult> page(SetmealPageQueryDTO setmealPageQueryDTO) {
+    log.info("分页查询套餐: {}", setmealPageQueryDTO);
+    PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);
+    return Result.success(pageResult);
+}
 ```
 
 **SetmealServiceImpl.java**
 
-```
-/** * 分页查询套餐 * @param setmealPageQueryDTO 分页查询参数 * @return 套餐分页结果 */@Overridepublic PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {    PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());    Page<SetmealVO> page = setmealMapper.pageQuery(setmealPageQueryDTO);    return new PageResult(page.getTotal(), page.getResult());}
+```java
+/**
+ * 分页查询套餐
+ * @param setmealPageQueryDTO 分页查询参数
+ * @return 套餐分页结果
+ */
+@Override
+public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
+    PageHelper.startPage(setmealPageQueryDTO.getPage(), setmealPageQueryDTO.getPageSize());
+    Page<SetmealVO> page = setmealMapper.pageQuery(setmealPageQueryDTO);
+    return new PageResult(page.getTotal(), page.getResult());
+}
 ```
 
 **SetmealMapper.java**
 
-```
-/** * 分页查询套餐 * @param setmealPageQueryDTO 分页查询参数 * @return 套餐分页结果 */Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+```java
+/**
+ * 分页查询套餐
+ * @param setmealPageQueryDTO 分页查询参数
+ * @return 套餐分页结果
+ */
+Page<SetmealVO> pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
 ```
 
 **SetmealMapper.xml**
 
-```
-<select id="pageQuery" resultType="com.sky.vo.SetmealVO">    select s.*, c.name as categoryName    from setmeal s left outer join category c    on s.category_id = c.id    <where>        <if test="name != null">            s.name like concat('%', #{name}, '%')        </if>        <if test="status != null">            and s.status = #{status}        </if>        <if test="categoryId != null">            and s.category_id = #{categoryId}        </if>    </where></select>
+```xml
+<select id="pageQuery" resultType="com.sky.vo.SetmealVO">
+    select s.*, c.name as categoryName
+    from setmeal s left outer join category c
+    on s.category_id = c.id
+    <where>
+        <if test="name != null">
+            s.name like concat('%', #{name}, '%')
+        </if>
+        <if test="status != null">
+            and s.status = #{status}
+        </if>
+        <if test="categoryId != null">
+            and s.category_id = #{categoryId}
+        </if>
+    </where>
+</select>
 ```
 
 ### 功能测试
@@ -240,38 +428,95 @@ SetmealDishMapper.xml
 
 **SetmealController.java**
 
-```
-/** * 删除套餐 * @param ids 套餐id集合 * @return 结果 */@DeleteMapping@ApiOperation("删除套餐")public Result<Void> delete(@RequestParam("ids") List<Long> ids) {    log.info("删除套餐: {}", ids);    setmealService.deleteWithDish(ids);    return Result.success();}
+```java
+/**
+ * 删除套餐
+ * @param ids 套餐id集合
+ * @return 结果
+ */
+@DeleteMapping
+@ApiOperation("删除套餐")
+public Result<Void> delete(@RequestParam("ids") List<Long> ids) {
+    log.info("删除套餐: {}", ids);
+    setmealService.deleteWithDish(ids);
+    return Result.success();
+}
 ```
 
 **SetmealServiceImpl.java**
 
-```
-/** * 删除套餐, 同时删除套餐和菜品的关联数据 * @param ids 套餐id集合 */@Overridepublic void deleteWithDish(List<Long> ids) {    // 起售中的套餐不能删除    // 1. 查询套餐状态, 确认是否可以删除    for (Long id : ids) {        Setmeal setmeal = setmealMapper.getById(id);        if (setmeal != null && Objects.equals(setmeal.getStatus(), StatusConstant.ENABLE)) { // 套餐起售中            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);        }    }    // 2. 删除套餐表中的数据    // delete from setmeal where id in (1,2,3)    setmealMapper.deleteByIds(ids);    // 3. 删除套餐和菜品的关联数据    // delete from setmeal_dish where setmeal_id in (1,2,3)    setmealDishMapper.deleteBySetmealIds(ids);}
+```java
+/**
+ * 删除套餐, 同时删除套餐和菜品的关联数据
+ * @param ids 套餐id集合
+ */
+@Override
+public void deleteWithDish(List<Long> ids) {
+    // 起售中的套餐不能删除
+    // 1. 查询套餐状态, 确认是否可以删除
+    for (Long id : ids) {
+        Setmeal setmeal = setmealMapper.getById(id);
+        if (setmeal != null && Objects.equals(setmeal.getStatus(), StatusConstant.ENABLE)) { // 套餐起售中
+            throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+        }
+    }
+
+    // 2. 删除套餐表中的数据
+    // delete from setmeal where id in (1,2,3)
+    setmealMapper.deleteByIds(ids);
+    // 3. 删除套餐和菜品的关联数据
+    // delete from setmeal_dish where setmeal_id in (1,2,3)
+    setmealDishMapper.deleteBySetmealIds(ids);
+}
 ```
 
 **SetmealMapper.java**
 
-```
-/** * 根据id查询套餐  (用于删除套餐时, 查询套餐状态) * @param id 套餐id */@Select("select * from setmeal where id = #{id}")Setmeal getById(Long id);/** * 根据id删除套餐 * @param ids 套餐id集合 */void deleteByIds(List<Long> ids);
+```java
+/**
+ * 根据id查询套餐  (用于删除套餐时, 查询套餐状态)
+ * @param id 套餐id
+ */
+@Select("select * from setmeal where id = #{id}")
+Setmeal getById(Long id);
+
+/**
+ * 根据id删除套餐
+ * @param ids 套餐id集合
+ */
+void deleteByIds(List<Long> ids);
 ```
 
 **SetmealMapper.xml**
 
-```
-<delete id="deleteByIds" parameterType="list">    delete from setmeal where id in    <foreach collection="ids" item="id" open="(" separator="," close=")">        #{id}    </foreach></delete>
+```xml
+<delete id="deleteByIds" parameterType="list">
+    delete from setmeal where id in
+    <foreach collection="ids" item="id" open="(" separator="," close=")">
+        #{id}
+    </foreach>
+</delete>
 ```
 
 **SetmealDishMapper.java**
 
-```
-/** * 根据套餐id删除对应的套餐和菜品的关联关系 * @param setmealIds 套餐id集合 */void deleteBySetmealIds(List<Long> setmealIds);
+```java
+/**
+ * 根据套餐id删除对应的套餐和菜品的关联关系
+ * @param setmealIds 套餐id集合
+ */
+void deleteBySetmealIds(List<Long> setmealIds);
 ```
 
 **SetmealDishMapper.xml**
 
-```
-<delete id="deleteBySetmealIds">    delete from setmeal_dish where setmeal_id in    <foreach collection="setmealIds" item="setmealId" open="(" separator="," close=")">        #{setmealId}    </foreach></delete>
+```xml
+<delete id="deleteBySetmealIds">
+    delete from setmeal_dish where setmeal_id in
+    <foreach collection="setmealIds" item="setmealId" open="(" separator="," close=")">
+        #{setmealId}
+    </foreach>
+</delete>
 ```
 
 ### 功能测试
@@ -307,32 +552,122 @@ SetmealDishMapper.xml
 
 **SetmealController.java**
 
-```
-/** * 根据id查询套餐信息, 包括套餐和菜品的关联信息 * @param id 套餐id * @return 套餐信息 */@GetMapping("/{id}")@ApiOperation("根据id查询套餐信息(包括套餐和菜品的关联信息)")public Result<SetmealVO> getById(@PathVariable Long id) {  // 这里要加 @PathVariable 将路径参数中的id参数绑定到方法的id参数上    log.info("根据id查询套餐信息: {}", id);    SetmealVO setmealVO = setmealService.getByIdWithDishes(id);    return Result.success(setmealVO);}/** * 修改套餐(包括套餐和菜品的关联信息) * @param setmealDTO 套餐信息 * @return 结果 */@PutMapping@ApiOperation("修改套餐")public Result<Void> update(@RequestBody SetmealDTO setmealDTO) {  // 这里要加 @RequestBody 将前端传递的json数据转换为java对象    log.info("修改套餐: {}", setmealDTO);    setmealService.updateWithDish(setmealDTO);    return Result.success();}
+```java
+/**
+ * 根据id查询套餐信息, 包括套餐和菜品的关联信息
+ * @param id 套餐id
+ * @return 套餐信息
+ */
+@GetMapping("/{id}")
+@ApiOperation("根据id查询套餐信息(包括套餐和菜品的关联信息)")
+public Result<SetmealVO> getById(@PathVariable Long id) {  // 这里要加 @PathVariable 将路径参数中的id参数绑定到方法的id参数上
+    log.info("根据id查询套餐信息: {}", id);
+    SetmealVO setmealVO = setmealService.getByIdWithDishes(id);
+    return Result.success(setmealVO);
+}
+
+/**
+ * 修改套餐(包括套餐和菜品的关联信息)
+ * @param setmealDTO 套餐信息
+ * @return 结果
+ */
+@PutMapping
+@ApiOperation("修改套餐")
+public Result<Void> update(@RequestBody SetmealDTO setmealDTO) {  // 这里要加 @RequestBody 将前端传递的json数据转换为java对象
+    log.info("修改套餐: {}", setmealDTO);
+    setmealService.updateWithDish(setmealDTO);
+    return Result.success();
+}
 ```
 
 **SetmealServiceImpl.java**
 
-```
-/** * 根据id查询套餐信息, 包括套餐和菜品的关联信息 * @param id 套餐id * @return 套餐信息 */@Overridepublic SetmealVO getByIdWithDishes(Long id) {    // 1. 查询套餐基本信息    Setmeal setmeal = setmealMapper.getById(id);    // 2. 查询套餐和菜品的关联信息    List<SetmealDish> setmealDishes = setmealDishMapper.getByIdWithDishes(id);    // 3. 将套餐基本信息与套餐菜品信息封装到VO对象中并返回    SetmealVO setmealVO = new SetmealVO();    BeanUtils.copyProperties(setmeal, setmealVO);    setmealVO.setSetmealDishes(setmealDishes);    return setmealVO;}/** * 修改套餐(包括套餐和菜品的关联信息) * @param setmealDTO 套餐信息 */@Overridepublic void updateWithDish(SetmealDTO setmealDTO) {    Setmeal setmeal = new Setmeal();    BeanUtils.copyProperties(setmealDTO, setmeal);    // 1. 首先，更新setmeal表中的基本信息    setmealMapper.updateById(setmeal);    // 2. 然后，更新setmeal_dish表中的关联信息    Long setmealId = setmeal.getId();    // 2.1 先删除原有的关联信息    setmealDishMapper.deleteBySetmealIds(List.of(setmealId));    // 2.2 再重新插入新的关联信息    List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();    // 设置套餐id    setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));    // 批量插入套餐和菜品的关联关系    setmealDishMapper.insertBatch(setmealDishes);}
+```java
+/**
+ * 根据id查询套餐信息, 包括套餐和菜品的关联信息
+ * @param id 套餐id
+ * @return 套餐信息
+ */
+@Override
+public SetmealVO getByIdWithDishes(Long id) {
+    // 1. 查询套餐基本信息
+    Setmeal setmeal = setmealMapper.getById(id);
+    // 2. 查询套餐和菜品的关联信息
+    List<SetmealDish> setmealDishes = setmealDishMapper.getByIdWithDishes(id);
+
+    // 3. 将套餐基本信息与套餐菜品信息封装到VO对象中并返回
+    SetmealVO setmealVO = new SetmealVO();
+    BeanUtils.copyProperties(setmeal, setmealVO);
+    setmealVO.setSetmealDishes(setmealDishes);
+
+    return setmealVO;
+}
+
+/**
+ * 修改套餐(包括套餐和菜品的关联信息)
+ * @param setmealDTO 套餐信息
+ */
+@Override
+public void updateWithDish(SetmealDTO setmealDTO) {
+    Setmeal setmeal = new Setmeal();
+    BeanUtils.copyProperties(setmealDTO, setmeal);
+    // 1. 首先，更新setmeal表中的基本信息
+    setmealMapper.updateById(setmeal);
+
+    // 2. 然后，更新setmeal_dish表中的关联信息
+    Long setmealId = setmeal.getId();
+    // 2.1 先删除原有的关联信息
+    setmealDishMapper.deleteBySetmealIds(List.of(setmealId));
+
+    // 2.2 再重新插入新的关联信息
+    List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+    // 设置套餐id
+    setmealDishes.forEach(setmealDish -> setmealDish.setSetmealId(setmealId));
+    // 批量插入套餐和菜品的关联关系
+    setmealDishMapper.insertBatch(setmealDishes);
+}
 ```
 
 **SetmealMapper.java**
 
-```
-/** * 根据id动态修改套餐信息 * @param setmeal 套餐信息 */@AutoFill(value = OperationType.UPDATE)void updateById(Setmeal setmeal);
+```java
+/**
+ * 根据id动态修改套餐信息
+ * @param setmeal 套餐信息
+ */
+@AutoFill(value = OperationType.UPDATE)
+void updateById(Setmeal setmeal);
 ```
 
 **SetmealMapper.xml**
 
-```
-<update id="updateById">    update setmeal    <set>        <if test="categoryId != null">category_id = #{categoryId},</if>        <if test="name != null">name = #{name},</if>        <if test="price != null">price = #{price},</if>        <if test="status != null">status = #{status},</if>        <if test="description != null">description = #{description},</if>        <if test="image != null">image = #{image},</if>        update_time = #{updateTime},        update_user = #{updateUser}    </set>    where id = #{id}</update>
+```xml
+<update id="updateById">
+    update setmeal
+    <set>
+        <if test="categoryId != null">category_id = #{categoryId},</if>
+        <if test="name != null">name = #{name},</if>
+        <if test="price != null">price = #{price},</if>
+        <if test="status != null">status = #{status},</if>
+        <if test="description != null">description = #{description},</if>
+        <if test="image != null">image = #{image},</if>
+        update_time = #{updateTime},
+        update_user = #{updateUser}
+    </set>
+    where id = #{id}
+</update>
 ```
 
 **SetmealDishMapper.java**
 
-```
-/** * 根据套餐id查询对应的套餐和菜品的关联关系 * @param setmealId 套餐id * @return 套餐和菜品的关联关系 */@Select("select * from setmeal_dish where setmeal_id = #{setmealId}")List<SetmealDish> getByIdWithDishes(Long setmealId);
+```java
+/**
+ * 根据套餐id查询对应的套餐和菜品的关联关系
+ * @param setmealId 套餐id
+ * @return 套餐和菜品的关联关系
+ */
+@Select("select * from setmeal_dish where setmeal_id = #{setmealId}")
+List<SetmealDish> getByIdWithDishes(Long setmealId);
 ```
 
 ### 功能测试
@@ -360,20 +695,65 @@ SetmealDishMapper.xml
 
 **SetmealController**
 
-```
-/** * 起售/停售套餐 * @param status 状态 * @param id 套餐id集合 * @return 结果 */@PostMapping("/status/{status}")@ApiOperation("起售/停售套餐")public Result<Void> startOrStop(@PathVariable Integer status, Long id) {    log.info("起售/停售套餐: {}, {}", status, id);    setmealService.startOrStop(status, id);    return Result.success();}
+```java
+/**
+ * 起售/停售套餐
+ * @param status 状态
+ * @param id 套餐id集合
+ * @return 结果
+ */
+@PostMapping("/status/{status}")
+@ApiOperation("起售/停售套餐")
+public Result<Void> startOrStop(@PathVariable Integer status, Long id) {
+    log.info("起售/停售套餐: {}, {}", status, id);
+    setmealService.startOrStop(status, id);
+    return Result.success();
+}
 ```
 
 **SetmealServiceImpl**
 
-```
-/** * 起售/停售套餐 * @param status 套餐状态 * @param id 套餐id */@Overridepublic void startOrStop(Integer status, Long id) {    // 如果要设置为起售，需要检查套餐内的菜品是否都为起售状态    if (Objects.equals(status, StatusConstant.ENABLE)) { // 要起售        // select a.* from dish a        // left join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = ?;        List<Dish> dishList = dishMapper.getBySetmealId(id); // 查询套餐内的菜品        dishList.forEach(dish -> {            if (dish.getStatus().equals(StatusConstant.DISABLE)) {                throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ENABLE_FAILED);            }        }); // 只要有一个菜品是停售状态, 就不能起售    }    // 可以起售，更新套餐状态    Setmeal setmeal = Setmeal.builder()            .id(id)            .status(status)            .build();    setmealMapper.updateById(setmeal);}
+```java
+/**
+ * 起售/停售套餐
+ * @param status 套餐状态
+ * @param id 套餐id
+ */
+@Override
+public void startOrStop(Integer status, Long id) {
+    // 如果要设置为起售，需要检查套餐内的菜品是否都为起售状态
+    if (Objects.equals(status, StatusConstant.ENABLE)) { // 要起售
+        // select a.* from dish a
+        // left join setmeal_dish b on a.id = b.dish_id where b.setmeal_id = ?;
+        List<Dish> dishList = dishMapper.getBySetmealId(id); // 查询套餐内的菜品
+        dishList.forEach(dish -> {
+            if (dish.getStatus().equals(StatusConstant.DISABLE)) {
+                throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ENABLE_FAILED);
+            }
+        }); // 只要有一个菜品是停售状态, 就不能起售
+    }
+
+    // 可以起售，更新套餐状态
+    Setmeal setmeal = Setmeal.builder()
+            .id(id)
+            .status(status)
+            .build();
+    setmealMapper.updateById(setmeal);
+}
 ```
 
 **DishMapper**
 
-```
-/** * 根据套餐id查询对应的菜品 * @param id 套餐id * @return 菜品列表 */@Select("select d.* from dish d " +        "left join setmeal_dish sd on d.id = sd.dish_id " +        "where sd.setmeal_id = #{id} ")List<Dish> getBySetmealId(Long id);
+```java
+/**
+ * 根据套餐id查询对应的菜品
+ * @param id 套餐id
+ * @return 菜品列表
+ */
+@Select("select d.* from dish d " +
+        "left join setmeal_dish sd on d.id = sd.dish_id " +
+        "where sd.setmeal_id = #{id} ")
+List<Dish> getBySetmealId(Long id);
 ```
 
 ### 功能测试

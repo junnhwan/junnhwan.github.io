@@ -159,8 +159,11 @@ Spring Data Redis 是 Spring 的一部分，提供了在 Spring 应用中通过�
 
 Spring Boot提供了对应的Starter，maven坐标：
 
-```
-<dependency>    <groupId>org.springframework.boot</groupId>    <artifactId>spring-boot-starter-data-redis</artifactId></dependency>
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
 ```
 
 Spring Data Redis中提供了一个高度封装的类：**RedisTemplate**，对相关api进行了归类封装,将同一类型操作封装为operation接口，具体分类如下：
@@ -177,16 +180,24 @@ Spring Data Redis中提供了一个高度封装的类：**RedisTemplate**，对�
 
 **1). 导入Spring Data Redis的maven坐标**
 
-```
-<dependency>     <groupId>org.springframework.boot</groupId>     <artifactId>spring-boot-starter-data-redis</artifactId></dependency>
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
 ```
 
 **2). 配置Redis数据源**
 
 在application-dev.yml中添加
 
-```
-sky:  redis:    host: localhost    port: 6379    password: 123456    database: 10
+```yaml
+sky:
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    database: 10
 ```
 
 **解释说明：**
@@ -197,14 +208,53 @@ database:指定使用Redis的哪个数据库，Redis服务启动后默认有16�
 
 在application.yml中添加读取application-dev.yml中的相关Redis配置
 
-```
-spring:  profiles:    active: dev  redis:    host: ${sky.redis.host}    port: ${sky.redis.port}    password: ${sky.redis.password}    database: ${sky.redis.database}
+```yaml
+spring:
+  profiles:
+    active: dev
+  redis:
+    host: ${sky.redis.host}
+    port: ${sky.redis.port}
+    password: ${sky.redis.password}
+    database: ${sky.redis.database}
 ```
 
 **3). 编写配置类，创建RedisTemplate对象**
 
-```
-package com.sky.config;import lombok.extern.slf4j.Slf4j;import org.springframework.context.annotation.Bean;import org.springframework.context.annotation.Configuration;import org.springframework.data.redis.connection.RedisConnectionFactory;import org.springframework.data.redis.core.RedisTemplate;import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;import org.springframework.data.redis.serializer.StringRedisSerializer;@Configuration@Slf4jpublic class RedisConfiguration {    @Bean    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {        log.info("开始创建RedisTemplate模板对象...");        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();        redisTemplate.setConnectionFactory(redisConnectionFactory);                // Key序列化器（String类型，避免Key乱码）        redisTemplate.setKeySerializer(new StringRedisSerializer());        // Value序列化器（JSON格式，支持对象、集合等复杂类型，且可读性好）        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());        // Hash结构的Key序列化器        redisTemplate.setHashKeySerializer(new StringRedisSerializer());        // Hash结构的Value序列化器        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());                redisTemplate.afterPropertiesSet(); // 初始化RedisTemplate        return redisTemplate;    }}
+```java
+package com.sky.config;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+@Configuration
+@Slf4j
+public class RedisConfiguration {
+
+    @Bean
+    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        log.info("开始创建RedisTemplate模板对象...");
+        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(redisConnectionFactory);
+
+        // Key序列化器（String类型，避免Key乱码）
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        // Value序列化器（JSON格式，支持对象、集合等复杂类型，且可读性好）
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        // Hash结构的Key序列化器
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        // Hash结构的Value序列化器
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+
+        redisTemplate.afterPropertiesSet(); // 初始化RedisTemplate
+        return redisTemplate;
+    }
+}
 ```
 
 **解释说明：**
@@ -218,7 +268,7 @@ package com.sky.config;import lombok.extern.slf4j.Slf4j;import org.springframewo
 **注：**
 
 * `RedisTemplate`是**泛型类**（`RedisTemplate<K, V>`），若未指定泛型类型（如`<String, Object>`），编译器会因 “原始类型使用”“未检查调用” 报警告。这些警告虽不影响运行，但会降低代码规范性，且可能隐藏潜在类型转换问题。
-* \*\*解决方法：\*\*修改`RedisConfiguration`类中的`redisTemplate`方法，指定泛型为`<String, Object>`（Redis 的 Key 通常为 String，Value 为任意对象），并完善序列化器配置（避免 Redis 存储数据时出现乱码）。
+* **解决方法**：修改`RedisConfiguration`类中的`redisTemplate`方法，指定泛型为`<String, Object>`（Redis 的 Key 通常为 String，Value 为任意对象），并完善序列化器配置（避免 Redis 存储数据时出现乱码）。
 * 泛型`<String, Object>`的指定，消除了 “原始类型使用”“未检查调用” 的警告。
 * 完善的序列化器配置（`StringRedisSerializer`+`GenericJackson2JsonRedisSerializer`），确保 Redis 中 Key、Value 的存储格式清晰（避免乱码），且支持对象、集合等复杂类型的序列化 / 反序列化。
 
@@ -226,8 +276,34 @@ package com.sky.config;import lombok.extern.slf4j.Slf4j;import org.springframewo
 
 在test下新建测试类
 
-```
-package com.sky.test;import org.junit.jupiter.api.Test;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.boot.test.context.SpringBootTest;import org.springframework.data.redis.core.*;@SpringBootTestpublic class SpringDataRedisTest {    @Autowired    private RedisTemplate redisTemplate;    @Test    public void testRedisTemplate(){        System.out.println(redisTemplate);        //string数据操作        ValueOperations valueOperations = redisTemplate.opsForValue();        //hash类型的数据操作        HashOperations hashOperations = redisTemplate.opsForHash();        //list类型的数据操作        ListOperations listOperations = redisTemplate.opsForList();        //set类型数据操作        SetOperations setOperations = redisTemplate.opsForSet();        //zset类型数据操作        ZSetOperations zSetOperations = redisTemplate.opsForZSet();    }}
+```java
+package com.sky.test;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.*;
+
+@SpringBootTest
+public class SpringDataRedisTest {
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Test
+    public void testRedisTemplate(){
+        System.out.println(redisTemplate);
+        //string数据操作
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        //hash类型的数据操作
+        HashOperations hashOperations = redisTemplate.opsForHash();
+        //list类型的数据操作
+        ListOperations listOperations = redisTemplate.opsForList();
+        //set类型数据操作
+        SetOperations setOperations = redisTemplate.opsForSet();
+        //zset类型数据操作
+        ZSetOperations zSetOperations = redisTemplate.opsForZSet();
+    }
+}
 ```
 
 测试：
@@ -240,38 +316,149 @@ package com.sky.test;import org.junit.jupiter.api.Test;import org.springframewor
 
 **1). 操作字符串类型数据**
 
-```
-/**    * 操作字符串类型的数据    */   @Test   public void testString(){       // set get setex setnx       redisTemplate.opsForValue().set("name","小明");       String city = (String) redisTemplate.opsForValue().get("name");       System.out.println(city);       redisTemplate.opsForValue().set("code","1234",3, TimeUnit.MINUTES);       redisTemplate.opsForValue().setIfAbsent("lock","1");       redisTemplate.opsForValue().setIfAbsent("lock","2");   }
+```java
+/**
+    * 操作字符串类型的数据
+    */
+   @Test
+   public void testString(){
+       // set get setex setnx
+       redisTemplate.opsForValue().set("name","小明");
+       String city = (String) redisTemplate.opsForValue().get("name");
+       System.out.println(city);
+       redisTemplate.opsForValue().set("code","1234",3, TimeUnit.MINUTES);
+       redisTemplate.opsForValue().setIfAbsent("lock","1");
+       redisTemplate.opsForValue().setIfAbsent("lock","2");
+   }
 ```
 
 **2). 操作哈希类型数据**
 
-```
-/**    * 操作哈希类型的数据    */   @Test   public void testHash(){       //hset hget hdel hkeys hvals       HashOperations hashOperations = redisTemplate.opsForHash();       hashOperations.put("100","name","tom");       hashOperations.put("100","age","20");       String name = (String) hashOperations.get("100", "name");       System.out.println(name);       Set keys = hashOperations.keys("100");       System.out.println(keys);       List values = hashOperations.values("100");       System.out.println(values);       hashOperations.delete("100","age");   }
+```java
+/**
+    * 操作哈希类型的数据
+    */
+   @Test
+   public void testHash(){
+       //hset hget hdel hkeys hvals
+       HashOperations hashOperations = redisTemplate.opsForHash();
+
+       hashOperations.put("100","name","tom");
+       hashOperations.put("100","age","20");
+
+       String name = (String) hashOperations.get("100", "name");
+       System.out.println(name);
+
+       Set keys = hashOperations.keys("100");
+       System.out.println(keys);
+
+       List values = hashOperations.values("100");
+       System.out.println(values);
+
+       hashOperations.delete("100","age");
+   }
 ```
 
 **3). 操作列表类型数据**
 
-```
-/**    * 操作列表类型的数据    */   @Test   public void testList(){       //lpush lrange rpop llen       ListOperations listOperations = redisTemplate.opsForList();       listOperations.leftPushAll("mylist","a","b","c");       listOperations.leftPush("mylist","d");       List mylist = listOperations.range("mylist", 0, -1);       System.out.println(mylist);       listOperations.rightPop("mylist");       Long size = listOperations.size("mylist");       System.out.println(size);   }
+```java
+/**
+    * 操作列表类型的数据
+    */
+   @Test
+   public void testList(){
+       //lpush lrange rpop llen
+       ListOperations listOperations = redisTemplate.opsForList();
+
+       listOperations.leftPushAll("mylist","a","b","c");
+       listOperations.leftPush("mylist","d");
+
+       List mylist = listOperations.range("mylist", 0, -1);
+       System.out.println(mylist);
+
+       listOperations.rightPop("mylist");
+
+       Long size = listOperations.size("mylist");
+       System.out.println(size);
+   }
 ```
 
 **4). 操作集合类型数据**
 
-```
-/**    * 操作集合类型的数据    */   @Test   public void testSet(){       //sadd smembers scard sinter sunion srem       SetOperations setOperations = redisTemplate.opsForSet();       setOperations.add("set1","a","b","c","d");       setOperations.add("set2","a","b","x","y");       Set members = setOperations.members("set1");       System.out.println(members);       Long size = setOperations.size("set1");       System.out.println(size);       Set intersect = setOperations.intersect("set1", "set2");       System.out.println(intersect);       Set union = setOperations.union("set1", "set2");       System.out.println(union);       setOperations.remove("set1","a","b");   }
+```java
+/**
+    * 操作集合类型的数据
+    */
+   @Test
+   public void testSet(){
+       //sadd smembers scard sinter sunion srem
+       SetOperations setOperations = redisTemplate.opsForSet();
+
+       setOperations.add("set1","a","b","c","d");
+       setOperations.add("set2","a","b","x","y");
+
+       Set members = setOperations.members("set1");
+       System.out.println(members);
+
+       Long size = setOperations.size("set1");
+       System.out.println(size);
+
+       Set intersect = setOperations.intersect("set1", "set2");
+       System.out.println(intersect);
+
+       Set union = setOperations.union("set1", "set2");
+       System.out.println(union);
+
+       setOperations.remove("set1","a","b");
+   }
 ```
 
 **5). 操作有序集合类型数据**
 
-```
-/**    * 操作有序集合类型的数据    */   @Test   public void testZset(){       //zadd zrange zincrby zrem       ZSetOperations zSetOperations = redisTemplate.opsForZSet();       zSetOperations.add("zset1","a",10);       zSetOperations.add("zset1","b",12);       zSetOperations.add("zset1","c",9);       Set zset1 = zSetOperations.range("zset1", 0, -1);       System.out.println(zset1);       zSetOperations.incrementScore("zset1","c",10);       zSetOperations.remove("zset1","a","b");   }
+```java
+/**
+    * 操作有序集合类型的数据
+    */
+   @Test
+   public void testZset(){
+       //zadd zrange zincrby zrem
+       ZSetOperations zSetOperations = redisTemplate.opsForZSet();
+
+       zSetOperations.add("zset1","a",10);
+       zSetOperations.add("zset1","b",12);
+       zSetOperations.add("zset1","c",9);
+
+       Set zset1 = zSetOperations.range("zset1", 0, -1);
+       System.out.println(zset1);
+
+       zSetOperations.incrementScore("zset1","c",10);
+
+       zSetOperations.remove("zset1","a","b");
+   }
 ```
 
 **6). 通用命令操作**
 
-```
-/**    * 通用命令操作    */   @Test   public void testCommon(){       //keys exists type del       Set keys = redisTemplate.keys("*");       System.out.println(keys);       Boolean name = redisTemplate.hasKey("name");       Boolean set1 = redisTemplate.hasKey("set1");       for (Object key : keys) {           DataType type = redisTemplate.type(key);           System.out.println(type.name());       }       redisTemplate.delete("mylist");   }
+```java
+/**
+    * 通用命令操作
+    */
+   @Test
+   public void testCommon(){
+       //keys exists type del
+       Set keys = redisTemplate.keys("*");
+       System.out.println(keys);
+
+       Boolean name = redisTemplate.hasKey("name");
+       Boolean set1 = redisTemplate.hasKey("set1");
+
+       for (Object key : keys) {
+           DataType type = redisTemplate.type(key);
+           System.out.println(type.name());
+       }
+
+       redisTemplate.delete("mylist");
+   }
 ```
 
 ## 店铺营业状态设置
@@ -289,7 +476,7 @@ package com.sky.test;import org.junit.jupiter.api.Test;import org.springframewor
 * 管理端查询营业状态
 * 用户端查询营业状态
 
-\*\*注：\*\*从技术层面分析，其实管理端和用户端查询营业状态时，可通过一个接口去实现即可。因为营业状态是一致的。但是，本项目约定：
+**注**：从技术层面分析，其实管理端和用户端查询营业状态时，可通过一个接口去实现即可。因为营业状态是一致的。但是，本项目约定：
 
 * **管理端**发出的请求，统一使用/admin作为前缀。
 * **用户端**发出的请求，统一使用/user作为前缀。
@@ -309,21 +496,104 @@ package com.sky.test;import org.junit.jupiter.api.Test;import org.springframewor
 
 虽然，可以通过一张表来存储营业状态数据，但整个表中只有一个字段，所以意义不大。
 
-营业状态数据存储方式：基于Redis的字符串来进行存储。\*\*约定：\*\*1表示营业 0表示打烊。  
+营业状态数据存储方式：基于Redis的字符串来进行存储。**约定**：1表示营业 0表示打烊。  
 ![image-20251014182318284](/images/posts/image-20251014182318284.png)
 
 ### 代码编写
 
 **admin/ShopController.java**
 
-```
-package com.sky.controller.admin;import com.sky.result.Result;import io.swagger.annotations.Api;import io.swagger.annotations.ApiOperation;import lombok.extern.slf4j.Slf4j;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.data.redis.core.RedisTemplate;import org.springframework.web.bind.annotation.*;@RestController("adminShopController")@RequestMapping("admin/shop")@Slf4j@Api(tags = "管理端-商铺相关接口")public class ShopController {    private final static String KEY = "SHOP_STATUS_";    @Autowired    private RedisTemplate<String, Object> redisTemplate;    /**     * 设置店铺营业状态     *     * @param status 店铺状态 0-打烊 1-营业     * @return 无     */    @PutMapping("/{status}")    @ApiOperation("设置店铺营业状态")    public Result<Void> setStatus(@PathVariable Integer status) {        log.info("设置店铺营业状态：{}", (status == 1 ? "营业" : "打烊"));        // 将店铺状态存入 Redis        redisTemplate.opsForValue().set(KEY, status);        return Result.success();    }    /**     * 获取店铺营业状态     *     * @return 店铺状态 0-打烊 1-营业     */    @ApiOperation("获取店铺营业状态")    @GetMapping("/status")    public Result<Integer> getStatus() {        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);        log.info("获取店铺营业状态：{}", (status != null && status == 1 ? "营业" : "打烊"));        return Result.success(status);    }}
+```java
+package com.sky.controller.admin;
+
+import com.sky.result.Result;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.*;
+
+@RestController("adminShopController")
+@RequestMapping("admin/shop")
+@Slf4j
+@Api(tags = "管理端-商铺相关接口")
+public class ShopController {
+
+    private final static String KEY = "SHOP_STATUS_";
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    /**
+     * 设置店铺营业状态
+     *
+     * @param status 店铺状态 0-打烊 1-营业
+     * @return 无
+     */
+    @PutMapping("/{status}")
+    @ApiOperation("设置店铺营业状态")
+    public Result<Void> setStatus(@PathVariable Integer status) {
+        log.info("设置店铺营业状态：{}", (status == 1 ? "营业" : "打烊"));
+        // 将店铺状态存入 Redis
+        redisTemplate.opsForValue().set(KEY, status);
+        return Result.success();
+    }
+
+    /**
+     * 获取店铺营业状态
+     *
+     * @return 店铺状态 0-打烊 1-营业
+     */
+    @ApiOperation("获取店铺营业状态")
+    @GetMapping("/status")
+    public Result<Integer> getStatus() {
+        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);
+        log.info("获取店铺营业状态：{}", (status != null && status == 1 ? "营业" : "打烊"));
+        return Result.success(status);
+    }
+}
 ```
 
 **user/ShopController.java**
 
-```
-package com.sky.controller.user;import com.sky.result.Result;import io.swagger.annotations.Api;import io.swagger.annotations.ApiOperation;import lombok.extern.slf4j.Slf4j;import org.springframework.beans.factory.annotation.Autowired;import org.springframework.data.redis.core.RedisTemplate;import org.springframework.web.bind.annotation.GetMapping;import org.springframework.web.bind.annotation.RequestMapping;import org.springframework.web.bind.annotation.RestController;@RestController@RequestMapping("user/shop")@Slf4j@Api(tags = "用户端-商铺相关接口")public class ShopController {    private static final String KEY = "SHOP_STATUS_";    @Autowired    private RedisTemplate<String, Object> redisTemplate;    /**     * 获取店铺营业状态     *     * @return 店铺状态 0-打烊 1-营业     */    @GetMapping("/status")    @ApiOperation("获取店铺营业状态")    public Result<Integer> getStatus() {        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);        log.info("获取店铺营业状态：{}", (status != null && status == 1 ? "营业" : "打烊"));        return Result.success(status);    }}
+```java
+package com.sky.controller.user;
+
+import com.sky.result.Result;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("user/shop")
+@Slf4j
+@Api(tags = "用户端-商铺相关接口")
+public class ShopController {
+
+    private static final String KEY = "SHOP_STATUS_";
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    /**
+     * 获取店铺营业状态
+     *
+     * @return 店铺状态 0-打烊 1-营业
+     */
+    @GetMapping("/status")
+    @ApiOperation("获取店铺营业状态")
+    public Result<Integer> getStatus() {
+        Integer status = (Integer) redisTemplate.opsForValue().get(KEY);
+        log.info("获取店铺营业状态：{}", (status != null && status == 1 ? "营业" : "打烊"));
+        return Result.success(status);
+    }
+}
 ```
 
 ### 功能测试
@@ -336,8 +606,48 @@ package com.sky.controller.user;import com.sky.result.Result;import io.swagger.a
 
 在WebMvcConfiguration.java中，分别扫描”com.sky.controller.admin”和”com.sky.controller.user”这两个包。
 
-```
-@Bean   public Docket docket1(){       log.info("准备生成接口文档...");       ApiInfo apiInfo = new ApiInfoBuilder()               .title("苍穹外卖项目接口文档")               .version("2.0")               .description("苍穹外卖项目接口文档")               .build();       Docket docket = new Docket(DocumentationType.SWAGGER_2)               .groupName("管理端接口")               .apiInfo(apiInfo)               .select()               //指定生成接口需要扫描的包               .apis(RequestHandlerSelectors.basePackage("com.sky.controller.admin"))               .paths(PathSelectors.any())               .build();       return docket;   }   @Bean   public Docket docket2(){       log.info("准备生成接口文档...");       ApiInfo apiInfo = new ApiInfoBuilder()               .title("苍穹外卖项目接口文档")               .version("2.0")               .description("苍穹外卖项目接口文档")               .build();       Docket docket = new Docket(DocumentationType.SWAGGER_2)               .groupName("用户端接口")               .apiInfo(apiInfo)               .select()               //指定生成接口需要扫描的包               .apis(RequestHandlerSelectors.basePackage("com.sky.controller.user"))               .paths(PathSelectors.any())               .build();       return docket;   }
+```java
+@Bean
+   public Docket docket1(){
+       log.info("准备生成接口文档...");
+       ApiInfo apiInfo = new ApiInfoBuilder()
+               .title("苍穹外卖项目接口文档")
+               .version("2.0")
+               .description("苍穹外卖项目接口文档")
+               .build();
+
+       Docket docket = new Docket(DocumentationType.SWAGGER_2)
+               .groupName("管理端接口")
+               .apiInfo(apiInfo)
+               .select()
+               //指定生成接口需要扫描的包
+               .apis(RequestHandlerSelectors.basePackage("com.sky.controller.admin"))
+               .paths(PathSelectors.any())
+               .build();
+
+       return docket;
+   }
+
+   @Bean
+   public Docket docket2(){
+       log.info("准备生成接口文档...");
+       ApiInfo apiInfo = new ApiInfoBuilder()
+               .title("苍穹外卖项目接口文档")
+               .version("2.0")
+               .description("苍穹外卖项目接口文档")
+               .build();
+
+       Docket docket = new Docket(DocumentationType.SWAGGER_2)
+               .groupName("用户端接口")
+               .apiInfo(apiInfo)
+               .select()
+               //指定生成接口需要扫描的包
+               .apis(RequestHandlerSelectors.basePackage("com.sky.controller.user"))
+               .paths(PathSelectors.any())
+               .build();
+
+       return docket;
+   }
 ```
 
 重启服务器，再次访问接口文档，可进行选择**用户端接口**或者**管理端接口**  

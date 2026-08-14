@@ -22,7 +22,8 @@
     --accent-rgb: 13, 122, 108;
     --highlight: rgba(255, 255, 255, 0.9);
     --grid-line: rgba(28, 32, 39, 0.035);
-    --code-bg: #f6f5f2;
+    --code-bg: #f7f6f3;
+    --code-head-bg: #efede8;
     --shadow-card: 0 1px 2px rgba(28, 32, 39, 0.04), 0 12px 32px -20px rgba(28, 32, 39, 0.25);
     --noise-opacity: 0.03;
 
@@ -54,6 +55,7 @@
     --highlight: rgba(255, 255, 255, 0.07);
     --grid-line: rgba(255, 255, 255, 0.022);
     --code-bg: #0d1117;
+    --code-head-bg: #11161f;
     --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.2), 0 16px 40px -24px rgba(0, 0, 0, 0.6);
     --noise-opacity: 0.025;
 
@@ -243,37 +245,104 @@
 }
 
 /* Code blocks (scoped to article content so decorative <pre> stays bare) */
+.prose .code-block {
+  position: relative;
+  margin: 1.75rem 0;
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: var(--code-bg);
+  overflow: hidden;
+}
+
+/* Title bar: traffic lights on the left, language on the right */
+.prose .code-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--code-head-bg);
+  user-select: none;
+}
+
+.prose .code-dots {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.prose .code-dots i {
+  width: 0.6875rem;
+  height: 0.6875rem;
+  border-radius: 9999px;
+  /* Muted a step below the real macOS hues so they read as a detail. */
+  background: currentColor;
+  opacity: 0.85;
+}
+
+.prose .code-dots i:nth-child(1) {
+  color: #ec6a5f;
+}
+
+.prose .code-dots i:nth-child(2) {
+  color: #f4bf50;
+}
+
+.prose .code-dots i:nth-child(3) {
+  color: #61c454;
+}
+
+.prose .code-lang {
+  margin-left: auto;
+  font-family: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+}
+
+.prose .code-copy {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: -0.25rem;
+  border-radius: 0.375rem;
+  color: var(--fg-subtle);
+  opacity: 0;
+  transition: opacity var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease),
+    background-color var(--dur-fast) var(--ease);
+}
+
+.prose .code-block:hover .code-copy,
+.prose .code-copy:focus-visible {
+  opacity: 1;
+}
+
+.prose .code-copy:hover {
+  color: var(--fg);
+  background: var(--surface-hover);
+}
+
+.prose .code-block pre {
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+}
+
 .prose pre {
   position: relative;
   background-color: var(--code-bg) !important;
   border: 1px solid var(--line) !important;
   border-radius: 0.625rem !important;
-  padding: 1.1rem 1.25rem !important;
+  padding: 1rem 1.15rem !important;
   font-family: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo,
     monospace !important;
   font-size: 0.8125rem !important;
   line-height: 1.7 !important;
   overflow-x: auto;
-}
-
-/* Language badge, sourced from Shiki's data-language attribute */
-.prose pre[data-language]::before {
-  content: attr(data-language);
-  position: absolute;
-  top: 0.6rem;
-  right: 0.75rem;
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fg-subtle);
-  opacity: 0.7;
-  pointer-events: none;
-  transition: opacity var(--dur-fast) var(--ease);
-}
-
-.prose pre:hover[data-language]::before {
-  opacity: 0;
+  tab-size: 4;
 }
 
 .prose pre code {

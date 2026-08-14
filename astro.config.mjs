@@ -23,18 +23,70 @@ export default defineConfig({
         light: 'github-light',
         dark: 'github-dark-dimmed',
       },
-      wrap: true,
-      transformers: [
-        {
-          // Expose the language so CSS can render a badge on the code block.
-          pre(node) {
-            const lang = this.options.lang;
-            if (lang && lang !== 'plaintext' && lang !== 'text') {
-              node.properties['data-language'] = lang;
-            }
-          },
-        },
-      ],
+      // Long lines scroll rather than reflow, so indentation stays readable.
+      wrap: false,
+      transformers: [codeWindow()],
     },
   },
 });
+
+/**
+ * Display names for the languages actually used across the posts.
+ * @type {Record<string, string>}
+ */
+const LANG_LABELS = {
+  bash: 'Shell',
+  css: 'CSS',
+  go: 'Go',
+  html: 'HTML',
+  java: 'Java',
+  javascript: 'JS',
+  json: 'JSON',
+  python: 'Python',
+  sql: 'SQL',
+  typescript: 'TS',
+  xml: 'XML',
+  yaml: 'YAML',
+};
+
+/**
+ * @param {string} tagName
+ * @param {Record<string, any>} properties
+ * @param {any[]} [children]
+ * @returns {any}
+ */
+const h = (tagName, properties, children = []) => ({
+  type: 'element',
+  tagName,
+  properties,
+  children,
+});
+
+/**
+ * Wraps every highlighted block in a titled window: macOS-style traffic
+ * lights on the left, language on the right, copy button revealed on hover.
+ * Built here rather than client-side so the chrome ships in the HTML.
+ *
+ * @returns {import('shiki').ShikiTransformer}
+ */
+function codeWindow() {
+  return {
+    name: 'code-window',
+    root(node) {
+      const lang = this.options.lang;
+      const known = lang && lang !== 'plaintext' && lang !== 'text';
+      const label = known ? (LANG_LABELS[lang] ?? lang.toUpperCase()) : '';
+
+      const head = h('div', { class: 'code-head' }, [
+        h('span', { class: 'code-dots' }, [
+          h('i', {}),
+          h('i', {}),
+          h('i', {}),
+        ]),
+        h('span', { class: 'code-lang' }, [{ type: 'text', value: label }]),
+      ]);
+
+      node.children = [h('div', { class: 'code-block', 'data-language': lang }, [head, ...node.children])];
+    },
+  };
+}
