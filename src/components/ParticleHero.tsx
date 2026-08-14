@@ -7,8 +7,12 @@ interface Particle {
   vy: number;
   targetX: number;
   targetY: number;
+  originX: number;
+  originY: number;
   size: number;
+  baseSize: number;
   color: string;
+  paletteIdx: number;
   alpha: number;
   baseAlpha: number;
   angle: number;
@@ -38,13 +42,22 @@ interface Shockwave {
   opacity: number;
 }
 
-const COLOR_PALETTE = [
-  '#00f2fe', // Electric Cyan
-  '#38bdf8', // Neon Sky Blue
-  '#60a5fa', // Indigo Blue
-  '#34d399', // Mint Emerald
-  '#a78bfa', // Cyber Purple
-  '#f8fafc', // Starlight White
+const COLOR_THEMES = [
+  {
+    name: 'Cyber Cyan',
+    colors: ['#00f2fe', '#38bdf8', '#60a5fa', '#34d399', '#f8fafc'],
+    accent: '#00f2fe',
+  },
+  {
+    name: 'Neon Aurora',
+    colors: ['#a855f7', '#ec4899', '#06b6d4', '#10b981', '#fbcfe8'],
+    accent: '#ec4899',
+  },
+  {
+    name: 'Solar Flare',
+    colors: ['#f59e0b', '#ef4444', '#fbbf24', '#f97316', '#fffbeb'],
+    accent: '#f59e0b',
+  },
 ];
 
 export const ParticleHero: React.FC = () => {
@@ -52,6 +65,7 @@ export const ParticleHero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isAssembled, setIsAssembled] = useState(false);
   const [connectLines, setConnectLines] = useState(false);
+  const [themeIdx, setThemeIdx] = useState(0);
   const [particleCount, setParticleCount] = useState(0);
 
   const particlesRef = useRef<Particle[]>([]);
@@ -60,32 +74,41 @@ export const ParticleHero: React.FC = () => {
   const mouseRef = useRef<{ x: number; y: number; radius: number; isHover: boolean }>({
     x: -9999,
     y: -9999,
-    radius: 120,
+    radius: 130,
     isHover: false,
   });
   const animFrameIdRef = useRef<number | null>(null);
   const stageTimeRef = useRef<number>(0);
-  const isFormingRef = useRef<boolean>(true);
+  const themeRef = useRef(COLOR_THEMES[0]);
+
+  useEffect(() => {
+    themeRef.current = COLOR_THEMES[themeIdx];
+    // Update existing particle colors
+    const palette = COLOR_THEMES[themeIdx].colors;
+    particlesRef.current.forEach((p) => {
+      p.color = palette[p.paletteIdx % palette.length];
+    });
+  }, [themeIdx]);
 
   // Initialize background starfield
   const initStars = (width: number, height: number) => {
     const stars: Star[] = [];
-    const count = Math.floor((width * height) / 18000);
+    const count = Math.floor((width * height) / 16000);
     for (let i = 0; i < count; i++) {
       stars.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        size: Math.random() * 1.5 + 0.5,
+        size: Math.random() * 1.5 + 0.4,
         alpha: Math.random() * 0.7 + 0.2,
         twinkleSpeed: Math.random() * 0.02 + 0.005,
-        vx: (Math.random() - 0.5) * 0.15,
-        vy: (Math.random() - 0.5) * 0.15,
+        vx: (Math.random() - 0.5) * 0.1,
+        vy: (Math.random() - 0.5) * 0.1,
       });
     }
     starsRef.current = stars;
   };
 
-  // Generate target coordinates by rendering text on offscreen canvas
+  // Generate target coordinates for "HWAN"
   const generateTextCoordinates = useCallback((width: number, height: number) => {
     const offscreen = document.createElement('canvas');
     offscreen.width = width;
@@ -93,33 +116,32 @@ export const ParticleHero: React.FC = () => {
     const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
     if (!offCtx) return [];
 
-    // Responsive font size calculation
-    const fontSize = Math.min(width * 0.14, 110);
+    // Scale font size dynamically according to canvas width
+    const fontSize = Math.min(width * 0.22, 170);
     offCtx.font = `900 ${fontSize}px "JetBrains Mono", "Inter", -apple-system, sans-serif`;
     offCtx.textAlign = 'center';
     offCtx.textBaseline = 'middle';
     offCtx.fillStyle = '#ffffff';
 
-    const text = 'junnhwan';
-    const textY = height * 0.45;
+    const text = 'HWAN';
+    const textY = height * 0.46;
     offCtx.fillText(text, width / 2, textY);
 
     const imgData = offCtx.getImageData(0, 0, width, height);
     const data = imgData.data;
     const coords: { x: number; y: number }[] = [];
 
-    // Sample spacing based on screen resolution
+    // Spacing step based on screen density
     const step = width < 640 ? 4 : 3;
 
     for (let y = 0; y < height; y += step) {
       for (let x = 0; x < width; x += step) {
         const index = (y * width + x) * 4;
         const alpha = data[index + 3];
-        if (alpha > 128) {
-          // Add slight jitter for organic tech dispersion
+        if (alpha > 120) {
           coords.push({
-            x: x + (Math.random() - 0.5) * 1.2,
-            y: y + (Math.random() - 0.5) * 1.2,
+            x: x + (Math.random() - 0.5) * 0.8,
+            y: y + (Math.random() - 0.5) * 0.8,
           });
         }
       }
@@ -137,40 +159,48 @@ export const ParticleHero: React.FC = () => {
 
     const coords = generateTextCoordinates(width, height);
     setParticleCount(coords.length);
-    isFormingRef.current = true;
     setIsAssembled(false);
     stageTimeRef.current = 0;
 
     const centerX = width / 2;
-    const centerY = height * 0.45;
-    const maxRadius = Math.sqrt(width * width + height * height) * 0.6;
+    const centerY = height * 0.46;
+    const maxRadius = Math.sqrt(width * width + height * height) * 0.65;
+    const palette = themeRef.current.colors;
 
     const particles: Particle[] = coords.map((coord, idx) => {
-      // Cosmic Vortex spawn math: disperse particles in a swirling spiral
-      const angle = Math.random() * Math.PI * 2 + (idx * 0.05);
-      const dist = (Math.random() * 0.8 + 0.2) * maxRadius;
+      // Cosmic spiral distribution
+      const spiralArms = 4;
+      const armOffset = (idx % spiralArms) * ((Math.PI * 2) / spiralArms);
+      const angle = Math.random() * Math.PI * 2 + armOffset;
+      const dist = (Math.random() * 0.85 + 0.15) * maxRadius;
+
       const spawnX = centerX + Math.cos(angle) * dist;
       const spawnY = centerY + Math.sin(angle) * dist;
 
-      const color = COLOR_PALETTE[Math.floor(Math.random() * COLOR_PALETTE.length)];
-      const size = Math.random() * 1.4 + 1.2;
+      const paletteIdx = Math.floor(Math.random() * palette.length);
+      const color = palette[paletteIdx];
+      const baseSize = Math.random() * 1.5 + 1.2;
 
       return {
         x: spawnX,
         y: spawnY,
-        vx: (Math.random() - 0.5) * 6,
-        vy: (Math.random() - 0.5) * 6,
+        vx: (Math.random() - 0.5) * 4,
+        vy: (Math.random() - 0.5) * 4,
         targetX: coord.x,
         targetY: coord.y,
-        size,
+        originX: spawnX,
+        originY: spawnY,
+        size: baseSize,
+        baseSize,
         color,
-        alpha: Math.random() * 0.3 + 0.2,
-        baseAlpha: Math.random() * 0.3 + 0.7,
+        paletteIdx,
+        alpha: Math.random() * 0.3 + 0.1,
+        baseAlpha: Math.random() * 0.35 + 0.65,
         angle,
-        speed: Math.random() * 0.04 + 0.02,
+        speed: Math.random() * 0.03 + 0.015,
         distance: dist,
-        spring: Math.random() * 0.03 + 0.04,
-        friction: Math.random() * 0.04 + 0.88,
+        spring: Math.random() * 0.025 + 0.04,
+        friction: Math.random() * 0.03 + 0.87,
         phase: Math.random() * Math.PI * 2,
       };
     });
@@ -186,7 +216,7 @@ export const ParticleHero: React.FC = () => {
 
     const dpr = window.devicePixelRatio || 1;
     const width = container.clientWidth;
-    const height = Math.min(Math.max(window.innerHeight * 0.65, 420), 560);
+    const height = Math.min(Math.max(window.innerHeight * 0.58, 380), 500);
 
     canvas.width = width * dpr;
     canvas.height = height * dpr;
@@ -197,7 +227,7 @@ export const ParticleHero: React.FC = () => {
     initParticles();
   }, [initParticles]);
 
-  // Animation Loop
+  // Main Render Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -207,9 +237,7 @@ export const ParticleHero: React.FC = () => {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    let lastTime = performance.now();
-
-    const render = (time: number) => {
+    const render = () => {
       const dpr = window.devicePixelRatio || 1;
       const width = canvas.width / dpr;
       const height = canvas.height / dpr;
@@ -221,7 +249,7 @@ export const ParticleHero: React.FC = () => {
       ctx.save();
       ctx.scale(dpr, dpr);
 
-      // Trail clear for subtle neon luminescence
+      // Clean background clear
       ctx.clearRect(0, 0, width, height);
 
       // 1. Draw Background Stars
@@ -235,7 +263,7 @@ export const ParticleHero: React.FC = () => {
         if (star.y < 0) star.y = height;
         if (star.y > height) star.y = 0;
 
-        const currentAlpha = star.alpha + Math.sin(stageTime * star.twinkleSpeed) * 0.25;
+        const currentAlpha = star.alpha + Math.sin(stageTime * star.twinkleSpeed) * 0.2;
         ctx.fillStyle = `rgba(224, 242, 254, ${Math.max(0.1, Math.min(1, currentAlpha))})`;
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
@@ -249,17 +277,17 @@ export const ParticleHero: React.FC = () => {
         sw.radius += (sw.maxRadius - sw.radius) * 0.08;
         sw.opacity *= 0.94;
 
-        if (sw.opacity > 0.02) {
+        if (sw.opacity > 0.015) {
           ctx.beginPath();
           ctx.arc(sw.x, sw.y, sw.radius, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(0, 242, 254, ${sw.opacity * 0.6})`;
-          ctx.lineWidth = 2;
+          ctx.strokeStyle = `rgba(0, 242, 254, ${sw.opacity * 0.7})`;
+          ctx.lineWidth = 2.5;
           ctx.stroke();
 
           ctx.beginPath();
-          ctx.arc(sw.x, sw.y, sw.radius * 0.85, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(168, 85, 247, ${sw.opacity * 0.3})`;
-          ctx.lineWidth = 1;
+          ctx.arc(sw.x, sw.y, sw.radius * 0.82, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(168, 85, 247, ${sw.opacity * 0.35})`;
+          ctx.lineWidth = 1.2;
           ctx.stroke();
         } else {
           shockwaves.splice(i, 1);
@@ -268,31 +296,27 @@ export const ParticleHero: React.FC = () => {
 
       // 3. Update & Draw Particles
       const particles = particlesRef.current;
-      let totalDistanceToTarget = 0;
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // Cosmic swirl physics during formation phase
-        if (stageTime < 90) {
+        if (stageTime < 95) {
+          // Vortex convergence phase: Swirl inward towards target coordinates
           const dx = p.targetX - p.x;
           const dy = p.targetY - p.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          totalDistanceToTarget += dist;
 
-          // Spiral vortex acceleration
-          const swirlSpeed = Math.max(0.01, (90 - stageTime) * 0.001);
-          p.angle += swirlSpeed;
+          // Tangential swirl force
+          const swirlProgress = Math.max(0, (95 - stageTime) / 95);
+          p.angle += swirlProgress * 0.05;
 
-          p.vx += dx * p.spring * 1.5;
-          p.vy += dy * p.spring * 1.5;
+          p.vx += dx * p.spring * 1.6;
+          p.vy += dy * p.spring * 1.6;
 
-          // Gradually brighten
-          p.alpha = Math.min(p.baseAlpha, p.alpha + 0.02);
+          p.alpha = Math.min(p.baseAlpha, p.alpha + 0.025);
         } else {
-          // Settled idle breathing + organic wave movement
-          const waveX = Math.cos(stageTime * 0.02 + p.phase) * 0.8;
-          const waveY = Math.sin(stageTime * 0.025 + p.phase) * 0.8;
+          // Assembled Harmonic Phase: Subtle breathing float
+          const waveX = Math.cos(stageTime * 0.02 + p.phase) * 0.7;
+          const waveY = Math.sin(stageTime * 0.025 + p.phase) * 0.7;
 
           const dx = (p.targetX + waveX) - p.x;
           const dy = (p.targetY + waveY) - p.y;
@@ -310,14 +334,15 @@ export const ParticleHero: React.FC = () => {
           const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
 
           if (mdist < mouse.radius && mdist > 0) {
-            const force = (1 - mdist / mouse.radius) * 12;
+            const force = (1 - mdist / mouse.radius) * 14;
             const angle = Math.atan2(mdy, mdx);
             p.vx += Math.cos(angle) * force;
             p.vy += Math.sin(angle) * force;
+            p.alpha = 1;
           }
         }
 
-        // Shockwave explosion effect
+        // Shockwave impact
         for (let s = 0; s < shockwaves.length; s++) {
           const sw = shockwaves[s];
           const sdx = p.x - sw.x;
@@ -325,21 +350,21 @@ export const ParticleHero: React.FC = () => {
           const sdist = Math.sqrt(sdx * sdx + sdy * sdy);
           const ringDist = Math.abs(sdist - sw.radius);
 
-          if (ringDist < 40 && sdist > 0) {
-            const push = (1 - ringDist / 40) * sw.strength * sw.opacity;
+          if (ringDist < 45 && sdist > 0) {
+            const push = (1 - ringDist / 45) * sw.strength * sw.opacity;
             const sAngle = Math.atan2(sdy, sdx);
             p.vx += Math.cos(sAngle) * push;
             p.vy += Math.sin(sAngle) * push;
           }
         }
 
-        // Apply friction & update position
+        // Apply friction & update
         p.vx *= p.friction;
         p.vy *= p.friction;
         p.x += p.vx;
         p.y += p.vy;
 
-        // Render Particle with Glow
+        // Render Particle
         ctx.fillStyle = p.color;
         ctx.globalAlpha = p.alpha;
         ctx.beginPath();
@@ -347,14 +372,14 @@ export const ParticleHero: React.FC = () => {
         ctx.fill();
 
         // Optional Constellation Neural Mesh Lines between neighboring particles
-        if (connectLines && stageTime > 70 && i % 4 === 0) {
-          for (let j = i + 1; j < Math.min(i + 12, particles.length); j++) {
+        if (connectLines && stageTime > 75 && i % 3 === 0) {
+          for (let j = i + 1; j < Math.min(i + 14, particles.length); j++) {
             const p2 = particles[j];
             const cdx = p.x - p2.x;
             const cdy = p.y - p2.y;
             const cdist = Math.sqrt(cdx * cdx + cdy * cdy);
             if (cdist < 18) {
-              ctx.strokeStyle = `rgba(56, 189, 248, ${0.25 * (1 - cdist / 18)})`;
+              ctx.strokeStyle = `rgba(56, 189, 248, ${0.3 * (1 - cdist / 18)})`;
               ctx.lineWidth = 0.6;
               ctx.beginPath();
               ctx.moveTo(p.x, p.y);
@@ -367,8 +392,7 @@ export const ParticleHero: React.FC = () => {
 
       ctx.globalAlpha = 1;
 
-      // Mark assembly state after vortex completes
-      if (stageTime > 90 && !isAssembled) {
+      if (stageTime > 95 && !isAssembled) {
         setIsAssembled(true);
       }
 
@@ -400,7 +424,7 @@ export const ParticleHero: React.FC = () => {
     mouseRef.current.y = -9999;
   };
 
-  // Click Shockwave Burst
+  // Click Trigger Shockwave Burst
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -412,8 +436,8 @@ export const ParticleHero: React.FC = () => {
       x,
       y,
       radius: 10,
-      maxRadius: Math.min(rect.width * 0.4, 220),
-      strength: 14,
+      maxRadius: Math.min(rect.width * 0.45, 240),
+      strength: 16,
       opacity: 1,
     });
   };
@@ -433,49 +457,54 @@ export const ParticleHero: React.FC = () => {
 
     shockwavesRef.current.push({
       x: width / 2,
-      y: height * 0.45,
+      y: height * 0.46,
       radius: 5,
-      maxRadius: Math.min(width * 0.5, 300),
-      strength: 22,
+      maxRadius: Math.min(width * 0.55, 320),
+      strength: 24,
       opacity: 1,
     });
   };
 
-  return (
-    <div ref={containerRef} className="relative w-full flex flex-col items-center justify-center pt-8 pb-4 select-none overflow-hidden">
-      {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[360px] bg-gradient-to-tr from-cyan-500/15 via-sky-500/10 to-purple-600/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" />
+  // Cycle Theme
+  const handleNextTheme = () => {
+    setThemeIdx((prev) => (prev + 1) % COLOR_THEMES.length);
+  };
 
-      {/* Interactive Particle Canvas */}
+  return (
+    <div ref={containerRef} className="relative w-full flex flex-col items-center justify-center pt-4 pb-8 select-none overflow-hidden">
+      {/* Background radial glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[650px] h-[380px] bg-gradient-to-tr from-cyan-500/15 via-sky-500/10 to-purple-600/10 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse" />
+
+      {/* Interactive Particle Canvas for HWAN */}
       <canvas
         ref={canvasRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
         onClick={handleClick}
         className="w-full cursor-crosshair touch-none"
-        title="移动鼠标产生力场排斥，点击触发星云冲击波"
+        title="移动鼠标产生力场排斥，点击触发能量冲击波"
       />
 
-      {/* Dynamic Subtitle & Interactive Badge Bar */}
-      <div className="relative z-10 -mt-6 sm:-mt-8 flex flex-col items-center gap-4 px-4 text-center">
+      {/* Subtitle & Core Navigation Hub */}
+      <div className="relative z-10 -mt-4 sm:-mt-6 flex flex-col items-center gap-5 px-4 text-center max-w-2xl">
         {/* Slogan */}
-        <div className="space-y-1.5 animate-fade-in">
-          <p className="text-sm sm:text-base font-medium text-slate-300 font-sans tracking-wide">
-            Be here now · 记录技术学习、后端开发与日常思考
+        <div className="space-y-1.5">
+          <p className="text-sm sm:text-base font-medium text-slate-200 font-sans tracking-wide">
+            Full-stack & AI Agent developer in the making.
           </p>
-          <p className="text-xs font-mono text-cyan-400/80">
-            Interactive Canvas Engine · {particleCount} Particles
+          <p className="text-xs font-mono text-cyan-400/90">
+            Be here now · 记录技术学习、后端开发与日常思考
           </p>
         </div>
 
         {/* Action Controls & Navigation Hub */}
-        <div className="flex flex-wrap items-center justify-center gap-2.5 pt-2">
+        <div className="flex flex-wrap items-center justify-center gap-2.5 pt-1">
           {/* Browse Blog Button */}
           <a
             href="/blog"
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 text-cyan-300 font-medium text-xs border border-cyan-500/30 transition-all shadow-[0_0_20px_rgba(0,242,254,0.15)] hover:scale-105"
           >
-            <span>浏览全部文章</span>
+            <span>浏览文章</span>
             <svg xmlns="http://www.w3.org/2005/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
@@ -495,7 +524,7 @@ export const ParticleHero: React.FC = () => {
             href="https://github.com/junnhwan"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl glass-pill hover:bg-white/10 text-slate-300 hover:text-white text-xs border border-white/10 transition-all hover:scale-105"
+            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl glass-pill hover:bg-white/10 text-slate-300 hover:text-white text-xs border border-white/10 transition-all hover:scale-105"
           >
             <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
@@ -515,7 +544,7 @@ export const ParticleHero: React.FC = () => {
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
               <path d="M3 3v5h5"></path>
             </svg>
-            <span>↻ 重播粒子</span>
+            <span>↻ 重播入场</span>
           </button>
 
           {/* Shockwave Blast button */}
@@ -525,7 +554,7 @@ export const ParticleHero: React.FC = () => {
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-purple-300 text-xs font-mono border border-white/10 transition-all active:scale-95"
             title="发射中心引力波震荡粒子"
           >
-            <span>⚡ 震荡</span>
+            <span>⚡ 脉冲</span>
           </button>
 
           {/* Constellation Mesh Toggle */}
@@ -539,13 +568,23 @@ export const ParticleHero: React.FC = () => {
             }`}
             title="切换星座连线模式"
           >
-            <span>✨ 星网连线: {connectLines ? 'ON' : 'OFF'}</span>
+            <span>✨ 连线: {connectLines ? 'ON' : 'OFF'}</span>
+          </button>
+
+          {/* Color Palette Toggle */}
+          <button
+            type="button"
+            onClick={handleNextTheme}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white text-xs font-mono border border-white/10 transition-all active:scale-95"
+            title="切换粒子光谱配色"
+          >
+            <span>🎨 {themeRef.current.name}</span>
           </button>
         </div>
 
         {/* Interactive Tip */}
-        <p className="text-[11px] text-slate-500 font-mono pt-1">
-          💡 提示：在画布上移动鼠标触发动力学排斥，点击任意位置释放冲击波
+        <p className="text-[11px] text-slate-500 font-mono">
+          💡 互动玩法：移动鼠标力场排斥 · 点击画布释放冲击波 · 支持随时重播与换色
         </p>
       </div>
     </div>
