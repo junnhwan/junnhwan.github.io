@@ -82,7 +82,9 @@ const readingTime = calculateReadingTime(post.body || '');
           post.data.tags && post.data.tags.length > 0 && (
             <div class="mt-12 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-fg-subtle">
               {post.data.tags.map((tag: string) => (
-                <span>#{tag}</span>
+                <a href={`/blog?tag=${encodeURIComponent(tag)}`} class="hover:text-accent transition-colors">
+                  #{tag}
+                </a>
               ))}
             </div>
           )
