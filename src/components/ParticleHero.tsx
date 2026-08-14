@@ -448,7 +448,7 @@ export const ParticleHero: React.FC = () => {
             Full-stack & AI Agent developer in the making.
           </p>
           <p className="text-xs font-mono text-cyan-400/90">
-            Be here now · 记录技术学习、后端开发与日常思考
+            Be here now · 记录技术学习与日常思考
           </p>
         </div>
 
