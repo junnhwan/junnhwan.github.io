@@ -32,8 +32,7 @@ export const CommandPalette: React.FC<Props> = ({ posts = [] }) => {
     { id: 'nav-home', title: '首页 / Home', description: '返回博客主页', category: 'Navigation', url: '/' },
     { id: 'nav-blog', title: '文章列表 / Blog Posts', description: '查看全部技术文章', category: 'Navigation', url: '/blog' },
     { id: 'nav-archive', title: '文章归档 / Archive', description: '按年份归档查看', category: 'Navigation', url: '/archive' },
-    { id: 'nav-projects', title: '项目与开源 / Projects', description: 'Agent 与后端工程项目', category: 'Navigation', url: '/projects' },
-    { id: 'nav-about', title: '关于作者 / About Me', description: '个人经历与联系方式', category: 'Navigation', url: '/about' },
+    { id: 'nav-about', title: '关于 / About', description: '关于本站与作者', category: 'Navigation', url: '/about' },
   ];
 
   const postItems: SearchItem[] = posts.map((p) => ({

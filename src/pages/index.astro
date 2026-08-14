@@ -10,58 +10,28 @@ const sortedPosts = allPosts.sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 const recentPosts = sortedPosts.slice(0, 6);
-
-const projects = [
-  {
-    title: 'learn-claude-code',
-    desc: '拆解 Coding Agent 核心架构：深入分析 Agent Loop、工具调用机制与上下文管理策略。',
-    tag: 'Agent / LLM',
-    href: '/blog/learn-claude-code-notes',
-    github: 'https://github.com/junnhwan',
-    stars: '⭐ Core Study',
-  },
-  {
-    title: 'Sky Takeout (苍穹外卖实战)',
-    desc: '基于 Spring Boot + Redis 缓存 + MySQL 搭建的完整高并发外卖点餐与商家管理系统。',
-    tag: 'Java / Backend',
-    href: '/blog/sky-takeout-day01',
-    github: 'https://github.com/junnhwan',
-    stars: '🔥 6-Day Series',
-  },
-  {
-    title: 'Modern Geek Blog UI',
-    desc: '基于 Astro 5 + Tailwind CSS + React 构建的高性能现代极客个人主页与技术日志系统。',
-    tag: 'Astro / UI',
-    href: 'https://github.com/junnhwan/junnhwan.github.io',
-    github: 'https://github.com/junnhwan/junnhwan.github.io',
-    stars: '✨ Astro 5.x',
-  },
-];
 ---
 
 <BaseLayout>
   <!-- Hero Section -->
   <Hero />
 
-  <!-- Bento Grid Dashboard (Spotlight, CLI, Skills, Stats) -->
+  <!-- Bento Grid Dashboard -->
   <BentoGrid />
 
   <!-- Recent Posts Section -->
-  <section class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">近期文章 / Recent Posts</h2>
-        </div>
-        <p class="text-xs text-slate-400 mt-1">记录技术探索、面试复盘与工程实践</p>
+  <section class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+        <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">近期文章 / Recent Posts</h2>
       </div>
       <a
         href="/blog"
-        class="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+        class="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
       >
-        <span>查看全部文章</span>
-        <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <span>全部文章</span>
+        <svg xmlns="http://www.w3.org/2005/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="5" y1="12" x2="19" y2="12"></line>
           <polyline points="12 5 19 12 12 19"></polyline>
         </svg>
@@ -71,76 +41,6 @@ const projects = [
     <!-- Posts Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       {recentPosts.map((post) => <PostCard post={post} />)}
-    </div>
-  </section>
-
-  <!-- Projects & Open Source Section -->
-  <section class="max-w-4xl mx-auto px-4 sm:px-6 py-12 border-t border-white/5">
-    <div class="flex items-center justify-between mb-8">
-      <div>
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">精选项目 & 实践</h2>
-        </div>
-        <p class="text-xs text-slate-400 mt-1">AI Agent 与后端工程实践项目</p>
-      </div>
-      <a
-        href="/projects"
-        class="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
-      >
-        <span>查看更多</span>
-        <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </a>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {
-        projects.map((proj) => (
-          <div class="rounded-2xl glass-card p-5 bg-slate-950/70 border border-white/5 hover:border-cyan-500/30 transition-all flex flex-col justify-between group">
-            <div>
-              <div class="flex items-center justify-between gap-2 mb-2">
-                <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
-                  {proj.tag}
-                </span>
-                <span class="text-[11px] font-mono text-slate-400">{proj.stars}</span>
-              </div>
-              <h3 class="font-bold text-sm text-white group-hover:text-cyan-400 transition-colors">
-                {proj.title}
-              </h3>
-              <p class="text-xs text-slate-400 mt-2 leading-relaxed line-clamp-3">
-                {proj.desc}
-              </p>
-            </div>
-
-            <div class="pt-4 mt-4 border-t border-white/5 flex items-center justify-between text-xs">
-              <a
-                href={proj.href}
-                class="text-slate-300 hover:text-cyan-400 font-medium inline-flex items-center gap-1"
-              >
-                <span>文章解析</span>
-                <svg xmlns="http://www.w3.org/2005/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="9 18 15 12 9 6"></polyline>
-                </svg>
-              </a>
-              <a
-                href={proj.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="text-slate-500 hover:text-slate-300"
-                title="GitHub Repo"
-              >
-                <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"></path>
-                  <path d="M9 18c-4.51 2-5-2-7-2"></path>
-                </svg>
-              </a>
-            </div>
-          </div>
-        ))
-      }
     </div>
   </section>
 </BaseLayout>

@@ -9,19 +9,16 @@ const featuredPost = allPosts.find((p) => p.data.featured) || allPosts[0];
 const readingTime = calculateReadingTime(featuredPost.body || '');
 ---
 
-<section class="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+<section class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <!-- Card 1: Featured Spotlight Post (Spans 2 columns on desktop) -->
-    <div class="md:col-span-2 relative group rounded-3xl p-[1px] bg-gradient-to-b from-cyan-500/40 via-blue-500/20 to-transparent shadow-xl">
+    <!-- Card 1: Featured Post -->
+    <div class="md:col-span-2 relative group rounded-3xl p-[1px] bg-gradient-to-b from-cyan-500/30 via-slate-800 to-transparent shadow-lg">
       <div class="relative h-full w-full rounded-3xl glass-card p-6 flex flex-col justify-between overflow-hidden bg-slate-950/80">
-        <!-- Background subtle glow -->
-        <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
         <div>
           <div class="flex items-center justify-between gap-2 mb-3">
             <div class="flex items-center gap-2">
-              <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                ⭐ 精选置顶 / Featured
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                置顶文章
               </span>
               <span class="text-xs text-slate-400 font-mono">
                 {formatDate(featuredPost.data.pubDate)}
@@ -31,19 +28,19 @@ const readingTime = calculateReadingTime(featuredPost.body || '');
           </div>
 
           <a href={`/blog/${featuredPost.slug}`} class="block group/link">
-            <h3 class="text-xl sm:text-2xl font-bold text-white group-hover/link:text-cyan-400 transition-colors leading-snug">
+            <h3 class="text-lg sm:text-xl font-bold text-white group-hover/link:text-cyan-400 transition-colors leading-snug">
               {featuredPost.data.title}
             </h3>
-            <p class="text-xs sm:text-sm text-slate-400 mt-2.5 leading-relaxed line-clamp-3">
+            <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed line-clamp-2">
               {featuredPost.data.description}
             </p>
           </a>
         </div>
 
-        <div class="pt-5 mt-4 border-t border-white/5 flex items-center justify-between">
+        <div class="pt-4 mt-4 border-t border-white/5 flex items-center justify-between">
           <div class="flex flex-wrap gap-1.5">
             {featuredPost.data.tags.slice(0, 3).map((tag: string) => (
-              <span class="px-2 py-0.5 rounded-md text-[11px] font-mono text-slate-300 bg-white/5 border border-white/5">
+              <span class="px-2 py-0.5 rounded-md text-[11px] font-mono text-slate-400 bg-white/5 border border-white/5">
                 #{tag}
               </span>
             ))}
@@ -51,10 +48,10 @@ const readingTime = calculateReadingTime(featuredPost.body || '');
 
           <a
             href={`/blog/${featuredPost.slug}`}
-            class="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 group-hover:translate-x-1 transition-all"
+            class="inline-flex items-center gap-1 text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
           >
-            <span>立即阅读</span>
-            <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <span>阅读全文</span>
+            <svg xmlns="http://www.w3.org/2005/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
               <polyline points="12 5 19 12 12 19"></polyline>
             </svg>
@@ -63,39 +60,38 @@ const readingTime = calculateReadingTime(featuredPost.body || '');
       </div>
     </div>
 
-    <!-- Card 2: Quick Metrics & Status -->
-    <div class="rounded-3xl glass-card p-6 flex flex-col justify-between bg-slate-950/80">
+    <!-- Card 2: Quick Status & Search -->
+    <div class="rounded-3xl glass-card p-5 flex flex-col justify-between bg-slate-950/80">
       <div>
-        <div class="flex items-center justify-between mb-4">
-          <h4 class="font-bold text-sm text-white">站点遥测 & 状态</h4>
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="font-bold text-sm text-white">关于站点</h4>
           <span class="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            ONLINE
+            Online
           </span>
         </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-            <span class="text-[11px] text-slate-400">文章总数</span>
-            <div class="text-xl font-bold font-mono text-white mt-1">9</div>
+        <div class="space-y-2 text-xs">
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+            <span class="text-slate-400">已发布文章</span>
+            <span class="font-mono font-bold text-white">{allPosts.length} 篇</span>
           </div>
-          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-            <span class="text-[11px] text-slate-400">技术标签</span>
-            <div class="text-xl font-bold font-mono text-cyan-400 mt-1">12+</div>
-          </div>
-          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-            <span class="text-[11px] text-slate-400">累计字数</span>
-            <div class="text-xl font-bold font-mono text-emerald-400 mt-1">50k+</div>
-          </div>
-          <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-            <span class="text-[11px] text-slate-400">运行环境</span>
-            <div class="text-xs font-bold font-mono text-slate-200 mt-1.5">Astro 5.x</div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+            <span class="text-slate-400">技术方向</span>
+            <span class="font-mono text-cyan-400">Java / Go / Agent</span>
           </div>
         </div>
       </div>
 
-      <div class="pt-4 mt-4 border-t border-white/5 text-[11px] text-slate-400 flex items-center justify-between">
-        <span>快捷搜索</span>
-        <kbd class="px-2 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-[10px] border border-white/10">⌘K</kbd>
+      <div class="pt-3 mt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
+        <span>快捷命令</span>
+        <button
+          type="button"
+          onclick="document.getElementById('cmd-palette-trigger')?.click()"
+          class="flex items-center gap-1 text-cyan-400 hover:underline text-[11px]"
+        >
+          <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-[10px] border border-white/10">⌘K</kbd>
+          <span>搜索</span>
+        </button>
       </div>
     </div>
 
@@ -105,7 +101,7 @@ const readingTime = calculateReadingTime(featuredPost.body || '');
     </div>
 
     <!-- Card 4: Skill Matrix -->
-    <div class="rounded-3xl glass-card p-6 bg-slate-950/80">
+    <div class="rounded-3xl glass-card p-5 bg-slate-950/80">
       <SkillMatrix client:visible />
     </div>
   </div>
