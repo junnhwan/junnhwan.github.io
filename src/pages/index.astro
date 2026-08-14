@@ -1,46 +1,13 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Hero from '../components/Hero.astro';
-import BentoGrid from '../components/BentoGrid.astro';
-import PostCard from '../components/PostCard.astro';
-import { getCollection } from 'astro:content';
-
-const allPosts = await getCollection('blog', ({ data }) => !data.draft);
-const sortedPosts = allPosts.sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
-const recentPosts = sortedPosts.slice(0, 6);
+import { ParticleHero } from '../components/ParticleHero';
 ---
 
-<BaseLayout>
-  <!-- Hero Section -->
-  <Hero />
-
-  <!-- Bento Grid Dashboard -->
-  <BentoGrid />
-
-  <!-- Recent Posts Section -->
-  <section class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-    <div class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-2">
-        <span class="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
-        <h2 class="text-lg sm:text-xl font-bold text-white tracking-tight">近期文章 / Recent Posts</h2>
-      </div>
-      <a
-        href="/blog"
-        class="inline-flex items-center gap-1 text-xs text-cyan-400 hover:text-cyan-300 transition-colors"
-      >
-        <span>全部文章</span>
-        <svg xmlns="http://www.w3.org/2005/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-          <polyline points="12 5 19 12 12 19"></polyline>
-        </svg>
-      </a>
-    </div>
-
-    <!-- Posts Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {recentPosts.map((post) => <PostCard post={post} />)}
-    </div>
-  </section>
+<BaseLayout
+  title="junnhwan · Be here now"
+  description="junnhwan's personal blog · Full-stack & AI Agent developer in the making."
+>
+  <div class="min-h-[calc(100vh-140px)] flex flex-col justify-center items-center py-6">
+    <ParticleHero client:load />
+  </div>
 </BaseLayout>
