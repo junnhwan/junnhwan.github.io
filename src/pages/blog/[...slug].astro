@@ -87,8 +87,34 @@ const readingTime = calculateReadingTime(post.body || '');
           <Content />
         </div>
 
+        <!-- Author Bio Card -->
+        <div class="mt-14 p-5 rounded-2xl glass-card border border-white/10 bg-slate-950/80 flex items-center justify-between gap-4">
+          <div class="flex items-center gap-3.5">
+            <img
+              src="/avatar.png"
+              alt="junnhwan"
+              class="w-11 h-11 rounded-xl object-cover border border-white/15 flex-shrink-0"
+            />
+            <div>
+              <div class="flex items-center gap-2">
+                <h4 class="text-sm font-bold text-white">hwan</h4>
+                <span class="text-xs font-mono text-slate-400">@junnhwan</span>
+              </div>
+              <p class="text-xs text-slate-400">深圳大学 · CS '28 · Go & AI Agent</p>
+            </div>
+          </div>
+          <a
+            href="https://github.com/junnhwan"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-slate-200 text-xs font-medium border border-white/10 transition-colors flex-shrink-0"
+          >
+            GitHub
+          </a>
+        </div>
+
         <!-- Post Footer Navigation -->
-        <div class="mt-14 pt-6 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="mt-8 pt-6 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {
             prevPost ? (
               <a

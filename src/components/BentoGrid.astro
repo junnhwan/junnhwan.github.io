@@ -1,24 +1,25 @@
 ---
 import { getCollection } from 'astro:content';
-import { TerminalCli } from './TerminalCli';
-import { SkillMatrix } from './SkillMatrix';
 import { calculateReadingTime, formatDate } from '../utils/readingTime';
 
-const allPosts = await getCollection('blog');
-const featuredPost = allPosts.find((p) => p.data.featured) || allPosts[0];
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const featuredPost = sortedPosts.find((p) => p.data.featured) || sortedPosts[0];
 const readingTime = calculateReadingTime(featuredPost.body || '');
 ---
 
 <section class="max-w-4xl mx-auto px-4 sm:px-6 py-4">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    <!-- Card 1: Featured Post -->
-    <div class="md:col-span-2 relative group rounded-3xl p-[1px] bg-gradient-to-b from-cyan-500/30 via-slate-800 to-transparent shadow-lg">
+    <!-- Card 1: Featured Post (Spans 2 columns on desktop) -->
+    <div class="md:col-span-2 relative group rounded-3xl p-[1px] bg-gradient-to-b from-cyan-500/25 via-slate-800 to-transparent shadow-lg">
       <div class="relative h-full w-full rounded-3xl glass-card p-6 flex flex-col justify-between overflow-hidden bg-slate-950/80">
         <div>
           <div class="flex items-center justify-between gap-2 mb-3">
             <div class="flex items-center gap-2">
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-medium bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
-                置顶文章
+                置顶推荐
               </span>
               <span class="text-xs text-slate-400 font-mono">
                 {formatDate(featuredPost.data.pubDate)}
@@ -76,33 +77,27 @@ const readingTime = calculateReadingTime(featuredPost.body || '');
             <span class="font-mono font-bold text-white">{allPosts.length} 篇</span>
           </div>
           <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
-            <span class="text-slate-400">技术方向</span>
-            <span class="font-mono text-cyan-400">Java / Go / Agent</span>
+            <span class="text-slate-400">主要方向</span>
+            <span class="font-mono text-cyan-400">Go · Java · Agent</span>
+          </div>
+          <div class="flex items-center justify-between p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+            <span class="text-slate-400">所在地</span>
+            <span class="font-mono text-slate-200">广东 深圳</span>
           </div>
         </div>
       </div>
 
       <div class="pt-3 mt-3 border-t border-white/5 flex items-center justify-between text-xs text-slate-400">
-        <span>快捷命令</span>
+        <span>快捷搜索</span>
         <button
           type="button"
           onclick="document.getElementById('cmd-palette-trigger')?.click()"
           class="flex items-center gap-1 text-cyan-400 hover:underline text-[11px]"
         >
           <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-[10px] border border-white/10">⌘K</kbd>
-          <span>搜索</span>
+          <span>唤起面板</span>
         </button>
       </div>
-    </div>
-
-    <!-- Card 3: Interactive CLI Terminal (Spans 2 columns on desktop) -->
-    <div id="terminal-section" class="md:col-span-2">
-      <TerminalCli client:visible />
-    </div>
-
-    <!-- Card 4: Skill Matrix -->
-    <div class="rounded-3xl glass-card p-5 bg-slate-950/80">
-      <SkillMatrix client:visible />
     </div>
   </div>
 </section>
