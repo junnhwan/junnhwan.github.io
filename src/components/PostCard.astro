@@ -1,0 +1,75 @@
+---
+import { calculateReadingTime, formatDate } from '../utils/readingTime';
+
+interface Props {
+  post: {
+    slug: string;
+    body?: string;
+    data: {
+      title: string;
+      description: string;
+      pubDate: Date;
+      tags: string[];
+      category?: string;
+      featured?: boolean;
+    };
+  };
+}
+
+const { post } = Astro.props;
+const readingTime = calculateReadingTime(post.body || '');
+---
+
+<article class="group relative rounded-2xl glass-card p-5 sm:p-6 bg-slate-950/70 border border-white/5 hover:border-cyan-500/30 transition-all duration-300">
+  <div class="flex flex-col h-full justify-between gap-4">
+    <div>
+      <!-- Meta line -->
+      <div class="flex items-center justify-between gap-2 mb-2.5">
+        <div class="flex items-center gap-2">
+          {
+            post.data.category && (
+              <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+                {post.data.category}
+              </span>
+            )
+          }
+          <span class="text-xs text-slate-400 font-mono">
+            {formatDate(post.data.pubDate)}
+          </span>
+        </div>
+        <span class="text-[11px] font-mono text-slate-500">{readingTime}</span>
+      </div>
+
+      <!-- Title & Link -->
+      <a href={`/blog/${post.slug}`} class="block group-hover:text-cyan-400 transition-colors">
+        <h3 class="text-base sm:text-lg font-bold text-white group-hover:text-cyan-300 transition-colors leading-snug">
+          {post.data.title}
+        </h3>
+        <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed line-clamp-2">
+          {post.data.description}
+        </p>
+      </a>
+    </div>
+
+    <!-- Tags & Read more -->
+    <div class="pt-3 border-t border-white/5 flex items-center justify-between">
+      <div class="flex flex-wrap gap-1.5">
+        {post.data.tags.slice(0, 3).map((tag: string) => (
+          <span class="px-2 py-0.5 rounded text-[11px] font-mono text-slate-400 bg-white/[0.03] border border-white/5">
+            #{tag}
+          </span>
+        ))}
+      </div>
+
+      <a
+        href={`/blog/${post.slug}`}
+        class="text-xs font-semibold text-cyan-400 group-hover:translate-x-1 inline-flex items-center gap-1 transition-transform"
+      >
+        <span>阅读</span>
+        <svg xmlns="http://www.w3.org/2005/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>

@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { formatDate } from '../../utils/readingTime';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Group posts by Year
+const postsByYear = sortedPosts.reduce((acc, post) => {
+  const year = post.data.pubDate.getFullYear().toString();
+  if (!acc[year]) acc[year] = [];
+  acc[year].push(post);
+  return acc;
+}, {} as Record<string, typeof sortedPosts>);
+
+const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
+---
+
+<BaseLayout
+  title="文章归档 · junnhwan's blog"
+  description="junnhwan 博客的所有文章时间轴与年份归档。"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <!-- Header banner -->
+    <div class="mb-12 space-y-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+        <span>Timeline Archive</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        文章归档
+      </h1>
+      <p class="text-sm text-slate-400">
+        共计 <span class="text-cyan-400 font-mono font-bold">{sortedPosts.length}</span> 篇技术沉淀与成长记录
+      </p>
+    </div>
+
+    <!-- Timeline Content -->
+    <div class="space-y-12">
+      {
+        years.map((year) => (
+          <div class="relative pl-6 sm:pl-8 border-l border-white/10 space-y-6">
+            <!-- Year Marker -->
+            <div class="absolute -left-3 top-0 flex items-center justify-center w-6 h-6 rounded-full bg-slate-900 border border-cyan-500/40 text-cyan-400 shadow-[0_0_12px_rgba(0,242,254,0.3)] font-mono text-xs font-bold">
+              •
+            </div>
+            <div class="flex items-center gap-3">
+              <h2 class="text-2xl font-bold font-mono text-white">{year}</h2>
+              <span class="text-xs text-slate-500 font-mono">({postsByYear[year].length} 篇)</span>
+            </div>
+
+            <!-- Posts in this year -->
+            <div class="space-y-4">
+              {postsByYear[year].map((post) => (
+                <div class="group flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-3.5 rounded-xl glass-card bg-slate-950/50 border border-white/5 hover:border-cyan-500/30 transition-all">
+                  <div class="flex items-center gap-3">
+                    <span class="text-xs font-mono text-slate-500 flex-shrink-0">
+                      {formatDate(post.data.pubDate).substring(5)}
+                    </span>
+                    <a
+                      href={`/blog/${post.slug}`}
+                      class="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors line-clamp-1"
+                    >
+                      {post.data.title}
+                    </a>
+                  </div>
+
+                  <div class="flex items-center gap-2 pl-9 sm:pl-0">
+                    {post.data.category && (
+                      <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/5 text-slate-400 border border-white/5">
+                        {post.data.category}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>

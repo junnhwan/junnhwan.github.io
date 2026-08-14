@@ -1,0 +1,98 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { CommandPalette } from '../components/CommandPalette';
+import { TerminalDrawer } from '../components/TerminalDrawer';
+import ReadingProgressBar from '../components/ReadingProgressBar.astro';
+import CodeBlockHelper from '../components/CodeBlockHelper.astro';
+import { getCollection } from 'astro:content';
+
+interface Props {
+  title?: string;
+  description?: string;
+  keywords?: string;
+  ogType?: string;
+}
+
+const {
+  title = "junnhwan's blog · AI Agent & Backend Engineer",
+  description = "junnhwan 的个人技术博客：专注 AI Agent 架构、Coding Agent、LLM 工程化与 Go/Java 后端高性能实践。",
+  keywords = "AI Agent, Claude Code, RAG, Go, Java, Spring Boot, Backend, junnhwan, 技术博客",
+  ogType = "website",
+} = Astro.props;
+
+const allPosts = await getCollection('blog');
+const searchPosts = allPosts.map((p) => ({
+  slug: p.slug,
+  data: {
+    title: p.data.title,
+    description: p.data.description,
+    tags: p.data.tags,
+    category: p.data.category,
+  },
+}));
+---
+
+<!doctype html>
+<html lang="zh-CN" class="dark scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content="junnhwan" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+
+    <!-- Favicon & RSS -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="junnhwan's blog RSS" href="/rss.xml" />
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-background text-slate-100 min-h-screen flex flex-col relative selection:bg-cyan-500/30 selection:text-white">
+    <!-- Reading Progress Bar (Top) -->
+    <ReadingProgressBar />
+
+    <!-- Ambient Grid & Radial Background -->
+    <div class="fixed inset-0 bg-grid-pattern pointer-events-none opacity-60 -z-20"></div>
+    <div class="fixed inset-0 bg-radial-glow pointer-events-none -z-10"></div>
+
+    <!-- Navigation Header -->
+    <Header />
+
+    <!-- Main Content Slot -->
+    <main class="flex-1 w-full pt-16">
+      <slot />
+    </main>
+
+    <!-- Global Command Palette -->
+    <CommandPalette client:load posts={searchPosts} />
+
+    <!-- Global Terminal Drawer -->
+    <TerminalDrawer client:load />
+
+    <!-- Code Block Helpers (Copy Button & Window Buttons) -->
+    <CodeBlockHelper />
+
+    <!-- Footer -->
+    <Footer />
+  </body>
+</html>

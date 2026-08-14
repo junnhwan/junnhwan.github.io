@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { BlogFilter } from '../../components/BlogFilter';
+import { getCollection } from 'astro:content';
+import { formatDate } from '../../utils/readingTime';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const formattedPosts = sortedPosts.map((p) => ({
+  slug: p.slug,
+  body: p.body,
+  data: {
+    title: p.data.title,
+    description: p.data.description,
+    pubDate: formatDate(p.data.pubDate),
+    tags: p.data.tags,
+    category: p.data.category,
+    featured: p.data.featured,
+  },
+}));
+---
+
+<BaseLayout
+  title="所有文章 · junnhwan's blog"
+  description="浏览 junnhwan 所有的技术文章、面经复盘、AI Agent 学习笔记与后端架构实战。"
+>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12">
+    <!-- Header banner -->
+    <div class="mb-10 space-y-2">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono bg-cyan-500/10 text-cyan-300 border border-cyan-500/20">
+        <span>Articles & Notes</span>
+      </div>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        文章与技术笔记
+      </h1>
+      <p class="text-sm text-slate-400 max-w-xl">
+        包含 AI Agent 体系拆解、Go & Java 后端高并发实践、面试复盘及项目实战记录。
+      </p>
+    </div>
+
+    <!-- Client-side Interactive Filter & Search -->
+    <BlogFilter client:load posts={formattedPosts} />
+  </div>
+</BaseLayout>

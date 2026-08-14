@@ -1,0 +1,67 @@
+---
+---
+
+<script>
+  function setupCodeBlocks() {
+    const preBlocks = document.querySelectorAll('pre');
+    preBlocks.forEach((pre) => {
+      if (pre.dataset.enhanced) return;
+      pre.dataset.enhanced = 'true';
+
+      // Create wrapper if not existing
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative my-6 rounded-2xl overflow-hidden border border-white/10 bg-slate-950/90 shadow-2xl';
+      
+      // Create Mac Header
+      const header = document.createElement('div');
+      header.className = 'flex items-center justify-between px-4 py-2.5 bg-slate-900/80 border-b border-white/5 text-xs text-slate-400 select-none';
+      
+      const dots = document.createElement('div');
+      dots.className = 'flex items-center gap-1.5';
+      dots.innerHTML = `
+        <span class="w-2.5 h-2.5 rounded-full bg-rose-500/80"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-amber-500/80"></span>
+        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/80"></span>
+      `;
+
+      // Copy Button
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 hover:bg-white/10 text-slate-400 hover:text-cyan-300 transition-colors font-mono text-[11px]';
+      copyBtn.innerHTML = `
+        <svg xmlns="http://www.w3.org/2005/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        <span>复制</span>
+      `;
+
+      copyBtn.addEventListener('click', async () => {
+        const codeText = pre.querySelector('code')?.innerText || pre.innerText;
+        await navigator.clipboard.writeText(codeText);
+        copyBtn.innerHTML = `
+          <svg xmlns="http://www.w3.org/2005/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          <span class="text-emerald-400">已复制</span>
+        `;
+        setTimeout(() => {
+          copyBtn.innerHTML = `
+            <svg xmlns="http://www.w3.org/2005/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+            <span>复制</span>
+          `;
+        }, 2000);
+      });
+
+      header.appendChild(dots);
+      header.appendChild(copyBtn);
+
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(header);
+      wrapper.appendChild(pre);
+
+      pre.style.margin = '0';
+      pre.style.border = 'none';
+      pre.style.borderRadius = '0';
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupCodeBlocks);
+  // Also run on dynamic transitions
+  setupCodeBlocks();
+</script>

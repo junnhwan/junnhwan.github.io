@@ -1,0 +1,161 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
+import { calculateReadingTime, formatDate } from '../../utils/readingTime';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await post.render();
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+const currentIndex = sortedPosts.findIndex((p) => p.slug === post.slug);
+const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
+const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
+
+const readingTime = calculateReadingTime(post.body || '');
+---
+
+<BaseLayout
+  title={`${post.data.title} · junnhwan's blog`}
+  description={post.data.description}
+  keywords={post.data.tags.join(', ')}
+  ogType="article"
+>
+  <article class="max-w-5xl mx-auto px-4 sm:px-6 py-12">
+    <!-- Back to Blog Button -->
+    <div class="mb-8">
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-pill text-xs text-slate-400 hover:text-white border border-white/10 hover:border-cyan-500/30 transition-all"
+      >
+        <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>返回文章列表</span>
+      </a>
+    </div>
+
+    <!-- Article Header -->
+    <header class="mb-12 pb-8 border-b border-white/10 space-y-4">
+      <div class="flex flex-wrap items-center gap-3">
+        {
+          post.data.category && (
+            <span class="px-2.5 py-1 rounded-md text-xs font-mono font-semibold bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+              {post.data.category}
+            </span>
+          )
+        }
+        <span class="text-xs text-slate-400 font-mono">
+          发布于 {formatDate(post.data.pubDate)}
+        </span>
+        <span class="text-xs text-slate-600">·</span>
+        <span class="text-xs text-slate-400 font-mono">{readingTime}</span>
+      </div>
+
+      <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
+        {post.data.title}
+      </h1>
+
+      {
+        post.data.description && (
+          <p class="text-sm sm:text-base text-slate-400 leading-relaxed max-w-3xl pt-1">
+            {post.data.description}
+          </p>
+        )
+      }
+
+      <div class="flex flex-wrap gap-2 pt-2">
+        {
+          post.data.tags.map((tag: string) => (
+            <span class="px-2.5 py-1 rounded-lg text-xs font-mono text-slate-300 bg-white/5 border border-white/5">
+              #{tag}
+            </span>
+          ))
+        }
+      </div>
+    </header>
+
+    <!-- Main Content Grid: Post Body & TOC Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+      <!-- Article Body -->
+      <div class="lg:col-span-3 min-w-0">
+        <div class="prose prose-invert prose-slate max-w-none prose-headings:scroll-mt-24 prose-headings:font-bold prose-headings:text-white prose-a:text-cyan-400 prose-a:no-underline hover:prose-a:underline prose-img:rounded-2xl prose-img:border prose-img:border-white/10 prose-code:text-cyan-300 prose-blockquote:border-l-cyan-500 prose-blockquote:bg-cyan-950/10 prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:rounded-r-xl">
+          <Content />
+        </div>
+
+        <!-- Author Bio Card -->
+        <div class="mt-16 p-6 rounded-3xl glass-card border border-white/10 bg-slate-950/80 flex flex-col sm:flex-row items-center gap-5">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-600/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-mono font-black text-xl flex-shrink-0">
+            JH
+          </div>
+          <div class="space-y-1 text-center sm:text-left flex-1">
+            <h4 class="text-sm font-bold text-white">junnhwan</h4>
+            <p class="text-xs text-slate-400">
+              AI Agent & Backend Engineer · 热衷于 Coding Agent 源码拆解、LLM 落地实践与高性能后端工程。
+            </p>
+          </div>
+          <a
+            href="https://github.com/junnhwan"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-4 py-2 rounded-xl bg-white/5 hover:bg-cyan-500/20 text-slate-200 hover:text-cyan-300 text-xs font-medium border border-white/10 hover:border-cyan-500/30 transition-colors flex-shrink-0"
+          >
+            关注 GitHub
+          </a>
+        </div>
+
+        <!-- Pagination (Prev / Next Posts) -->
+        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {
+            prevPost ? (
+              <a
+                href={`/blog/${prevPost.slug}`}
+                class="group p-4 rounded-2xl glass-card bg-slate-950/60 border border-white/5 hover:border-cyan-500/30 transition-all flex flex-col justify-between"
+              >
+                <span class="text-[11px] text-slate-500 font-mono">← 上一篇</span>
+                <span class="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-cyan-400 transition-colors line-clamp-1 mt-1">
+                  {prevPost.data.title}
+                </span>
+              </a>
+            ) : (
+              <div />
+            )
+          }
+
+          {
+            nextPost ? (
+              <a
+                href={`/blog/${nextPost.slug}`}
+                class="group p-4 rounded-2xl glass-card bg-slate-950/60 border border-white/5 hover:border-cyan-500/30 transition-all flex flex-col justify-between text-right"
+              >
+                <span class="text-[11px] text-slate-500 font-mono">下一篇 →</span>
+                <span class="text-xs sm:text-sm font-bold text-slate-200 group-hover:text-cyan-400 transition-colors line-clamp-1 mt-1">
+                  {nextPost.data.title}
+                </span>
+              </a>
+            ) : (
+              <div />
+            )
+          }
+        </div>
+      </div>
+
+      <!-- TOC Sidebar -->
+      <aside class="hidden lg:block lg:col-span-1">
+        <TableOfContents headings={headings} />
+      </aside>
+    </div>
+  </article>
+</BaseLayout>
