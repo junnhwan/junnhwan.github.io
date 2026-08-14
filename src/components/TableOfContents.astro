@@ -15,29 +15,70 @@ const filteredHeadings = headings.filter((h) => h.depth > 1 && h.depth < 4);
 
 {
   filteredHeadings.length > 0 && (
-    <nav class="sticky top-24 rounded-2xl glass-card p-4 border border-white/5 bg-slate-950/70 text-xs max-h-[calc(100vh-120px)] overflow-y-auto">
-      <div class="flex items-center gap-2 font-bold text-slate-200 mb-3 pb-2 border-b border-white/5">
-        <svg xmlns="http://www.w3.org/2005/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-cyan-400">
-          <line x1="21" y1="10" x2="3" y2="10"></line>
-          <line x1="21" y1="6" x2="3" y2="6"></line>
-          <line x1="21" y1="14" x2="3" y2="14"></line>
-          <line x1="21" y1="18" x2="3" y2="18"></line>
-        </svg>
-        <span>目录导航 / TOC</span>
-      </div>
-      <ul class="space-y-1.5 text-slate-400">
+    <div class="sticky top-24 space-y-3">
+      <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider font-mono">
+        目录 / TOC
+      </p>
+      <nav class="toc-container max-h-[calc(100vh-140px)] overflow-y-auto pr-2 text-xs space-y-1">
         {filteredHeadings.map((h) => (
-          <li
-            class={`transition-colors hover:text-cyan-400 ${
+          <a
+            href={`#${h.slug}`}
+            class={`toc-link block py-1 text-slate-400 hover:text-cyan-400 transition-colors truncate ${
               h.depth === 3 ? 'pl-3 text-[11px] text-slate-500' : 'font-medium'
             }`}
+            data-slug={h.slug}
           >
-            <a href={`#${h.slug}`} class="block py-0.5 truncate hover:underline">
-              {h.text}
-            </a>
-          </li>
+            {h.text}
+          </a>
         ))}
-      </ul>
-    </nav>
+      </nav>
+    </div>
   )
 }
+
+<script>
+  function setupTocScrollSpy() {
+    const links = document.querySelectorAll('.toc-link');
+    if (!links.length) return;
+
+    const headingEls: HTMLElement[] = [];
+    links.forEach((link) => {
+      const slug = link.getAttribute('data-slug');
+      if (slug) {
+        const el = document.getElementById(slug);
+        if (el) headingEls.push(el);
+      }
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.getAttribute('id');
+            links.forEach((link) => {
+              if (link.getAttribute('data-slug') === id) {
+                link.classList.add('text-cyan-400', 'font-bold');
+                link.classList.remove('text-slate-400', 'text-slate-500');
+              } else {
+                link.classList.remove('text-cyan-400', 'font-bold');
+                if (link.classList.contains('pl-3')) {
+                  link.classList.add('text-slate-500');
+                } else {
+                  link.classList.add('text-slate-400');
+                }
+              }
+            });
+          }
+        });
+      },
+      {
+        rootMargin: '0px 0px -70% 0px',
+      }
+    );
+
+    headingEls.forEach((el) => observer.observe(el));
+  }
+
+  document.addEventListener('DOMContentLoaded', setupTocScrollSpy);
+  setupTocScrollSpy();
+</script>

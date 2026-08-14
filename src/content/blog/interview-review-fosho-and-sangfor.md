@@ -192,8 +192,11 @@ draft: false
 
 **问题：** 订单表数据量很大，后台翻页类似：
 
-```
-SELECT * FROM `order`WHERE status = 1ORDER BY id DESCLIMIT 500000, 20;
+```sql
+SELECT * FROM `order`
+WHERE status = 1
+ORDER BY id DESC
+LIMIT 500000, 20;
 ```
 
 耗时可能到秒级。
@@ -202,8 +205,15 @@ SELECT * FROM `order`WHERE status = 1ORDER BY id DESCLIMIT 500000, 20;
 
 **优化思路（延迟关联）：** 子查询只取 `id`（更容易走覆盖索引），再回表取 20 行完整数据，例如：
 
-```
-SELECT t1.*FROM `order` t1JOIN (  SELECT id FROM `order`  WHERE status = 1  ORDER BY id DESC  LIMIT 500000, 20) t2 ON t1.id = t2.id;
+```sql
+SELECT t1.*
+FROM `order` t1
+JOIN (
+  SELECT id FROM `order`
+  WHERE status = 1
+  ORDER BY id DESC
+  LIMIT 500000, 20
+) t2 ON t1.id = t2.id;
 ```
 
 （具体能降多少取决于数据量和索引，这里只记思路，不当作绝对数字。）
