@@ -26,18 +26,8 @@ export default {
         DEFAULT: 'var(--line)',
       },
       fontFamily: {
-        sans: [
-          'Inter Variable',
-          'Inter',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'Segoe UI',
-          'PingFang SC',
-          'HarmonyOS Sans SC',
-          'Hiragino Sans GB',
-          'Microsoft YaHei',
-          'sans-serif',
-        ],
+        sans: ['Newsreader Variable', 'Noto Serif SC Variable', 'Songti SC', 'SimSun', 'serif'],
+        serif: ['Newsreader Variable', 'Noto Serif SC Variable', 'Songti SC', 'SimSun', 'serif'],
         mono: [
           'JetBrains Mono Variable',
           'JetBrains Mono',
@@ -65,8 +55,8 @@ export default {
             '--tw-prose-body': 'var(--fg-muted)',
             color: 'var(--fg-muted)',
             maxWidth: 'none',
-            fontSize: '0.9375rem',
-            lineHeight: '1.9',
+            fontSize: '1.0625rem',
+            lineHeight: '1.95',
             'p, ul, ol, blockquote': {
               marginTop: '1.3em',
               marginBottom: '1.3em',
