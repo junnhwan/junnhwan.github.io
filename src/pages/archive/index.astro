@@ -19,45 +19,78 @@ const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
 ---
 
 <BaseLayout title="归档 · junnhwan's blog" description="junnhwan 博客的全部文章时间线。">
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 py-12">
     <header class="mb-10" data-reveal>
-      <h1 class="text-xl font-semibold text-fg">归档</h1>
-      <p class="mt-1 text-[13px] text-fg-subtle">
-        共 <span class="font-mono tabular-nums">{sortedPosts.length}</span> 篇
-      </p>
+      <h1 class="text-3xl font-semibold text-fg">归档</h1>
+      <p class="mt-2 text-[13px] text-fg-subtle">共 <span class="font-mono tabular-nums">{sortedPosts.length}</span> 篇</p>
     </header>
-
-    <div class="space-y-10">
-      {
-        years.map((year, index) => (
-          <section data-reveal data-reveal-delay={index * 60}>
-            <div class="flex items-baseline gap-3 mb-1">
-              <h2 class="font-mono text-sm text-fg">{year}</h2>
-              <span class="font-mono text-[11px] text-fg-subtle">
-                {postsByYear[year].length}
-              </span>
+    <div class="grid items-start gap-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-14">
+      <nav aria-label="归档年份" class="year-index flex flex-wrap gap-2 lg:flex-col lg:sticky lg:top-28" data-reveal>
+        {years.map(year => (
+          <a href={`#year-${year}`} class="year-link flex items-baseline justify-between gap-6 px-3 py-3 rounded-md text-fg-muted transition-colors hover:text-accent hover:bg-surface-hover">
+            <span class="font-mono text-base">{year}</span>
+            <span class="text-xs text-fg-subtle">{postsByYear[year].length} 篇</span>
+          </a>
+        ))}
+      </nav>
+      <div class="min-w-0 space-y-14">
+        {years.map(year => (
+          <section id={`year-${year}`} aria-labelledby={`heading-${year}`} class="archive-year scroll-mt-28" data-reveal>
+            <div class="flex items-baseline justify-between gap-4 pb-5 border-b border-line-strong">
+              <h2 id={`heading-${year}`} class="year-heading text-fg">{year}</h2>
+              <span class="text-xs text-fg-subtle">{postsByYear[year].length} 篇</span>
             </div>
-
-            <div class="border-t border-line">
-              {postsByYear[year].map((post) => (
-                <a href={`/blog/${post.slug}`} class="row py-3 flex items-baseline gap-4">
-                  <time class="w-12 shrink-0 font-mono text-xs text-fg-subtle tabular-nums">
-                    {formatDate(post.data.pubDate).slice(5)}
-                  </time>
-                  <span class="row-title min-w-0 flex-1 text-[14px] text-fg-muted truncate">
-                    {post.data.title}
-                  </span>
-                  {post.data.category && (
-                    <span class="shrink-0 font-mono text-[11px] text-fg-subtle hidden sm:inline">
-                      {post.data.category}
-                    </span>
-                  )}
-                </a>
-              ))}
-            </div>
+            {postsByYear[year].map(post => (
+              <a href={`/blog/${post.slug}`} class="archive-entry article-row group">
+                <time datetime={post.data.pubDate.toISOString()} class="font-mono text-xs text-fg-subtle tabular-nums">{formatDate(post.data.pubDate).slice(5)}</time>
+                <h3 class="min-w-0 text-[15px] sm:text-base leading-7 text-fg group-hover:text-accent transition-colors">{post.data.title}</h3>
+                {post.data.category && <span class="archive-category font-mono text-[11px] text-fg-subtle">{post.data.category}</span>}
+                <span class="article-arrow" aria-hidden="true">↗</span>
+              </a>
+            ))}
           </section>
-        ))
-      }
+        ))}
+      </div>
     </div>
   </div>
 </BaseLayout>
+<style>
+  .year-heading { font-family: Georgia, 'Times New Roman', serif; font-size: 3rem; font-style: italic; line-height: 1; letter-spacing: -.04em; }
+  .year-link[aria-current="date"] { color: var(--accent); background: var(--accent-soft); }
+  .archive-entry { display: grid; grid-template-columns: 3.5rem minmax(0,1fr) auto; align-items: baseline; gap: 1rem; padding: 1.35rem 2rem 1.35rem 0; border-bottom: 1px solid var(--line); }
+  @media (max-width: 639px) {
+    .archive-entry { grid-template-columns: minmax(0,1fr); gap: .35rem; }
+    .archive-category { display: none; }
+    .year-heading { font-size: 2.5rem; }
+  }
+</style>
+<script>
+  function setupArchiveIndex() {
+    const sections = Array.from(document.querySelectorAll<HTMLElement>('.archive-year'));
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.year-link'));
+    if (!sections.length) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      let current = sections[0];
+      for (const section of sections) {
+        if (section.getBoundingClientRect().top <= 180) current = section;
+      }
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 8) current = sections[sections.length - 1];
+      for (const link of links) {
+        if (link.hash === `#${current.id}`) link.setAttribute('aria-current', 'date');
+        else link.removeAttribute('aria-current');
+      }
+    };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    update();
+    document.addEventListener('astro:before-swap', () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', schedule);
+    }, { once: true });
+  }
+  document.addEventListener('astro:page-load', setupArchiveIndex);
+</script>
