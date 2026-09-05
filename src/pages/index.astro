@@ -1,13 +1,45 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { ParticleHero } from '../components/ParticleHero';
+import LineField from '../components/LineField.astro';
+import { Wordmark } from '../components/Wordmark';
+import { getCollection } from 'astro:content';
+import { formatDate } from '../utils/readingTime';
+const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
 ---
-
-<BaseLayout
-  title="junnhwan · Be here now"
-  description="junnhwan's personal blog · Full-stack & AI Agent developer in the making."
->
-  <div class="min-h-[calc(100vh-13rem)] flex flex-col justify-center items-center">
-    <ParticleHero client:load />
-  </div>
+<BaseLayout title="junnhwan · Be here now" description="junnhwan 的博客。">
+  <section data-line-hero class="line-hero">
+    <LineField />
+    <div class="hero-mark">
+      <Wordmark client:load />
+      <a href="/blog">文章 <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+  <section class="home-posts max-w-[1120px] mx-auto px-4 sm:px-6" aria-labelledby="recent-title">
+    <div class="flex items-baseline justify-between gap-4 pb-5 border-b border-line">
+      <h2 id="recent-title" class="text-sm font-medium text-fg">最近更新</h2>
+      <a href="/blog" class="all-posts text-xs text-accent">全部文章 ↗</a>
+    </div>
+    {recentPosts.map(post => (
+      <a href={`/blog/${post.slug}`} class="home-post article-row group">
+        <time class="font-mono text-xs text-fg-subtle">{formatDate(post.data.pubDate)}</time>
+        <h3 class="text-[15px] sm:text-base leading-7 text-fg group-hover:text-accent transition-colors">{post.data.title}</h3>
+        <span class="article-arrow" aria-hidden="true">↗</span>
+      </a>
+    ))}
+  </section>
 </BaseLayout>
+<style>
+  .line-hero { position: relative; min-height: clamp(400px, 65dvh, 680px); display: grid; place-items: center; isolation: isolate; }
+  .hero-mark { position: relative; text-align: center; padding: 3rem 2rem; }
+  .hero-mark::before { content: ''; position: absolute; inset: -2rem; z-index: -1; background: radial-gradient(ellipse, var(--bg) 20%, transparent 70%); pointer-events: none; }
+  .hero-mark a { display: inline-flex; gap: .75rem; align-items: center; margin-top: 2.5rem; padding: .75rem 1rem; color: var(--fg-muted); font-size: 13px; transition: color var(--dur-fast) var(--ease); }
+  .hero-mark a span { transition: transform var(--dur-fast) var(--ease); }
+  @media (hover: hover) and (pointer: fine) { .hero-mark a:hover { color: var(--accent); } .hero-mark a:hover span { transform: translate(2px,-2px); } }
+  @media (prefers-reduced-motion: reduce) { .hero-mark a:hover span { transform: none; } }
+  .home-posts { padding-top: 1rem; }
+  .home-posts a { text-decoration: none; }
+  .home-post { display: grid; grid-template-columns: 120px minmax(0,1fr); gap: 2rem; align-items: baseline; padding: 1.5rem 2rem 1.5rem 0; border-bottom: 1px solid var(--line); }
+  .all-posts:hover { text-decoration: underline; text-underline-offset: 4px; }
+  @media (max-width: 639px) { .home-post { grid-template-columns: minmax(0,1fr); gap: .5rem; } }
+</style>

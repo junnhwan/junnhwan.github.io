@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 
 interface PostItem {
   slug: string;
@@ -23,6 +23,7 @@ export const BlogFilter: React.FC<Props> = ({ posts }) => {
   const [category, setCategory] = useState<string>(ALL);
   const [tag, setTag] = useState<string>(ALL);
   const [query, setQuery] = useState<string>('');
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const categories = useMemo(
     () => [ALL, ...Array.from(new Set(posts.map((p) => p.data.category || 'Tech'))).sort()],
@@ -62,12 +63,22 @@ export const BlogFilter: React.FC<Props> = ({ posts }) => {
     });
   }, [posts, category, tag, query]);
 
+  useEffect(() => {
+    const element = resultsRef.current;
+    if (!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const animation = element.animate(
+      [{ opacity: 0.65 }, { opacity: 1 }],
+      { duration: 150, easing: getComputedStyle(document.documentElement).getPropertyValue('--ease').trim() }
+    );
+    return () => animation.cancel();
+  }, [filtered]);
+
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
-            <span className="mr-1 shrink-0 font-mono text-[10px] uppercase tracking-wider text-fg-subtle">
+    <div className="grid items-start gap-8 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-14">
+      <aside aria-label="文章筛选" className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-28">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-wrap items-center gap-1 lg:flex-col lg:items-stretch">
+            <span className="w-full mb-2 font-mono text-[11px] tracking-wider text-fg-subtle">
               分类
             </span>
             {categories.map((item) => (
@@ -78,7 +89,8 @@ export const BlogFilter: React.FC<Props> = ({ posts }) => {
                   setCategory(item);
                   updateUrl(item, tag);
                 }}
-                className={`h-7 px-3 rounded-full text-xs whitespace-nowrap transition-colors ${
+                aria-pressed={category === item}
+                className={`min-h-8 px-3 rounded-md text-left text-[13px] whitespace-nowrap transition-colors ${
                   category === item
                     ? 'bg-accent-soft text-accent'
                     : 'text-fg-subtle hover:text-fg hover:bg-surface-hover'
@@ -89,7 +101,7 @@ export const BlogFilter: React.FC<Props> = ({ posts }) => {
             ))}
           </div>
 
-          <div className="relative sm:w-56">
+          <div className="relative order-first">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="13"
@@ -116,8 +128,8 @@ export const BlogFilter: React.FC<Props> = ({ posts }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 overflow-x-auto no-scrollbar -mx-1 px-1">
-          <span className="mr-1 shrink-0 font-mono text-[10px] uppercase tracking-wider text-fg-subtle">
+        <div className="flex flex-wrap items-center gap-1">
+          <span className="w-full mb-2 font-mono text-[11px] tracking-wider text-fg-subtle">
             标签
           </span>
           {tags.map((item) => (
@@ -128,6 +140,7 @@ export const BlogFilter: React.FC<Props> = ({ posts }) => {
                 setTag(item);
                 updateUrl(category, item);
               }}
+              aria-pressed={tag === item}
               className={`h-7 px-3 rounded-full text-xs whitespace-nowrap transition-colors ${
                 tag === item
                   ? 'bg-accent-soft text-accent'
@@ -138,54 +151,57 @@ export const BlogFilter: React.FC<Props> = ({ posts }) => {
             </button>
           ))}
         </div>
-      </div>
+      </aside>
 
-      {filtered.length === 0 ? (
-        <div className="py-20 text-center space-y-3">
-          <p className="text-sm text-fg-subtle">没有匹配的文章</p>
-          <button
-            type="button"
-            onClick={() => {
-              setCategory(ALL);
-              setTag(ALL);
-              setQuery('');
-              updateUrl(ALL, ALL);
-            }}
-            className="text-xs text-accent hover:text-accent-hover transition-colors"
-          >
-            重置筛选
-          </button>
-        </div>
-      ) : (
-        <div className="border-t border-line">
-          {filtered.map((post) => (
-            <a key={post.slug} href={`/blog/${post.slug}`} className="row group py-4 sm:py-5">
-              <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-5">
-                <time className="w-24 shrink-0 font-mono text-xs text-fg-subtle tabular-nums">
-                  {post.data.pubDate}
-                </time>
+      <div ref={resultsRef} className="min-w-0">
+        {filtered.length === 0 ? (
+          <div className="py-20 text-center space-y-3">
+            <p className="text-sm text-fg-subtle">没有匹配的文章</p>
+            <button
+              type="button"
+              onClick={() => {
+                setCategory(ALL);
+                setTag(ALL);
+                setQuery('');
+                updateUrl(ALL, ALL);
+              }}
+              className="text-xs text-accent hover:text-accent-hover transition-colors"
+            >
+              重置筛选
+            </button>
+          </div>
+        ) : (
+          <div className="border-t border-line">
+            {filtered.map((post) => (
+              <a key={post.slug} href={`/blog/${post.slug}`} className="article-row group block border-b border-line py-5 sm:py-6 pr-8">
+                <span aria-hidden="true" className="article-arrow">↗</span>
+                <div className="flex flex-col gap-2">
+                  <time className="w-24 shrink-0 font-mono text-xs text-fg-subtle tabular-nums">
+                    {post.data.pubDate}
+                  </time>
 
-                <div className="min-w-0 flex-1 space-y-1">
-                  <h2 className="row-title text-[15px] font-medium text-fg-muted leading-snug">
-                    {post.data.title}
-                  </h2>
-                  <p className="text-[13px] text-fg-subtle leading-relaxed line-clamp-1">
-                    {post.data.description}
-                  </p>
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <h2 className="text-[17px] font-medium text-fg leading-relaxed transition-colors group-hover:text-accent">
+                      {post.data.title}
+                    </h2>
+                    <p className="text-[13px] text-fg-subtle leading-relaxed line-clamp-2">
+                      {post.data.description}
+                    </p>
+                  </div>
+
+                  {post.data.category && (
+                    <span className="shrink-0 font-mono text-[11px] text-fg-subtle">
+                      {post.data.category}
+                    </span>
+                  )}
                 </div>
+              </a>
+            ))}
+          </div>
+        )}
 
-                {post.data.category && (
-                  <span className="shrink-0 font-mono text-[11px] text-fg-subtle">
-                    {post.data.category}
-                  </span>
-                )}
-              </div>
-            </a>
-          ))}
-        </div>
-      )}
-
-      <p className="font-mono text-[11px] text-fg-subtle">{filtered.length} 篇</p>
+        <p aria-live="polite" className="mt-5 font-mono text-[11px] text-fg-subtle">{filtered.length} 篇</p>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,93 @@
+---
+---
+<div class="line-field" aria-hidden="true"><canvas></canvas></div>
+<style>
+  .line-field { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  canvas { width: 100%; height: 100%; display: block; opacity: .65; }
+</style>
+<script>
+  function setupLineField() {
+    const canvas = document.querySelector<HTMLCanvasElement>('.line-field canvas');
+    const host = canvas?.closest<HTMLElement>('[data-line-hero]');
+    const ctx = canvas?.getContext('2d');
+    if (!canvas || !host || !ctx) return;
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const fine = matchMedia('(hover: hover) and (pointer: fine)');
+    let width = 0, height = 0, frame = 0, phase = 0, last = 0;
+    let visible = true, disposed = false;
+    let px = -1000, py = -1000, targetX = -1000, targetY = -1000;
+    let influence = 0, targetInfluence = 0;
+    let color = '';
+    const readColor = () => { color = getComputedStyle(host).getPropertyValue('--accent').trim(); draw(); };
+    function draw() {
+      if (!ctx || !canvas) return;
+      ctx.clearRect(0, 0, width, height);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = .8;
+      const count = width < 600 ? 26 : 40;
+      for (let line = 0; line < count; line++) {
+        const fraction = line / (count - 1);
+        ctx.globalAlpha = .12 + .32 * Math.sin(fraction * Math.PI);
+        ctx.beginPath();
+        for (let x = -20; x <= width + 20; x += 8) {
+          const nx = x / width;
+          const envelope = Math.sin(Math.max(0, Math.min(1, nx)) * Math.PI);
+          const base = height * (.22 + fraction * .58);
+          const wave = Math.sin(nx * 6 + fraction * 3 + phase) * height * .09
+            + Math.cos(nx * 9 - fraction * 2 - phase * .7) * height * .035;
+          let y = base + wave * envelope;
+          const dx = x - px, dy = y - py;
+          const falloff = Math.exp(-(dx * dx + dy * dy) / (2 * 125 * 125));
+          y += Math.tanh(dy / 45) * 48 * falloff * influence;
+          if (x === -20) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    }
+    function tick(time: number) {
+      frame = 0;
+      if (disposed || !visible || document.hidden || reduced.matches) return;
+      const dt = Math.min((time - (last || time)) / 1000, .05);
+      last = time;
+      phase += dt * .18;
+      const ease = 1 - Math.exp(-dt * 7);
+      px += (targetX - px) * ease; py += (targetY - py) * ease;
+      influence += (targetInfluence - influence) * ease;
+      draw(); frame = requestAnimationFrame(tick);
+    }
+    function sync() {
+      cancelAnimationFrame(frame); frame = 0; last = 0;
+      if (!disposed && visible && !document.hidden && !reduced.matches) frame = requestAnimationFrame(tick);
+      else draw();
+    }
+    const resize = new ResizeObserver(() => {
+      const rect = host.getBoundingClientRect(); width = rect.width; height = rect.height;
+      const dpr = Math.min(devicePixelRatio || 1, 2);
+      canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); draw();
+    });
+    const move = (event: PointerEvent) => {
+      if (!fine.matches || reduced.matches) return;
+      const rect = host.getBoundingClientRect();
+      targetX = event.clientX - rect.left; targetY = event.clientY - rect.top;
+      if (!targetInfluence) { px = targetX; py = targetY; }
+      targetInfluence = 1;
+    };
+    const leave = () => { targetInfluence = 0; };
+    const motionChange = () => { influence = 0; targetInfluence = 0; sync(); };
+    const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); });
+    const theme = new MutationObserver(readColor);
+    resize.observe(host); observer.observe(host);
+    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    host.addEventListener('pointermove', move); host.addEventListener('pointerleave', leave);
+    document.addEventListener('visibilitychange', sync); reduced.addEventListener('change', motionChange);
+    readColor(); sync();
+    document.addEventListener('astro:before-swap', () => {
+      disposed = true; cancelAnimationFrame(frame); resize.disconnect(); observer.disconnect(); theme.disconnect();
+      host.removeEventListener('pointermove', move); host.removeEventListener('pointerleave', leave);
+      document.removeEventListener('visibilitychange', sync); reduced.removeEventListener('change', motionChange);
+    }, { once: true });
+  }
+  document.addEventListener('astro:page-load', setupLineField);
+</script>

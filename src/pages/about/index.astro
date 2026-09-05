@@ -1,33 +1,39 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
+// Selected merged contributions, verified on GitHub on 2026-09-05.
 const repos = [
+  {
+    name: 'The-PR-Agent / pr-agent',
+    url: 'https://github.com/The-PR-Agent/pr-agent',
+    description: 'AI-powered code review · Agent capabilities and reliable review workflows',
+    prs: [
+      { number: 3011, title: 'Trigger PR-Agent commands from submitted GitHub reviews' },
+      { number: 2993, title: 'Review every CodeCommit target and route suggestions to the correct comparison' },
+      { number: 2967, title: 'Bring configured Agent Skills into top-level /ask prompts' },
+      { number: 2862, title: 'Enforce conversation token budgets across primary and fallback models' },
+      { number: 2829, title: 'Keep successful code suggestions when individual diff chunks fail' },
+    ],
+  },
   {
     name: 'k8sgpt-ai / k8sgpt',
     url: 'https://github.com/k8sgpt-ai/k8sgpt',
-    description: 'Contributor · Kubernetes & AI tooling',
+    description: 'Kubernetes diagnostics · More accurate workload and resource analysis',
     prs: [
-      { number: 1737, title: 'inspect Gateway Accepted and Programmed by type', url: 'https://github.com/k8sgpt-ai/k8sgpt/pull/1737' },
-      { number: 1725, title: 'skip failure reports after successful retries', url: 'https://github.com/k8sgpt-ai/k8sgpt/pull/1725' },
-      { number: 1722, title: 'scan init containers for ConfigMap usage', url: 'https://github.com/k8sgpt-ai/k8sgpt/pull/1722' },
+      { number: 1740, title: 'Detect timed-out Deployment rollouts even when replica counts match' },
+      { number: 1737, title: 'Evaluate Gateway Accepted and Programmed conditions by type' },
+      { number: 1725, title: 'Avoid false failure reports for Jobs that succeed after retries' },
     ],
   },
   {
     name: 'kubevela / kubevela',
     url: 'https://github.com/kubevela/kubevela',
-    description: 'Contributor · Cloud-native application platform',
+    description: 'Cloud-native applications · Admission validation',
     prs: [
-      { number: 7303, title: 'enforce TraitDefinition conflictsWith at admission', url: 'https://github.com/kubevela/kubevela/pull/7303' },
+      { number: 7303, title: 'Reject conflicting traits during Application admission' },
     ],
   },
-  {
-    name: 'k0sproject / k0smotron',
-    url: 'https://github.com/k0sproject/k0smotron',
-    description: 'Contributor · Kubernetes infrastructure',
-    prs: [
-      { number: 1542, title: 'add e2e checks for each upgrade strategy', url: 'https://github.com/k0sproject/k0smotron/pull/1542' },
-    ],
-  },
+
 ];
 ---
 
@@ -35,7 +41,8 @@ const repos = [
   title="About · junnhwan"
   description="About junnhwan — CS student at Shenzhen University, full-stack & AI agent developer in the making."
 >
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-12">
+  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 py-12 grid items-start gap-12 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-20">
+    <aside class="space-y-8 lg:sticky lg:top-28 min-w-0">
     <header class="flex items-center gap-4" data-reveal>
       <img
         src="/avatar.png"
@@ -67,48 +74,6 @@ const repos = [
         <span class="font-mono text-[13px] text-fg">TypeScript</span>.
       </p>
       <p class="text-fg-subtle">Open to full-stack &amp; AI agent internships.</p>
-    </section>
-
-    <section class="space-y-3" data-reveal data-reveal-delay="120">
-      <div class="flex items-baseline justify-between gap-4">
-        <h2 class="font-mono text-[11px] uppercase tracking-[0.12em] text-fg-subtle">
-          Selected Contributions
-        </h2>
-        <span class="text-[11px] text-fg-subtle">Open source</span>
-      </div>
-      <div class="border-t border-line">
-        {
-          repos.map((repo) => (
-            <div class="row py-3.5">
-              <a
-                href={repo.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="flex flex-col sm:flex-row sm:items-baseline sm:gap-4"
-              >
-                <span class="row-title font-mono text-[13px] text-fg-muted">{repo.name}</span>
-                <span class="text-[12px] text-fg-subtle">{repo.description}</span>
-              </a>
-              <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]">
-                <span class="text-fg-subtle">Merged PRs</span>
-                {
-                  repo.prs.map((pr) => (
-                    <a
-                      href={pr.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={pr.title}
-                      class="font-mono text-accent transition-colors hover:text-accent-hover"
-                    >
-                      #{pr.number}
-                    </a>
-                  ))
-                }
-              </div>
-            </div>
-          ))
-        }
-      </div>
     </section>
 
     <section class="space-y-3" data-reveal data-reveal-delay="180">
@@ -146,5 +111,84 @@ const repos = [
         </a>
       </div>
     </section>
+    </aside>
+
+    <section class="space-y-3 min-w-0" data-reveal data-reveal-delay="120">
+      <div class="flex items-baseline justify-between gap-4">
+        <h2 class="font-mono text-[11px] uppercase tracking-[0.12em] text-fg-subtle">
+          Selected Contributions
+        </h2>
+        <span class="text-[11px] text-fg-subtle">Open source</span>
+      </div>
+      <div class="border-t border-line">
+        {
+          repos.map((repo) => (
+            <article class="contribution py-6 border-b border-line">
+              <h3 class="text-sm font-semibold text-fg">
+                <a
+                  href={repo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="project-link inline-flex max-w-full items-baseline gap-2 font-mono"
+                >
+                  <span class="min-w-0 break-words">{repo.name}</span>
+                  <span aria-hidden="true" class="shrink-0 text-accent">↗</span>
+                </a>
+              </h3>
+              <p class="mt-1.5 text-[13px] leading-relaxed text-fg-muted">{repo.description}</p>
+              <p class="mt-4 text-[11px] font-medium text-fg-subtle">Selected merged PRs</p>
+              <ul class="mt-1 space-y-0.5">
+                {repo.prs.map((pr) => (
+                  <li>
+                    <a
+                      href={`${repo.url}/pull/${pr.number}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="pr-link grid grid-cols-[3.5rem_minmax(0,1fr)] gap-2 rounded-md px-2 py-2 -mx-2 text-[13px] leading-relaxed"
+                    >
+                      <span class="font-mono text-accent">#{pr.number}</span>
+                      <span>{pr.title}</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+      <a
+        href="https://github.com/search?q=is%3Apr+is%3Amerged+author%3Ajunnhwan&type=pullrequests"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="project-link inline-flex items-center gap-1.5 text-[12px] text-accent"
+      >
+        All merged contributions <span aria-hidden="true">↗</span>
+      </a>
+    </section>
+
+
   </div>
 </BaseLayout>
+
+<style>
+  .project-link {
+    text-underline-offset: 4px;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .project-link:hover,
+  .project-link:focus-visible {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+
+  .pr-link {
+    transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+  }
+
+  .pr-link:hover,
+  .pr-link:focus-visible {
+    background-color: var(--surface-hover);
+    color: var(--fg);
+  }
+</style>

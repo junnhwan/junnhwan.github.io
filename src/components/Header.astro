@@ -11,15 +11,15 @@ const navItems = [
 ];
 ---
 
-<header class="fixed top-4 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+<header class="masthead fixed top-0 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
   <div
-    class="pointer-events-auto flex items-center justify-between gap-4 pl-3 pr-2 py-1.5 rounded-full surface max-w-3xl w-full"
+    class="masthead-inner pointer-events-auto flex items-center justify-between gap-4 max-w-[1120px] w-full"
   >
     <!-- Monogram: an H whose posts frame a W -->
-    <a href="/" class="group flex items-center gap-2.5 pl-1" aria-label="junnhwan · 首页">
+    <a href="/" class="masthead-brand group flex items-center gap-2.5" aria-label="junnhwan · 首页">
       <svg
-        width="22"
-        height="22"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -33,12 +33,12 @@ const navItems = [
         <path d="M19 4.5v15" />
         <path d="M5 7.5 9.5 17 12 10.5 14.5 17 19 7.5" />
       </svg>
-      <span class="text-sm font-semibold text-fg group-hover:text-accent transition-colors">
+      <span class="brand-name text-fg group-hover:text-accent transition-colors">
         junnhwan
       </span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-0.5">
+    <nav class="hidden md:flex items-center gap-7">
       {
         navItems.map((item) => {
           const isActive =
@@ -46,10 +46,11 @@ const navItems = [
           return (
             <a
               href={item.href}
-              class={`px-3 py-1.5 rounded-full text-[13px] transition-colors ${
+              aria-current={isActive ? 'page' : undefined}
+              class={`masthead-nav transition-colors ${
                 isActive
-                  ? 'text-accent bg-accent-soft'
-                  : 'text-fg-muted hover:text-fg hover:bg-surface-hover'
+                  ? 'text-accent'
+                  : 'text-fg-muted hover:text-fg'
               }`}
             >
               {item.name}
@@ -59,7 +60,7 @@ const navItems = [
       }
     </nav>
 
-    <div class="flex items-center gap-1">
+    <div class="masthead-tools flex items-center gap-1">
       <button
         id="cmd-palette-trigger"
         type="button"
@@ -138,7 +139,7 @@ const navItems = [
 
   <div
     id="mobile-menu"
-    class="hidden md:hidden pointer-events-auto absolute top-16 inset-x-4 max-w-sm mx-auto surface rounded-2xl p-2 flex-col gap-0.5"
+    class="hidden md:hidden pointer-events-auto absolute top-[76px] inset-x-4 max-w-sm mx-auto surface rounded-2xl p-2 flex-col gap-0.5"
   >
     {
       navItems.map((item) => (
@@ -168,3 +169,16 @@ const navItems = [
 
   document.addEventListener('astro:page-load', setupMobileMenu);
 </script>
+
+<style>
+  .masthead { background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(16px); }
+  .masthead-inner { min-height: 80px; border-bottom: 1px solid var(--line-strong); }
+  .brand-name { font-family: Georgia, 'Times New Roman', serif; font-style: italic; font-size: 27px; letter-spacing: -.055em; }
+  .masthead-nav { position: relative; display: flex; align-items: center; min-height: 80px; padding: 0 .25rem; font-size: 16px; font-weight: 500; }
+  .masthead-nav::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: center; transition: transform var(--dur-fast) var(--ease); }
+  .masthead-nav[aria-current="page"]::after, .masthead-nav:focus-visible::after { transform: scaleX(1); }
+  .masthead-tools :global(button), .masthead-tools > a { min-width: 40px; min-height: 40px; border-radius: 8px; }
+  .masthead-tools :global(svg) { width: 18px; height: 18px; }
+  @media (hover: hover) and (pointer: fine) { .masthead-nav:hover::after { transform: scaleX(.55); } .masthead-nav[aria-current="page"]:hover::after { transform: scaleX(1); } }
+  @media (max-width: 767px) { .masthead-inner { min-height: 70px; gap: .5rem; } .brand-name { font-size: 23px; } .masthead-brand { gap: .4rem; } .masthead-brand svg { width: 24px; } }
+</style>
