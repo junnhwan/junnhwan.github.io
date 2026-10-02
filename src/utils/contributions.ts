@@ -5,11 +5,6 @@ export const allMergedUrl = (repo?: string) => {
   return `https://github.com/search?q=${encodeURIComponent(query)}&type=pullrequests`;
 };
 
-/**
- * Merged-PR counts per repository. The About page curates which PRs it lists
- * by hand; these numbers come from GitHub at build time so the totals do not
- * rot as more pull requests land.
- */
 export type RepoCounts = Record<string, number>;
 
 export interface Contributions {
@@ -17,18 +12,16 @@ export interface Contributions {
   total: number;
   repoCount: number;
   updatedAt: Date;
-  /** `fallback` means the GitHub request failed and the bundled counts are shown. */
+  /** `fallback` shows the bundled snapshot with its original date. */
   source: 'live' | 'fallback';
 }
 
-/**
- * Snapshot taken on 2026-09-13, used only when the build-time request fails.
- * A network problem should not fail the whole build, and showing a stale count
- * is better than showing none.
- */
+// Verified against GitHub search on 2026-10-02. A failed request must not label
+// these cached numbers with the current build date.
+const FALLBACK_UPDATED_AT = new Date('2026-10-02T00:00:00+08:00');
 const FALLBACK_COUNTS: RepoCounts = {
-  'The-PR-Agent/pr-agent': 28,
-  'k8sgpt-ai/k8sgpt': 5,
+  'The-PR-Agent/pr-agent': 34,
+  'k8sgpt-ai/k8sgpt': 11,
   'kprompt/kprompt': 2,
   'ag2ai/ag2': 1,
   'kubevela/kubevela': 1,
@@ -42,41 +35,59 @@ const FALLBACK_COUNTS: RepoCounts = {
 };
 
 interface SearchItem {
+  id: number;
   repository_url: string;
+}
+
+interface SearchResponse {
+  total_count: number;
+  incomplete_results: boolean;
+  items: SearchItem[];
 }
 
 async function fetchCounts(): Promise<RepoCounts> {
   const query = `is:pr is:merged author:${GH_USER}`;
-  const url = `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&per_page=100`;
   const token = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
-
-  const response = await fetch(url, {
-    headers: {
-      Accept: 'application/vnd.github+json',
-      'User-Agent': `${GH_USER}-blog-build`,
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    signal: AbortSignal.timeout(15000),
-  });
-
-  if (!response.ok) throw new Error(`GitHub search returned ${response.status}`);
-
-  const data = (await response.json()) as { items?: SearchItem[] };
-  const items = data.items ?? [];
-  if (!items.length) throw new Error('GitHub search returned no merged PRs');
-
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    'User-Agent': `${GH_USER}-blog-build`,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
   const counts: RepoCounts = {};
-  for (const item of items) {
-    const repo = item.repository_url.replace('https://api.github.com/repos/', '');
-    counts[repo] = (counts[repo] ?? 0) + 1;
+  const seen = new Set<number>();
+  let expected = 0;
+
+  // GitHub search returns at most 100 items per page and exposes 1,000 results.
+  // Reject incomplete data instead of silently presenting a partial total.
+  for (let page = 1; page <= 10; page += 1) {
+    const url = `https://api.github.com/search/issues?q=${encodeURIComponent(query)}&per_page=100&page=${page}&sort=created&order=asc`;
+    const response = await fetch(url, { headers, signal: AbortSignal.timeout(15000) });
+    if (!response.ok) throw new Error(`GitHub search returned ${response.status}`);
+
+    const data = (await response.json()) as SearchResponse;
+    if (data.incomplete_results || !Array.isArray(data.items) || !Number.isInteger(data.total_count)) {
+      throw new Error('GitHub search returned incomplete results');
+    }
+    if (data.total_count > 1000) throw new Error('GitHub search result limit exceeded');
+    if (page === 1) expected = data.total_count;
+    else if (data.total_count !== expected) throw new Error('GitHub contributions changed during pagination');
+
+    for (const item of data.items) {
+      if (!Number.isInteger(item.id) || seen.has(item.id) || !item.repository_url?.startsWith('https://api.github.com/repos/')) {
+        throw new Error('GitHub search returned invalid or duplicate results');
+      }
+      seen.add(item.id);
+      const repo = item.repository_url.slice('https://api.github.com/repos/'.length);
+      counts[repo] = (counts[repo] ?? 0) + 1;
+    }
+    if (seen.size === expected) return counts;
+    if (data.items.length < 100) throw new Error('GitHub search returned a partial page');
   }
-  return counts;
+  throw new Error('GitHub search did not return all contributions');
 }
 
 export async function getContributions(): Promise<Contributions> {
-  const updatedAt = new Date();
-
-  const summarise = (counts: RepoCounts, source: Contributions['source']): Contributions => ({
+  const summarise = (counts: RepoCounts, source: Contributions['source'], updatedAt: Date): Contributions => ({
     counts,
     total: Object.values(counts).reduce((sum, n) => sum + n, 0),
     repoCount: Object.keys(counts).length,
@@ -85,13 +96,14 @@ export async function getContributions(): Promise<Contributions> {
   });
 
   try {
-    return summarise(await fetchCounts(), 'live');
+    const counts = await fetchCounts();
+    return summarise(counts, 'live', new Date());
   } catch (error) {
     console.warn(
       `[contributions] falling back to the bundled counts: ${
         error instanceof Error ? error.message : String(error)
       }`
     );
-    return summarise(FALLBACK_COUNTS, 'fallback');
+    return summarise(FALLBACK_COUNTS, 'fallback', FALLBACK_UPDATED_AT);
   }
 }

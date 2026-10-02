@@ -2,44 +2,127 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { BlogFilter } from '../../components/BlogFilter';
 import { getCollection } from 'astro:content';
-import { formatDate } from '../../utils/readingTime';
+import { calculateReadingTime, formatDate } from '../../utils/readingTime';
 
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const formattedPosts = sortedPosts.map((p) => ({
-  slug: p.slug,
+const formattedPosts = sortedPosts.map((post) => ({
+  slug: post.slug,
   data: {
-    title: p.data.title,
-    description: p.data.description,
-    pubDate: formatDate(p.data.pubDate),
-    tags: p.data.tags,
-    category: p.data.category,
-    featured: p.data.featured,
+    title: post.data.title,
+    description: post.data.description,
+    pubDate: formatDate(post.data.pubDate),
+    isoDate: post.data.pubDate.toISOString(),
+    readingTime: calculateReadingTime(post.body || '').replace(' min read', ' 分钟'),
+    tags: post.data.tags,
+    category: post.data.category,
+    featured: post.data.featured,
   },
 }));
 ---
 
-<BaseLayout
-  title="文章 · junnhwan's blog"
-  description="junnhwan 的技术文章、学习笔记与面经复盘。"
->
-  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 py-12">
-    <header class="mb-10" data-reveal>
-      <div class="flex items-baseline justify-between gap-4">
-        <div>
-          <h1 class="text-3xl font-semibold text-fg">文章</h1>
-        </div>
-        <div class="flex items-center gap-3 font-mono text-[11px] text-fg-subtle">
-          <a href="/categories" class="hover:text-accent transition-colors">分类</a>
-          <span class="text-line-strong">/</span>
-          <a href="/tags" class="hover:text-accent transition-colors">标签</a>
-        </div>
+<BaseLayout title="文章 · junnhwan's blog" description="junnhwan 的技术文章、学习笔记与面经复盘。">
+  <div class="blog-index">
+    <header class="blog-intro" data-reveal>
+      <div>
+        <p class="blog-eyebrow">Notes & stories</p>
+        <h1>文章</h1>
+        <p class="blog-intro-description">记录项目里的问题、开源中的实践，以及学习时的想法。</p>
       </div>
+      <nav class="blog-taxonomy" aria-label="文章索引">
+        <a href="/categories/">分类 <span aria-hidden="true">↗</span></a>
+        <a href="/tags/">标签 <span aria-hidden="true">↗</span></a>
+      </nav>
     </header>
-
-    <div data-reveal data-reveal-delay="60">
-      <BlogFilter client:load posts={formattedPosts} />
-    </div>
+    <div data-reveal data-reveal-delay="60"><BlogFilter client:load posts={formattedPosts} /></div>
   </div>
 </BaseLayout>
+
+<style>
+  .blog-index { max-width: 1120px; margin-inline: auto; padding: 4.5rem 1.5rem 6rem; }
+  .blog-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-bottom: 3.5rem; }
+  .blog-eyebrow { margin-bottom: .9rem; color: var(--accent); font-family: 'JetBrains Mono Variable', monospace; font-size: .7rem; letter-spacing: .035em; }
+  .blog-intro h1 { color: var(--fg); font-family: var(--font-reading); font-size: clamp(2.2rem, 4vw, 3rem); line-height: 1.2; font-weight: 600; letter-spacing: -.035em; }
+  .blog-intro-description { margin-top: 1.2rem; font-size: .9rem; line-height: 1.8; color: var(--fg-subtle); }
+  .blog-taxonomy { display: flex; flex-shrink: 0; gap: 1.6rem; padding-bottom: .25rem; font-size: .8rem; }
+  .blog-taxonomy a { display: inline-flex; align-items: center; gap: .4rem; padding-block: .4rem; color: var(--fg-subtle); transition: color var(--dur-fast) var(--ease); }
+  .blog-taxonomy span { font-size: .9rem; color: var(--accent); }
+  .blog-index :global(.blog-browser) { display: grid; grid-template-columns: 12rem minmax(0, 1fr); gap: 4rem; align-items: start; }
+  .blog-index :global(.blog-filters) { position: sticky; top: 7.5rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; min-width: 0; }
+  .blog-index :global(.blog-search) { display: flex; align-items: center; gap: .7rem; min-height: 44px; padding: 0 .8rem; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface-hover); color: var(--fg-subtle); transition: border-color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease); }
+  .blog-index :global(.blog-search:focus-within) { border-color: var(--accent-line); background: var(--accent-soft); }
+  .blog-index :global(.blog-search svg) { flex-shrink: 0; }
+  .blog-index :global(.blog-search input) { width: 100%; min-width: 0; padding-block: .65rem; background: none; border: none; outline: none; color: var(--fg); font-size: .8rem; }
+  .blog-index :global(.blog-search input::placeholder) { color: var(--fg-subtle); }
+  .blog-index :global(.blog-filter-label) { margin-bottom: .85rem; color: var(--fg-subtle); font-size: .7rem; font-weight: 500; }
+  .blog-index :global(.blog-categories) { display: grid; gap: .2rem; }
+  .blog-index :global(.blog-category) { display: flex; justify-content: space-between; align-items: center; gap: .75rem; min-height: 42px; padding: .6rem .75rem; border-radius: .4rem; color: var(--fg-muted); text-align: left; font-size: .82rem; transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .blog-index :global(.blog-category[aria-pressed='true']) { background: var(--accent-soft); color: var(--accent); }
+  .blog-index :global(.blog-category-count) { color: var(--fg-subtle); font-family: 'JetBrains Mono Variable', monospace; font-size: .66rem; font-variant-numeric: tabular-nums; }
+  .blog-index :global(.blog-category[aria-pressed='true'] .blog-category-count) { color: var(--accent); }
+  .blog-index :global(.blog-tags) { display: flex; flex-wrap: wrap; gap: .3rem; }
+  .blog-index :global(.blog-tag) { min-height: 34px; padding: .35rem .6rem; border: 1px solid transparent; border-radius: .35rem; color: var(--fg-subtle); font-size: .72rem; transition: background-color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .blog-index :global(.blog-tag[aria-pressed='true']) { color: var(--accent); background: var(--accent-soft); border-color: var(--accent-line); }
+  .blog-index :global(.blog-tags-mobile) { display: none; }
+  .blog-index :global(.blog-results) { min-width: 0; }
+  .blog-index :global(.blog-results-heading) { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 44px; padding-bottom: .8rem; border-bottom: 1px solid var(--line-strong); }
+  .blog-index :global(.blog-results-heading p) { display: flex; align-items: baseline; gap: .7rem; color: var(--fg-muted); font-size: .8rem; }
+  .blog-index :global(.blog-result-count) { font-family: 'JetBrains Mono Variable', monospace; font-size: .65rem; color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
+  .blog-index :global(.blog-reset) { display: inline-flex; align-items: center; gap: .5rem; min-height: 32px; color: var(--accent); font-size: .75rem; }
+  .blog-index :global(.blog-reset span) { font-size: 1rem; }
+  .blog-index :global(.blog-post) { border-bottom: 1px solid var(--line); }
+  .blog-index :global(.blog-post-link) { position: relative; display: block; padding: 1.9rem 0 1.7rem; border-radius: 2px; }
+  .blog-index :global(.blog-post-link::after) { content: ''; position: absolute; bottom: -1px; inset-inline: 0; height: 1px; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform var(--dur) var(--ease); }
+  .blog-index :global(.blog-post-meta) { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; color: var(--fg-subtle); font-family: 'JetBrains Mono Variable', monospace; font-size: .68rem; font-variant-numeric: tabular-nums; }
+  .blog-index :global(.blog-post-category) { color: var(--accent); }
+  .blog-index :global(.blog-post-reading) { margin-left: auto; font-family: var(--font-ui); font-size: .7rem; }
+  .blog-index :global(.blog-post h2) { margin-top: .8rem; max-width: 95%; color: var(--fg); font-family: var(--font-reading); font-size: clamp(1.12rem, 1.6vw, 1.35rem); font-weight: 600; line-height: 1.65; letter-spacing: -.025em; text-wrap: pretty; transition: color var(--dur-fast) var(--ease); }
+  .blog-index :global(.blog-post-description) { margin-top: .65rem; color: var(--fg-subtle); font-size: .87rem; line-height: 1.85; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .blog-index :global(.blog-post-bottom) { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-top: 1.2rem; }
+  .blog-index :global(.blog-post-tags) { display: flex; flex-wrap: wrap; gap: .9rem; color: var(--fg-subtle); font-size: .68rem; }
+  .blog-index :global(.blog-post-tags > span::before) { content: '#'; margin-right: .12rem; opacity: .6; }
+  .blog-index :global(.blog-post-action) { display: inline-flex; align-items: center; flex-shrink: 0; gap: .7rem; color: var(--fg-subtle); font-size: .7rem; transition: color var(--dur-fast) var(--ease); }
+  .blog-index :global(.blog-post-action > span) { color: var(--accent); font-size: 1rem; transition: transform var(--dur-fast) var(--ease); }
+  .blog-index :global(.blog-post-link:focus-visible h2), .blog-index :global(.blog-post-link:focus-visible .blog-post-action) { color: var(--accent); }
+  .blog-index :global(.blog-post-link:focus-visible::after) { transform: scaleX(1); }
+  .blog-index :global(.blog-empty) { display: grid; justify-items: center; padding: 4.5rem 1rem; text-align: center; }
+  .blog-index :global(.blog-empty-mark) { color: var(--accent); font-family: var(--font-reading); font-size: 3rem; line-height: 1; opacity: .75; }
+  .blog-index :global(.blog-empty h2) { margin-top: 1.2rem; color: var(--fg); font-size: 1rem; font-weight: 500; }
+  .blog-index :global(.blog-empty p) { margin-top: .7rem; margin-bottom: 1rem; color: var(--fg-subtle); font-size: .82rem; }
+  @media (hover: hover) and (pointer: fine) {
+    .blog-taxonomy a:hover { color: var(--accent); }
+    .blog-index :global(.blog-category:hover), .blog-index :global(.blog-tag:hover) { color: var(--accent); background: var(--accent-soft); }
+    .blog-index :global(.blog-post-link:hover h2), .blog-index :global(.blog-post-link:hover .blog-post-action) { color: var(--accent); }
+    .blog-index :global(.blog-post-link:hover::after) { transform: scaleX(1); }
+    .blog-index :global(.blog-post-link:hover .blog-post-action > span) { transform: translate(2px, -2px); }
+  }
+  @media (max-width: 1023px) {
+    .blog-index { padding-top: 3rem; }
+    .blog-index :global(.blog-browser) { grid-template-columns: 10rem minmax(0, 1fr); gap: 2rem; }
+  }
+  @media (max-width: 767px) {
+    .blog-index { padding: 2.5rem 1.25rem 4rem; }
+    .blog-intro { flex-wrap: wrap; gap: 1.2rem; margin-bottom: 2rem; }
+    .blog-intro-description { font-size: .82rem; }
+    .blog-taxonomy { gap: 1.2rem; }
+    .blog-index :global(.blog-browser) { display: block; }
+    .blog-index :global(.blog-filters) { position: static; gap: 1rem; margin-bottom: 1.75rem; }
+    .blog-index :global(.blog-filter-label) { display: none; }
+    .blog-index :global(.blog-categories) { display: flex; gap: .35rem; overflow-x: auto; padding: .15rem; margin-inline: -.15rem; scrollbar-width: none; }
+    .blog-index :global(.blog-category) { flex-shrink: 0; gap: .5rem; min-height: 40px; padding: .5rem .8rem; white-space: nowrap; }
+    .blog-index :global(.blog-category-count) { font-size: .6rem; }
+    .blog-index :global(.blog-tags-desktop) { display: none; }
+    .blog-index :global(.blog-tags-mobile) { display: flex; align-items: center; gap: .8rem; color: var(--fg-subtle); font-size: .75rem; }
+    .blog-index :global(.blog-tags-mobile select) { flex: 1; min-height: 40px; padding: .5rem .65rem; color: var(--fg-muted); border: 1px solid var(--line); border-radius: .35rem; background: var(--bg); font-size: 1rem; }
+    .blog-index :global(.blog-search input) { font-size: 1rem; }
+    .blog-index :global(.blog-post-link) { padding-block: 1.6rem; }
+    .blog-index :global(.blog-post-meta) { gap: .8rem; font-size: .64rem; }
+    .blog-index :global(.blog-post h2) { max-width: none; font-size: 1.15rem; }
+    .blog-index :global(.blog-post-description) { font-size: .82rem; }
+    .blog-index :global(.blog-post-tags) { gap: .65rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .blog-index :global(.blog-post-action > span) { transform: none !important; }
+    .blog-index :global(.blog-post-link::after) { transition: none; }
+  }
+</style>

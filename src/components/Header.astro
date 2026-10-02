@@ -4,10 +4,10 @@ import ThemeToggle from './ThemeToggle.astro';
 const currentPath = Astro.url.pathname;
 
 const navItems = [
-  { name: '首页', href: '/' },
-  { name: '文章', href: '/blog' },
-  { name: '归档', href: '/archive' },
-  { name: '关于', href: '/about' },
+  { name: 'Home', href: '/' },
+  { name: 'Writing', href: '/blog' },
+  { name: 'Archive', href: '/archive' },
+  { name: 'About', href: '/about' },
 ];
 ---
 
@@ -16,7 +16,7 @@ const navItems = [
     class="masthead-inner pointer-events-auto flex items-center justify-between gap-4 max-w-[1120px] w-full"
   >
     <!-- Monogram: an H whose posts frame a W -->
-    <a href="/" class="masthead-brand group flex items-center gap-2.5" aria-label="junnhwan · 首页">
+    <a href="/" class="masthead-brand group flex items-center gap-2.5" aria-label="junnhwan · Home">
       <svg
         width="28"
         height="28"
@@ -38,7 +38,7 @@ const navItems = [
       </span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-7">
+    <nav class="hidden md:flex items-center gap-5" aria-label="Main navigation">
       {
         navItems.map((item) => {
           const isActive =
@@ -65,8 +65,8 @@ const navItems = [
         id="cmd-palette-trigger"
         type="button"
         class="flex items-center gap-1.5 px-2.5 h-8 rounded-full text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
-        title="搜索 (⌘K)"
-        aria-label="搜索"
+        title="Search (Ctrl / ⌘ K)"
+        aria-label="Search"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +82,7 @@ const navItems = [
           <circle cx="11" cy="11" r="7"></circle>
           <path d="m20 20-3.6-3.6"></path>
         </svg>
-        <span class="hidden sm:inline text-[11px] font-mono text-fg-subtle">⌘K</span>
+        <span class="shortcut-key hidden sm:inline text-[11px] font-mono text-fg-subtle">Ctrl K</span>
       </button>
 
       <ThemeToggle />
@@ -117,8 +117,9 @@ const navItems = [
         id="mobile-menu-btn"
         type="button"
         class="md:hidden grid place-items-center w-8 h-8 rounded-full text-fg-muted hover:text-fg hover:bg-surface-hover transition-colors"
-        aria-label="打开导航菜单"
+        aria-label="Open navigation menu"
         aria-expanded="false"
+        aria-controls="mobile-menu"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -145,6 +146,7 @@ const navItems = [
       navItems.map((item) => (
         <a
           href={item.href}
+          aria-current={(item.href === '/' ? currentPath === '/' : currentPath.startsWith(item.href)) ? 'page' : undefined}
           class="px-4 py-2.5 rounded-xl text-sm text-fg-muted hover:text-accent hover:bg-surface-hover transition-colors"
         >
           {item.name}
@@ -160,11 +162,37 @@ const navItems = [
     const menu = document.getElementById('mobile-menu');
     if (!button || !menu) return;
 
-    button.addEventListener('click', () => {
-      const isHidden = menu.classList.toggle('hidden');
-      menu.classList.toggle('flex', !isHidden);
-      button.setAttribute('aria-expanded', String(!isHidden));
+    const setOpen = (open: boolean) => {
+      menu.classList.toggle('hidden', !open);
+      menu.classList.toggle('flex', open);
+      button.setAttribute('aria-expanded', String(open));
+      button.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+    };
+    button.addEventListener('click', (event) => {
+      menu.dataset.animate = String(event.detail > 0);
+      setOpen(button.getAttribute('aria-expanded') !== 'true');
     });
+    const dismiss = (event: MouseEvent) => {
+      if (event.target instanceof Node && !menu.contains(event.target) && !button.contains(event.target)) setOpen(false);
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') {
+        setOpen(false);
+        button.focus();
+      }
+    };
+    const breakpoint = matchMedia('(min-width: 768px)');
+    const resize = () => { if (breakpoint.matches) setOpen(false); };
+    document.addEventListener('click', dismiss);
+    document.addEventListener('keydown', escape);
+    breakpoint.addEventListener('change', resize);
+    document.addEventListener('astro:before-swap', () => {
+      document.removeEventListener('click', dismiss);
+      document.removeEventListener('keydown', escape);
+      breakpoint.removeEventListener('change', resize);
+    }, { once: true });
+    const shortcut = document.querySelector('.shortcut-key');
+    if (shortcut && /Macintosh|iPhone|iPad/.test(navigator.userAgent)) shortcut.textContent = '⌘ K';
   }
 
   document.addEventListener('astro:page-load', setupMobileMenu);
@@ -174,11 +202,15 @@ const navItems = [
   .masthead { background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(16px); }
   .masthead-inner { min-height: 80px; border-bottom: 1px solid var(--line-strong); }
   .brand-name { font-family: 'Newsreader Variable', Georgia, serif; font-style: italic; font-size: 27px; letter-spacing: -.055em; }
-  .masthead-nav { position: relative; display: flex; align-items: center; min-height: 80px; padding: 0 .25rem; font-size: 16px; font-weight: 500; }
+  .masthead-nav { position: relative; display: flex; align-items: center; min-height: 80px; padding: 0 .25rem; font-size: 18px; font-weight: 450; }
   .masthead-nav::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--accent); transform: scaleX(0); transform-origin: center; transition: transform var(--dur-fast) var(--ease); }
   .masthead-nav[aria-current="page"]::after, .masthead-nav:focus-visible::after { transform: scaleX(1); }
   .masthead-tools :global(button), .masthead-tools > a { min-width: 40px; min-height: 40px; border-radius: 8px; }
   .masthead-tools :global(svg) { width: 18px; height: 18px; }
+  #mobile-menu a[aria-current="page"] { color: var(--accent); background: var(--accent-soft); }
+  .masthead-tools :global(button:active), .masthead-tools > a:active { transform: scale(.96); }
+  #mobile-menu[data-animate="true"]:not(.hidden) { animation: menu-enter 180ms var(--ease) both; transform-origin: top right; }
+  @keyframes menu-enter { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
   @media (hover: hover) and (pointer: fine) { .masthead-nav:hover::after { transform: scaleX(.55); } .masthead-nav[aria-current="page"]:hover::after { transform: scaleX(1); } }
   @media (max-width: 767px) { .masthead-inner { min-height: 70px; gap: .5rem; } .brand-name { font-size: 23px; } .masthead-brand { gap: .4rem; } .masthead-brand svg { width: 24px; } }
 </style>

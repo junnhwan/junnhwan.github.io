@@ -15,7 +15,9 @@ export default defineConfig({
       applyBaseStyles: false,
     }),
     mdx(),
-    sitemap(),
+    sitemap({
+      filter: (page) => !/^\/library(?:\/|$)/.test(new URL(page).pathname),
+    }),
   ],
   markdown: {
     shikiConfig: {

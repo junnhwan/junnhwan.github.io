@@ -14,11 +14,11 @@ export function Wordmark() {
   const reduced = useReducedMotion();
   const [ready, setReady] = useState(false);
   useEffect(() => {
-    const timer = window.setTimeout(() => setReady(true), 180);
+    const timer = window.setTimeout(() => setReady(true), 80);
     return () => window.clearTimeout(timer);
   }, []);
   const [fine, setFine] = useState(false);
-  const spring = { stiffness: 100, damping: 10, mass: 1 };
+  const spring = { stiffness: 140, damping: 22, mass: 1 };
   const x = useSpring(0, spring);
   const y = useSpring(0, spring);
   const rotate = useSpring(0, spring);
@@ -47,7 +47,7 @@ export function Wordmark() {
           <svg viewBox="0 0 650 205" aria-hidden="true" focusable="false">
             {strokes.map((path, index) => (
               <path key={index} d={path} pathLength={1} className="signature-stroke"
-                style={{ animationDelay: `${index * 600}ms`, strokeWidth: index === 4 ? 1.8 : 3.2 }} />
+                style={{ animationDelay: `${index * 420}ms`, strokeWidth: index === 4 ? 1.8 : 3.2 }} />
             ))}
           </svg>
         </motion.span>

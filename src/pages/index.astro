@@ -3,7 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import LineField from '../components/LineField.astro';
 import { Wordmark } from '../components/Wordmark';
 import { getCollection } from 'astro:content';
-import { formatDate } from '../utils/readingTime';
+import { formatDate, calculateReadingTime } from '../utils/readingTime';
 const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
 ---
@@ -12,34 +12,80 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
     <LineField />
     <div class="hero-mark">
       <Wordmark client:load />
-      <a href="/blog">文章 <span aria-hidden="true">↗</span></a>
+      <div class="hero-links">
+        <a href="/blog">Explore the writing <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+    <div class="hero-caption page-shell">
+      <p>开源实践、个人项目与学习笔记。</p>
+      <a href="#recent-title">最近更新 <span aria-hidden="true">↓</span></a>
     </div>
   </section>
-  <section class="home-posts max-w-[1120px] mx-auto px-4 sm:px-6" aria-labelledby="recent-title">
-    <div class="flex items-baseline justify-between gap-4 pb-5 border-b border-line">
-      <h2 id="recent-title" class="text-sm font-medium text-fg">最近更新</h2>
-      <a href="/blog" class="all-posts text-xs text-accent">全部文章 ↗</a>
+  <section class="home-posts page-shell" aria-labelledby="recent-title">
+    <div class="section-heading">
+      <div>
+        <p class="section-eyebrow">Journal</p>
+        <h2 id="recent-title">最近更新</h2>
+      </div>
+      <a href="/blog" class="all-posts">全部文章 <span aria-hidden="true">↗</span></a>
     </div>
-    {recentPosts.map(post => (
-      <a href={`/blog/${post.slug}`} class="home-post article-row group">
-        <time class="font-mono text-xs text-fg-subtle">{formatDate(post.data.pubDate)}</time>
-        <h3 class="text-[15px] sm:text-base leading-7 text-fg group-hover:text-accent transition-colors">{post.data.title}</h3>
-        <span class="article-arrow" aria-hidden="true">↗</span>
-      </a>
+    {recentPosts.map((post, index) => (
+      <article class:list={['home-post', { 'home-post-latest': index === 0 }]}>
+        <div class="post-date">
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          <span>{post.data.category}</span>
+        </div>
+        <a href={`/blog/${post.slug}`} class="home-post-link article-row">
+          <h3>{post.data.title}</h3>
+          <p>{post.data.description}</p>
+          <div class="post-meta">
+            <span>{post.data.tags.slice(0, 2).join(' / ')}</span>
+            <span>{calculateReadingTime(post.body).replace('min read', '分钟阅读')}</span>
+          </div>
+          <span class="article-arrow" aria-hidden="true">↗</span>
+        </a>
+      </article>
     ))}
   </section>
 </BaseLayout>
 <style>
-  .line-hero { position: relative; min-height: clamp(400px, 65dvh, 680px); display: grid; place-items: center; isolation: isolate; }
-  .hero-mark { position: relative; text-align: center; padding: 3rem 2rem; }
+  .line-hero { position: relative; min-height: clamp(440px, 68dvh, 720px); display: grid; place-items: center; isolation: isolate; }
+  .hero-mark { position: relative; text-align: center; padding: 2rem 1rem 5rem; }
   .hero-mark::before { content: ''; position: absolute; inset: -2rem; z-index: -1; background: radial-gradient(ellipse, var(--bg) 20%, transparent 70%); pointer-events: none; }
-  .hero-mark a { display: inline-flex; gap: .75rem; align-items: center; margin-top: 2.5rem; padding: .75rem 1rem; color: var(--fg-muted); font-size: 13px; transition: color var(--dur-fast) var(--ease); }
+  .hero-links { display: flex; gap: .75rem; justify-content: center; margin-top: 2rem; }
+  .hero-mark a { display: inline-flex; gap: .75rem; align-items: center; padding: .75rem 1rem; color: var(--fg-muted); font-size: 13px; transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease); border-radius: 6px; }
+  .hero-mark a:first-child { color: var(--accent); background: var(--accent-soft); }
   .hero-mark a span { transition: transform var(--dur-fast) var(--ease); }
   @media (hover: hover) and (pointer: fine) { .hero-mark a:hover { color: var(--accent); } .hero-mark a:hover span { transform: translate(2px,-2px); } }
   @media (prefers-reduced-motion: reduce) { .hero-mark a:hover span { transform: none; } }
-  .home-posts { padding-top: 1rem; }
+  .hero-caption { position: absolute; bottom: 2.5rem; left: 0; right: 0; display: flex; justify-content: space-between; gap: 1rem; color: var(--fg-subtle); font-size: 12px; }
+  .hero-caption a { display: flex; align-items: center; gap: .75rem; }
+  .hero-caption a:hover { color: var(--accent); }
+  .home-posts { padding-top: 2.5rem; }
+  .section-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: end; padding-bottom: 1.75rem; border-bottom: 1px solid var(--line-strong); }
+  .section-eyebrow { color: var(--accent); font-size: 11px; letter-spacing: .08em; margin-bottom: .5rem; }
+  .section-heading h2 { font-family: var(--font-reading); font-size: clamp(24px, 3vw, 32px); color: var(--fg); }
+  #recent-title { scroll-margin-top: 7rem; }
+  .all-posts { font-size: 12px; color: var(--fg-muted); padding-block: .5rem; }
   .home-posts a { text-decoration: none; }
-  .home-post { display: grid; grid-template-columns: 120px minmax(0,1fr); gap: 2rem; align-items: baseline; padding: 1.5rem 2rem 1.5rem 0; border-bottom: 1px solid var(--line); }
+  .home-post { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 2rem; border-bottom: 1px solid var(--line); }
+  .post-date { padding-block: 2rem; font-size: 12px; color: var(--fg-subtle); display: flex; flex-direction: column; gap: .65rem; }
+  .post-date time { font-family: 'JetBrains Mono Variable', monospace; font-size: 11px; }
+  .home-post-link { display: block; padding: 1.75rem 2.5rem 1.75rem 0; }
+  .home-post h3 { font-family: var(--font-reading); font-size: clamp(19px, 2.2vw, 25px); color: var(--fg); line-height: 1.55; transition: color var(--dur-fast) var(--ease); text-wrap: pretty; }
+  .home-post-latest h3 { font-size: clamp(23px, 2.6vw, 30px); }
+  .home-post-link p { margin-top: .65rem; max-width: 48rem; font-size: 14px; line-height: 1.8; color: var(--fg-muted); }
+  .post-meta { margin-top: 1rem; font-size: 11px; color: var(--fg-subtle); display: flex; gap: 1.25rem; }
+  .home-post-link:hover h3, .home-post-link:focus-visible h3 { color: var(--accent); }
   .all-posts:hover { text-decoration: underline; text-underline-offset: 4px; }
-  @media (max-width: 639px) { .home-post { grid-template-columns: minmax(0,1fr); gap: .5rem; } }
+  @media (max-width: 639px) {
+    .hero-caption { bottom: 1.5rem; font-size: 10px; }
+    .hero-caption > a { display: none; }
+    .hero-mark { padding-bottom: 3rem; }
+    .hero-links { margin-top: 1.5rem; gap: .25rem; }
+    .home-post { grid-template-columns: minmax(0,1fr); gap: 0; }
+    .post-date { padding: 1.5rem 0 0; flex-direction: row; gap: 1rem; }
+    .home-post-link { padding-top: .75rem; }
+    .home-post-link .article-arrow { top: .85rem; }
+  }
 </style>

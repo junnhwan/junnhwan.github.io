@@ -26,7 +26,7 @@ export default {
         DEFAULT: 'var(--line)',
       },
       fontFamily: {
-        sans: ['Newsreader Variable', 'Noto Serif SC Variable', 'Songti SC', 'SimSun', 'serif'],
+        sans: ['Inter Variable', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'sans-serif'],
         serif: ['Newsreader Variable', 'Noto Serif SC Variable', 'Songti SC', 'SimSun', 'serif'],
         mono: [
           'JetBrains Mono Variable',

@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>PR-Agent · 从零读懂四项开源贡献</title>
+<style>
+:root{--paper:#f5f3eb;--white:#fffdf7;--ink:#213c38;--muted:#687b72;--line:#d6ded2;--accent:#b94a2f;--green:#35634d;--wash:#e7eee2;--orange:#f5e6d9;--dark:#183d37;--mono:Consolas,'Cascadia Code',monospace;--body:'Microsoft YaHei','PingFang SC',sans-serif;--serif:Georgia,'Source Han Serif SC','Songti SC','SimSun',serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.95 var(--body);overflow-wrap:anywhere}a{color:var(--accent);text-underline-offset:4px}button,input,select,textarea{font:inherit}button{cursor:pointer}button,a,input,select,textarea,summary{outline-offset:4px}*:focus-visible{outline:2px solid var(--accent)}button:disabled{cursor:default;opacity:.45}.skip{position:fixed;top:-80px;left:20px;z-index:20;background:var(--white);padding:10px}.skip:focus{top:10px}.rail{position:fixed;inset:0 auto 0 0;width:268px;padding:32px 23px;background:#eaece1;border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:4;overflow-y:auto}.brand{font:italic 30px/1.25 var(--serif);letter-spacing:-1px}.brand span{font-style:normal;color:var(--accent)}.edition{font:11px var(--mono);letter-spacing:1.4px;color:var(--muted);margin:17px 0 20px}.progress{height:3px;background:#ccd7c8;margin:9px 0}.progress i{display:block;height:100%;background:var(--green);width:0;transition:width .3s}.progress-label{font-size:11px;color:var(--muted)}nav{margin:20px -10px}nav a{display:flex;align-items:center;gap:12px;padding:8px 10px;color:var(--muted);text-decoration:none;font-size:13px;line-height:1.6;margin:3px 0;border-radius:3px}nav a b{font:11px var(--mono);opacity:.75}nav a.active{background:var(--dark);color:var(--white)}nav a.done:after{content:'✓';margin-left:auto;color:var(--green)}nav a.active.done:after{color:#bdd5b4}.rail-bottom{margin-top:auto;padding-top:17px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.rail-bottom a{color:var(--green)}.mobile-menu{display:none}.workspace{margin-left:268px}.topbar{min-height:66px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:12px 5vw;gap:12px}.crumb{font:10px var(--mono);letter-spacing:1px;color:var(--muted)}.top-actions{display:flex;gap:16px}.plain{border:0;background:none;font-size:12px;color:var(--muted);padding:4px}.main{max-width:1170px;margin:auto;padding:54px 5vw 42px;min-width:0}.chapter[hidden]{display:none}.eyebrow{color:var(--accent);font:11px var(--mono);letter-spacing:2px;margin-bottom:22px}.chapter-head{display:flex;justify-content:space-between;gap:25px}.chapter-title{font:600 clamp(31px,3.5vw,47px)/1.4 var(--serif);letter-spacing:-1.2px;margin:0 0 20px;max-width:800px}.chapter-title em{font-style:normal;font-weight:500;color:var(--accent)}.folio{font:italic 88px/1 var(--serif);color:#d0dccc;flex-shrink:0}.intro{font-size:16px;color:var(--muted);max-width:780px;margin:0 0 27px;line-height:2}.chapter-meta{display:flex;flex-wrap:wrap;gap:12px 23px;border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:31px;font:11px var(--mono);color:var(--muted)}h3{font:600 25px/1.5 var(--serif);margin:43px 0 17px;letter-spacing:-.4px}h4{font-size:16px;margin:24px 0 10px}p{margin:11px 0}strong{font-weight:600}code{font-family:var(--mono);font-size:.91em;color:#91482f;background:#ece9dd;padding:2px 5px;border-radius:3px}pre{white-space:pre;overflow:auto;padding:24px;background:var(--dark);color:#e5eee1;border-radius:3px;font:12px/1.85 var(--mono);tab-size:4;margin:18px 0;max-width:100%;overflow-wrap:normal}pre code{font-size:inherit;color:inherit;background:none;padding:0;overflow-wrap:normal}.code-label,.caption,.source,.footnote{font-size:12px;color:var(--muted);line-height:1.8}.source a{margin-right:14px}.source{margin-top:18px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:21px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:17px}.grid-2>*,.grid-3>*,.lab-grid>*{min-width:0}.panel{background:var(--white);border:1px solid var(--line);border-radius:4px;padding:23px;min-width:0}.panel h4:first-child,.panel h3:first-child{margin-top:0}.note{padding:18px 22px;border-left:3px solid var(--green);background:var(--wash);margin:24px 0;font-size:14px}.note.orange{border-color:var(--accent);background:var(--orange)}.note strong{display:block;margin-bottom:4px}.big-quote{font:23px/1.8 var(--serif);border-block:1px solid var(--ink);padding:23px 0;margin:29px 0}.tag{font:10px var(--mono);border:1px solid var(--line);padding:4px 8px;border-radius:30px;display:inline-block;color:var(--muted)}.tag.green{background:var(--wash);color:var(--green)}.tag.rust{background:var(--orange);color:var(--accent)}.route{border-top:1px solid var(--ink);margin-top:28px}.route-item{display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:16px;padding:18px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}.route-item .num{font:21px var(--serif);color:var(--accent)}.route-item strong{display:block;font-size:15px}.route-item span{font-size:12px;color:var(--muted)}.route-item:hover strong{color:var(--accent)}.hero-graphic{position:relative;padding:28px;background:var(--dark);color:var(--white);border-radius:4px;overflow:hidden}.hero-graphic:before{content:'';position:absolute;inset:0;background-image:linear-gradient(#ffffff09 1px,transparent 1px),linear-gradient(90deg,#ffffff09 1px,transparent 1px);background-size:24px 24px}.hero-graphic>*{position:relative}.diagram-kicker{font:10px var(--mono);letter-spacing:2px;color:#b7cbb4}.diagram-title{font:24px/1.6 var(--serif);margin:13px 0 21px}.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}.flow-node{flex:1;min-width:105px;background:#ffffff0b;border:1px solid #ffffff29;padding:16px 13px;text-align:left;color:inherit;border-radius:3px}.flow-node b{display:block;font-size:13px}.flow-node small{color:#bfd1bf;font-size:10px;display:block}.flow-node.active{border-color:#d4bc78;background:#ffffff18}.flow-arrow{align-self:center;color:#c5d3b8}.flow-explain{border-top:1px solid #ffffff29;padding-top:17px;margin-top:20px;color:#d2dfce;font-size:13px}.table-wrap{overflow-x:auto;margin:20px 0}table{width:100%;border-collapse:collapse;text-align:left;font-size:13px;min-width:440px}th{font-size:12px;background:#e8eddf;font-weight:600}th,td{padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child{color:var(--ink)}.term-list{display:grid;grid-template-columns:145px 1fr;gap:13px 23px;font-size:14px}.term-list dt{font-family:var(--mono);color:var(--accent)}.term-list dd{margin:0}.lab{border:1px solid var(--line);background:var(--white);padding:25px;border-radius:4px;margin:27px 0;min-width:0}.lab h4{margin-top:0}.lab-kicker{font:10px var(--mono);letter-spacing:1.4px;color:var(--accent);margin-bottom:8px}.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}.lab-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.control label{font-size:12px;color:var(--muted);display:block;margin-bottom:5px}.control select,.control input[type=number]{width:100%;padding:8px;border:1px solid var(--line);background:var(--paper);border-radius:3px}.control input[type=range]{width:100%;accent-color:var(--green)}.control output{color:var(--green);font-family:var(--mono)}.preset-row{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.preset{border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:12px;padding:7px 12px;border-radius:3px}.preset.active{background:var(--dark);color:var(--white);border-color:var(--dark)}.output{padding:19px;background:var(--wash);border-top:2px solid var(--green);margin-top:18px;font-size:13px}.output.warn{background:var(--orange);border-color:var(--accent)}.output strong{font-size:15px;display:block}.meter{display:flex;height:26px;overflow:hidden;background:#eee9dd;border-radius:3px;max-width:100%;margin:13px 0}.meter span{min-width:0;font:10px/26px var(--mono);text-align:center;color:white;transition:width .3s;overflow:hidden;white-space:nowrap}.meter .fixed{background:var(--green)}.meter .history{background:#849774}.meter .reserve{background:var(--accent)}.meter .space{background:#dce2d4;color:var(--muted)}.legend{display:flex;flex-wrap:wrap;gap:7px 18px;font-size:11px;color:var(--muted)}.legend i{display:inline-block;width:8px;height:8px;margin-right:5px}.stats{display:flex;gap:24px;flex-wrap:wrap;margin:19px 0}.stat b{font:30px/1.2 var(--serif);display:block}.stat small{font-size:11px;color:var(--muted)}.chunks{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.chunk{padding:16px 12px;border:1px solid var(--line);background:var(--paper);font-size:12px}.chunk b{display:block;font:20px var(--serif);margin-bottom:8px}.chunk.good{border-top:3px solid var(--green)}.chunk.bad{border-top:3px solid var(--accent)}.chunk.recovered{border-top:3px solid #a58536}.trace{font:12px/1.9 var(--mono);white-space:pre-wrap;background:var(--paper);padding:16px;margin-top:16px;overflow-wrap:anywhere}.timeline{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin:23px 0}.timeline>div{border-top:2px solid var(--green);padding:14px 6px;font-size:12px}.timeline b{display:block;font:13px var(--mono);margin-bottom:7px}.timeline small{display:block;color:var(--muted)}details{border-bottom:1px solid var(--line);padding:15px 0}summary{cursor:pointer;font-size:14px;font-weight:600}details p,details ul{font-size:14px}details>div{padding-top:12px}.quiz{border:1px solid var(--line);padding:21px;margin:18px 0;background:var(--white)}.quiz legend{font-size:14px;font-weight:600;padding:0 6px}.quiz button{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--paper);padding:10px 12px;margin:8px 0;font-size:13px;border-radius:3px}.quiz button.selected{background:var(--wash);border-color:var(--green)}.quiz .feedback{font-size:13px;color:var(--green);min-height:1em}.quiz .feedback.wrong{color:var(--accent)}textarea{width:100%;min-height:150px;border:1px solid var(--line);background:var(--white);padding:16px;color:var(--ink);resize:vertical;line-height:1.8;font-size:14px}.save-status{font-size:11px;color:var(--muted);margin:7px 0}.completion{display:flex;align-items:center;gap:12px;margin-top:33px;padding-top:21px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.completion button{border:1px solid var(--green);padding:9px 15px;background:var(--wash);color:var(--green);font-size:12px;border-radius:3px}.completion button[aria-pressed=true]{background:var(--green);color:white}.chapter-footer{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:21px;margin-top:28px;font-size:12px}.chapter-footer a{text-decoration:none;color:var(--green)}.glossary-search{width:100%;padding:12px 15px;border:1px solid var(--line);background:var(--white);margin:15px 0}.glossary-item{display:grid;grid-template-columns:160px 1fr;gap:20px;padding:15px 0;border-bottom:1px solid var(--line);font-size:13px}.glossary-item b{font-family:var(--mono);color:var(--accent)}.noscript{padding:19px;background:var(--orange)}.main:focus{outline:0}.print-only{display:none}.tiny{font-size:12px;color:var(--muted)}
+@media(min-width:1450px){.main{padding-inline:65px}.topbar{padding-inline:65px}}@media(max-width:1100px){.rail{width:226px;padding:26px 18px}.workspace{margin-left:226px}.main{padding:40px 4vw}.folio{font-size:64px}.grid-3{grid-template-columns:1fr}.flow-node{min-width:130px}.chunks{grid-template-columns:1fr 1fr}}@media(max-width:760px){.rail{position:static;width:auto;padding:20px 22px;border-right:0;border-bottom:1px solid var(--line)}.brand{font-size:26px}.edition,.rail-bottom{display:none}.rail nav{display:none;margin:12px -8px}.rail.open nav{display:grid;grid-template-columns:1fr 1fr}.mobile-menu{display:block;position:absolute;right:20px;top:22px;border:1px solid var(--line);background:transparent;padding:5px 10px;font-size:12px}.workspace{margin:0}.topbar{min-height:50px;padding:10px 22px}.crumb{font-size:9px;letter-spacing:0}.top-actions{gap:8px}.main{padding:29px 22px}.chapter-title{font-size:34px;letter-spacing:-.7px}.folio{display:none}.grid-2,.lab-grid{grid-template-columns:1fr}.intro{font-size:15px}.panel,.lab{padding:19px}.flow-arrow{display:none}.hero-graphic{padding:22px}.timeline{grid-template-columns:1fr}.term-list{grid-template-columns:105px 1fr;gap:12px}.glossary-item{grid-template-columns:1fr;gap:4px}.route-item{grid-template-columns:32px 1fr 15px;gap:12px}pre{padding:18px;font-size:11px}.completion{align-items:flex-start}.chapter-footer{align-items:flex-start}.chapter-meta{gap:10px}}@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}@media print{body{background:white;font-size:11pt}.rail,.topbar,.chapter-footer,.completion,.preset-row,.lab-controls,.mobile-menu,.quiz button,.no-print{display:none!important}.workspace{margin:0}.main{padding:0;max-width:none}.chapter,.chapter[hidden]{display:block!important;break-before:page}.chapter:first-of-type{break-before:auto}.folio{display:none}.chapter-title{font-size:28pt}.print-only{display:block}.panel,.lab,pre,.note,.quiz{break-inside:avoid}pre{white-space:pre-wrap;font-size:8pt}.flow-node{min-width:110px}.grid-2{grid-template-columns:1fr 1fr}.footnote{font-size:8pt}a{color:inherit}.glossary-search{display:none}}
+</style>
+<style>.glossary-item[hidden]{display:none}</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<aside class="rail" aria-label="学习章节">
+ <div class="brand">PR<span>–Agent</span><br>Field Notes.</div>
+ <div class="edition">开源贡献研读手册 · 02</div>
+ <button class="mobile-menu" type="button" aria-expanded="false" aria-controls="chapter-nav">章节目录</button>
+ <div class="progress-label" id="progress-label">已标记掌握 0 / 11 章</div><div class="progress" aria-hidden="true"><i id="progress-fill"></i></div>
+ <nav id="chapter-nav">
+  <a href="#start"><b>00</b>从四句话开始</a>
+  <a href="#basics"><b>01</b>项目到底在做什么</a>
+  <a href="#pipeline"><b>02</b>一次请求怎样流动</a>
+  <a href="#budget"><b>03</b>把模型输入装得下</a>
+  <a href="#recovery"><b>04</b>四块代码，一块失败</a>
+  <a href="#performance"><b>05</b>少做重复准备工作</a>
+  <a href="#a2a"><b>06</b>下一轮还记得哪个 PR</a>
+  <a href="#reading"><b>07</b>第一次读 Python 与测试</a>
+  <a href="#interview"><b>08</b>把理解说给面试官</a>
+  <a href="#evidence"><b>09</b>证据与术语索引</a>
+  <a href="#practice"><b>10</b>动手与学习记录</a>
+ </nav>
+ <div class="rail-bottom">核对：2026.10.02 · Asia/Shanghai<br>正文离线可读 · 记录留在当前浏览器<br><a href="/library/k8sgpt-learning/k8sgpt-learning.html">上一册：K8sGPT →</a></div>
+</aside>
+<div class="workspace">
+ <header class="topbar"><span class="crumb">RESEARCH NOTEBOOK / <span id="current-crumb">从四句话开始</span></span><div class="top-actions"><button class="plain" id="glossary-shortcut" type="button">查术语</button><button class="plain" id="print-button" type="button">打印全册 ↗</button></div></header>
+ <main class="main" id="main" tabindex="-1">
+ <noscript><p class="noscript">脚本未启用：全部正文、代码、答案仍可阅读。交互演示和学习记录需要 JavaScript。</p></noscript>
+
+<section class="chapter" id="start" aria-labelledby="title-start">
+ <div class="eyebrow">00 / YOUR STARTING POINT</div><div class="chapter-head"><h1 class="chapter-title" id="title-start">先认识这个项目，<br>再读懂<em>自己的四项贡献。</em></h1><span class="folio" aria-hidden="true">00</span></div>
+ <p class="intro">你看过 Agent 的入门介绍，但尚未系统阅读 PR-Agent 和这些 PR。我们从这里开始：把简历中的四句话，逐步变成你能解释、能举反例、能沿着源码验证的四个故事。</p>
+ <div class="chapter-meta"><span>基础 → 运行过程 → PR → 测试 → 表达</span><span>5 个核心 PR · 4 个学习主题</span><span>第一轮只读 01 → 02 → 03</span></div>
+ <div class="hero-graphic"><div class="diagram-kicker">THE ENGINEERING AROUND A MODEL CALL</div><div class="diagram-title">让代码审查真正跑起来，<br>需要管理输入、执行、准备工作和会话。</div><div class="flow"><a class="flow-node" href="#budget"><b>输入装得下</b><small>#2862 · 上下文预算</small></a><a class="flow-node" href="#recovery"><b>失败能收拾</b><small>#2829 / #3324 · 分块恢复</small></a><a class="flow-node" href="#performance"><b>准备少重复</b><small>#3291 · Diff 复用</small></a><a class="flow-node" href="#a2a"><b>多轮接得上</b><small>#3643 · A2A 上下文</small></a></div></div>
+ <h3>从你的实际起点出发</h3>
+ <p>这些代码主要由 AI 完成，所以本册不会假设你已经知道函数名、项目目录或当时的设计过程。遇到“上下文窗口”“fallback”“TaskStore”时，先解释它在做什么，再解释为什么贡献需要它。</p>
+ <p>学习目标也不是背诵提交标题。读完一个主题，至少能回答：<strong>谁在什么情况下遇到问题？旧代码怎么出错？改动怎么解决？一个测试怎样证明？还有什么没解决？</strong></p>
+ <div class="note"><strong>先理解，再练习表达</strong>参考回答描述已经核实的实现。只有你真的完成复现、阅读和验证后，才把这些活动写成自己的亲历。这里不会替你编造“我手动排查了多久”“我独立设计了全部代码”。</div>
+ <h3>四次阅读，每次只增加一层</h3>
+ <div class="route">
+  <a class="route-item" href="#basics"><span class="num">01</span><div><strong>第一轮：建立最小地图</strong><span>读 01、02、03。知道 PR、Diff、Prompt、Token，以及输入为什么会超限。</span></div><span>↗</span></a>
+  <a class="route-item" href="#recovery"><span class="num">02</span><div><strong>第二轮：看懂失败恢复</strong><span>先学 await / gather，再用四块代码的例子理解局部成功和取消。</span></div><span>↗</span></a>
+  <a class="route-item" href="#performance"><span class="num">03</span><div><strong>第三轮：效率和多轮状态</strong><span>读 05、06。把“复用什么”“恢复哪条输入”说清楚。</span></div><span>↗</span></a>
+  <a class="route-item" href="#reading"><span class="num">04</span><div><strong>第四轮：拿代码和测试支持自己的回答</strong><span>读 07–10。打开一个真实文件、解释一个断言、录一段自己的回答。</span></div><span>↗</span></a>
+ </div>
+ <p class="source">范围来自前序会话确认的简历四条，详见 写作与证据素材库。本册不改动简历正文。</p>
+</section>
+
+<section class="chapter" id="basics" aria-labelledby="title-basics">
+ <div class="eyebrow">01 / A MINIMUM MAP</div><div class="chapter-head"><h2 class="chapter-title" id="title-basics">有人提交了代码，<br>谁来<em>帮他检查改动？</em></h2><span class="folio" aria-hidden="true">01</span></div>
+ <p class="intro">PR-Agent 是开源的 AI 代码审查工具。它从 Git 平台读取提交的改动，准备给语言模型看的材料，再把审查意见、改进建议或问题答案交回给用户。</p>
+ <div class="chapter-meta"><span>前置：会写一点代码即可</span><span>这一章先不读复杂函数</span><span>目标：能用 30 秒解释项目</span></div>
+ <h3>先理解 PR 和 Diff</h3>
+ <p><strong>Pull Request（PR）</strong>是“请把我这批改动合进目标分支”的协作请求。审查者看到改动后，可以评论、要求修改，最后再决定是否合并。GitLab 的类似对象通常叫 Merge Request。</p>
+ <p><strong>Diff</strong>就是两个版本的差异。下面是一段<strong>教学例子</strong>：删除行以 <code>-</code> 开头，新增行以 <code>+</code> 开头。Diff 里的前缀不是 Python 语法。</p>
+ <pre><code>@@ -1,2 +1,4 @@
+ def divide(a, b):
+-    return a / b
++    if b == 0:
++        raise ValueError("b must not be zero")
++    return a / b</code></pre>
+ <p>以 <code>@@</code> 开头的标题标明这个<strong>hunk（差异片段）</strong>在旧、新文件中的行位置。一个文件可以有多个 hunk。周围没改的几行有助于理解修改所在的函数。</p>
+ <div class="grid-2"><div class="panel"><h4>人类审查者看什么？</h4><p>修改有没有漏掉特殊输入？会不会破坏原来的行为？测试覆盖了哪些边界？</p></div><div class="panel"><h4>模型需要得到什么？</h4><p>任务说明、PR 元信息、相关 Diff，以及当前问题等材料。输入准备代码负责把这些材料组织成 Prompt。</p></div></div>
+ <h3>四个入口，对应四类用途</h3>
+ <div class="table-wrap"><table><thead><tr><th>入口</th><th>用户的意图</th><th>大致输出 / 本册关联</th></tr></thead><tbody><tr><td><code>/review</code></td><td>“帮我审查这个 PR。”</td><td>审查结果；#3291 改善大型 Diff 的准备过程。</td></tr><tr><td><code>/improve</code></td><td>“给出具体代码改进建议。”</td><td>建议列表；#2829 / #3324 处理分块失败。</td></tr><tr><td><code>/ask_line</code></td><td>“解释我选中的这段代码。”</td><td>行级问题答案；#2862 处理历史和输入预算。</td></tr><tr><td>A2A 接口</td><td>“通过协议客户端发任务，再接着问。”</td><td>任务状态与结果；#3643 恢复后续任务的 PR / Diff。</td></tr></tbody></table></div>
+ <p class="tiny"><code>/ask_line</code>通常由选中代码后的评论路径提供相关位置参数；此表说明用途，不保证在任何普通评论里直接输入命令就能运行。接口和配置以所读版本为准。</p>
+ <h3>你看过的 Agent 概念，哪些在这里适用？</h3>
+ <p>这里确实需要连接模型、工具和外部环境。但本册涉及的主要路径是<strong>命令驱动的 LLM 工作流</strong>：代码先根据命令选定工具，再准备输入、调用模型、处理输出。不能仅凭项目名里的“Agent”，就认为这几项 PR 实现了 ReAct、自主规划循环或多 Agent 协作。</p>
+ <dl class="term-list"><dt>LLM</dt><dd>生成和理解文本的模型。它依据当前传入的输入工作，不会天然知道你上一轮谈的是哪个 PR。</dd><dt>Git provider</dt><dd>访问 GitHub、GitLab 等平台的适配层。负责取 PR / Diff，或发布评论。它不是模型供应商。</dd><dt>LiteLLM</dt><dd>项目用于接入不同模型服务的库。请求仍受各模型的上下文限制、配置和错误行为影响。</dd><dt>Prompt</dt><dd>实际发给模型的任务说明与上下文。包含模板文字和插入进去的数据。</dd></dl>
+ <div class="note orange"><strong>模型给出建议，不等于建议已经正确</strong>这些贡献改善的是运行工程：输入能否装下、失败结果能否保留、准备是否重复、上下文能否接续。它们没有证明模型的审查准确率提高了多少。</div>
+ <details><summary>停下来，用自己的话回答</summary><p>“PR-Agent 拿到一批代码改动后，会按命令组织材料交给模型，再输出审查或问答结果。我的这几项贡献主要完善模型调用周围的工程环节。”</p><p>能说清这句话，就有继续学习的基础。先不要背函数名。</p></details>
+ <p class="source"><a href="https://github.com/The-PR-Agent/pr-agent" target="_blank" rel="noopener">项目 README</a>更细的项目基础与调用链</p>
+</section>
+
+<section class="chapter" id="pipeline" aria-labelledby="title-pipeline">
+ <div class="eyebrow">02 / FOLLOW ONE REQUEST</div><div class="chapter-head"><h2 class="chapter-title" id="title-pipeline">一次“改进代码”，<br>怎样<em>走到模型面前？</em></h2><span class="folio" aria-hidden="true">02</span></div>
+ <p class="intro">把项目想成几层合作的代码。每层接收上一层的结果，再准备下一层需要的数据。认识这些分工，比先读完整仓库更有用。</p>
+ <div class="chapter-meta"><span>前置：01</span><span>核心路径：命令 → 输入准备 → 模型 → 结果</span></div>
+ <div class="hero-graphic"><div class="diagram-kicker">CLICK TO INSPECT / 点击各层看职责</div><div class="diagram-title">以 /improve 为例</div><div class="flow" id="pipeline-flow"><button class="flow-node active" type="button" data-step="0" aria-pressed="true"><b>命令路由</b><small>PRAgent</small></button><span class="flow-arrow">→</span><button class="flow-node" type="button" data-step="1" aria-pressed="false"><b>取 PR / Diff</b><small>Git provider</small></button><span class="flow-arrow">→</span><button class="flow-node" type="button" data-step="2" aria-pressed="false"><b>准备模型输入</b><small>工具 / Token handler</small></button><span class="flow-arrow">→</span><button class="flow-node" type="button" data-step="3" aria-pressed="false"><b>调用与恢复</b><small>LiteLLM / asyncio</small></button><span class="flow-arrow">→</span><button class="flow-node" type="button" data-step="4" aria-pressed="false"><b>汇总与输出</b><small>解析 / 发布建议</small></button></div><div class="flow-explain" id="pipeline-explain" aria-live="polite">入口收到请求后，PRAgent.handle_request 根据命令选择 PRCodeSuggestions 等工具。这里是程序选择流程，并非模型临时规划工具序列。</div></div>
+ <h3>目录名现在有了具体含义</h3>
+ <div class="table-wrap"><table><thead><tr><th>位置</th><th>职责</th><th>先认识的对象</th></tr></thead><tbody><tr><td><code>pr_agent/agent/</code></td><td>把请求交给对应工具</td><td><code>PRAgent.handle_request</code></td></tr><tr><td><code>pr_agent/git_providers/</code></td><td>连接 Git 平台</td><td>PR 元信息、差异文件、评论</td></tr><tr><td><code>pr_agent/tools/</code></td><td>实现 review、improve、ask_line</td><td><code>PRReviewer</code> / <code>PRCodeSuggestions</code> / <code>PR_LineQuestions</code></td></tr><tr><td><code>pr_agent/algo/</code></td><td>输入准备、计数、分块、模型调用支持</td><td><code>TokenHandler</code> / <code>pr_processing</code></td></tr><tr><td><code>pr_agent/mosaico/</code></td><td>A2A 协议到项目运行路径的桥接</td><td><code>PRAgentExecutor</code> / <code>TaskStore</code></td></tr></tbody></table></div>
+ <h3>Prompt 不是“问题那一句话”</h3>
+ <p>例如用户问“这个条件为什么放在这里”，最终请求还会带上说明文字、PR 标题、代码片段、可用的历史等。项目用 <strong>Jinja2</strong> 模板把变量填进去，再交给模型。</p>
+ <pre><code># 教学示意：模板和最终文本的区别，不是原仓库摘录
+模板：请解释 {{ file_name }} 的这段改动：{{ diff }}
+变量：file_name = "math.py"，diff = 相关代码片段
+渲染：请解释 math.py 的这段改动：……真实代码……</code></pre>
+ <p><strong>渲染（render）</strong>就是把模板占位符替换为真实数据。模板本身很短，填入 Diff 和历史后可能很长。这解释了为什么 #2862 必须对最终渲染文本计数。</p>
+ <p>项目把请求组织成 <strong>system / user 两类消息</strong>：system 放任务要求与回答规则；user 放这次的材料与问题。两部分都占输入空间。这里的 user 消息可以由程序组装，不只是你手动输入的一句话。</p>
+ <h3>四条贡献分别守住哪里？</h3>
+ <div class="grid-2"><div class="panel"><span class="tag green">输入准备</span><h4>预算与性能</h4><p>#2862 决定当前请求能不能装进实际模型的窗口。#3291 减少大型 Diff 准备中的重复处理与计数。</p></div><div class="panel"><span class="tag rust">执行与跨任务状态</span><h4>恢复与会话</h4><p>#2829 / #3324 处理同一次请求里部分分块的失败。#3643 处理下一次 A2A 任务怎样找到上一轮的 PR / Diff。</p></div></div>
+ <div class="note"><strong>两个“上下文”要分开想</strong>预算问题：这次要发给模型的材料有多长？A2A 问题：这次应该针对哪份 PR / Diff？找对了材料之后，仍然需要做输入预算。</div>
+ <details><summary>先做一个小检查：Token handler 是 LLM 吗？</summary><p>不是。它是准备和计量模型输入的代码。模型服务才负责生成答案。计数器可能针对不同模型采用不同的 tokenizer 或估算方式，不能把计数等同于推理。</p></details>
+ <p class="source"><a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/pr_agent/agent/pr_agent.py" target="_blank" rel="noopener">命令路由源码</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/pr_agent/tools/pr_code_suggestions.py" target="_blank" rel="noopener">/improve 工具源码</a>函数阅读顺序与模型适配层</p>
+</section>
+
+<section class="chapter" id="budget" aria-labelledby="title-budget">
+ <div class="eyebrow">03 / CONTEXT BUDGET · #2862</div><div class="chapter-head"><h2 class="chapter-title" id="title-budget">问题只有一句，<br>为什么模型会说<em>“装不下”？</em></h2><span class="folio" aria-hidden="true">03</span></div>
+ <p class="intro">用户围绕一段代码接着问，历史评论越积越多。当前问题很短，最终 Prompt 却可能超出模型的上下文窗口。#2862 处理的是 /ask_line 这条路径的输入预算。</p>
+ <div class="chapter-meta"><span>前置：Prompt / 模板渲染</span><span>输入预算 = 模型窗口 − 输出预留</span><span>核心函数：_fit_conversation_history</span></div>
+ <h3>先认识 Token、窗口和输出预留</h3>
+ <p><strong>Token</strong>是模型处理文本的片段单位，不等于字符、单词或汉字。不同模型的切分方式可能不同；同样一段文本，计数结果也可能不同。</p>
+ <p><strong>上下文窗口</strong>可以先理解成一次模型调用可容纳的容量。这里的代码从项目给当前模型配置的容量中，扣除输出预留，得到允许使用的输入预算。不能把整个窗口都塞满输入，再期待模型有空间写答案。</p>
+ <div class="big-quote">模板说明 + 代码片段 + 当前问题 + 历史<br>≤ 模型容量 − 输出预留</div>
+ <p>“最终 Prompt”意味着填入了<strong>真实 hunk、问题和历史</strong>的 system / user 文本。只数 Diff 或只数历史，都可能遗漏模板和其他变量。</p>
+ <h3>旧问题 → 修复后的处理顺序</h3>
+ <div class="grid-2"><div class="panel"><h4>容易出错的想法</h4><p>“之前准备时数过 Token，后来加一点历史应该没事。”或者“主模型装得下，备用模型肯定也装得下。”</p><p>这些假设会在历史增长、模板展开或模型切换后失效。</p></div><div class="panel"><h4>合并代码的做法</h4><p>每次尝试模型调用，先把 hunk / 问题填好，再按<strong>本次实际模型</strong>计算最终 Prompt。若超限，逐步减少历史；若去掉全部历史仍超限，调用前报错。</p></div></div>
+ <p>具体到旧代码：对象初始化时历史和 hunk 还为空，TokenHandler 先计过数；运行时才加载这两部分。初始化得到的数字因此不能代表最终模型请求。</p>
+ <h3>为什么保留当前问题和代码，优先裁剪历史？</h3>
+ <p>模型这次要解释的就是当前问题和代码。如果先把它们删掉，请求虽然变短，回答的对象却可能变了。代码把历史作为可收缩部分，从历史文本末尾保留较新的内容，并加上裁剪标记。</p>
+ <p>它用<strong>二分搜索</strong>查找可保留的字符数：试一半；能装下就多留，装不下就少留；每次都重新渲染并计数。这样比一字符一字符地尝试更节省计数次数。</p>
+ <div class="lab" id="budget-lab"><div class="lab-kicker">EXPERIMENT 01 / 教学预算模型</div><h4>自己把历史“装进窗口”</h4><p class="caption">这里把模板、代码、问题合成固定输入，并把历史切成等量教学单位。数值用于说明预算；没有接入真实 tokenizer，也没有模拟真实字符后缀的每个细节。</p>
+  <div class="preset-row"><button class="preset" type="button" data-budget="fits">历史能装下</button><button class="preset" type="button" data-budget="trim">历史太长</button><button class="preset" type="button" data-budget="fallback">切到更小模型</button><button class="preset" type="button" data-budget="blocked">只留问题也超限</button></div>
+  <div class="lab-controls"><div class="control"><label for="budget-window">实际模型容量</label><select id="budget-window"><option value="1600">1600（教学）</option><option value="1000" selected>1000（教学）</option><option value="600">600（教学）</option></select></div><div class="control"><label for="budget-reserve">输出预留 <output id="reserve-value">200</output></label><input id="budget-reserve" type="range" min="100" max="400" step="50" value="200"></div><div class="control"><label for="budget-fixed">模板 + 代码 + 问题 <output id="fixed-value">450</output></label><input id="budget-fixed" type="range" min="150" max="1000" step="50" value="450"></div><div class="control"><label for="budget-history">历史长度 <output id="history-value">700</output></label><input id="budget-history" type="range" min="0" max="1200" step="50" value="700"></div></div>
+  <div class="meter" id="budget-meter" aria-hidden="true"></div><div class="legend"><span><i style="background:var(--green)"></i>固定输入</span><span><i style="background:#849774"></i>留下的历史（含教学标记）</span><span><i style="background:var(--accent)"></i>输出预留</span></div>
+  <div class="output" id="budget-result" aria-live="polite"></div><div class="trace" id="budget-trace"></div><p class="print-only">预设反例：窗口 1000、输出 200、固定输入 450、历史 700。输入预算只有 800，需要裁剪历史。若固定输入本身超过 800，裁剪历史也无济于事。</p>
+ </div>
+ <h3>现在读真实代码：先看三道判断</h3>
+ <p class="code-label">原源码摘录，来自 #2862 的合并提交；<code>render_with_history</code> 和 <code>count_prompts</code> 是上文定义的内部函数。</p>
+ <pre><code>if count_prompts(render_with_history(conversation_history)) &lt;= max_tokens:
+    return conversation_history
+
+if count_prompts(render_with_history("")) &gt; max_tokens:
+    raise ValueError(
+        f"The /ask_line prompt exceeds the token limit for {model} even without conversation history"
+    )</code></pre>
+ <p>第一道：原历史就能装下，直接保留。第二道：空历史也装不下，说明不能靠历史裁剪解决。第三道在后面的二分循环里：测试候选历史，直到找到预算内的字符后缀。</p>
+ <details><summary>再深一层：计数和裁剪有哪些限制？</summary><p>优先用 LiteLLM 的 <code>token_counter(model=..., messages=...)</code>；失败时用该模型对应的 TokenEncoder，非 GPT 路径可能采用本地估算。不能承诺与每家模型服务的真实计数完全一致。</p><p>二分搜索的是<strong>历史字符串的字符后缀长度</strong>，不是对话轮数，不保证保留完整消息，也不是摘要算法。裁剪标记同样占空间。项目的模型容量配置若不准确，仍可能影响判断。</p></details>
+ <h3>一个真实测试，先看它在证明什么</h3>
+ <p><code>test_ask_line_keeps_final_prompt_within_budget_after_loading_history</code>构造 200 条历史回复，在模拟模型窗口 700、输出预留 100 下检查最终输入不超过 600，同时确认问题、hunk 和最近的 <code>reply 199</code>仍在。Git provider 和模型调用使用假实现，预算使用 <strong>LiteLLM token_counter 做本地计数</strong>，没有调用真实模型。</p>
+ <p>另一个测试 <code>test_ask_line_uses_attempted_model_for_non_gpt_prompt_budget</code>核对调用计数器时使用尝试中的模型 <code>claude-2</code>；它没有真实调用 Claude。代码有“空历史仍超限”的报错分支，这个新增测试文件没有单独覆盖它，后续可以亲手补一条练习。</p>
+ <div class="note"><strong>学完应能讲清</strong>为什么数最终 Prompt；为什么换模型要重算；为什么预留输出；为什么问题和代码本身过长时要明确报错。</div>
+ <p class="source"><a href="https://github.com/The-PR-Agent/pr-agent/pull/2862" target="_blank" rel="noopener">PR #2862</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/8ef8f2de719a457959fbcbcb5f848cca08df5a71/pr_agent/tools/pr_line_questions.py#L219" target="_blank" rel="noopener">真实预算与二分函数</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/8ef8f2de719a457959fbcbcb5f848cca08df5a71/tests/unittest/test_pr_line_questions_context_budget.py#L47" target="_blank" rel="noopener">真实回归测试</a>逐步研读笔记</p>
+</section>
+
+<section class="chapter" id="recovery" aria-labelledby="title-recovery">
+ <div class="eyebrow">04 / PARTIAL FAILURE · #2829 + #3324</div><div class="chapter-head"><h2 class="chapter-title" id="title-recovery">四块代码，三块成功，<br>结果应该<em>全部作废吗？</em></h2><span class="folio" aria-hidden="true">04</span></div>
+ <p class="intro">大 Diff 需要分块，分别向模型请求建议。其中一块失败时，成功块已经产生了有用结果。两项 PR 先保住这些结果，再尝试只恢复失败的块。</p>
+ <div class="chapter-meta"><span>前置：02 / 03</span><span>先学 asyncio，再看 fallback</span><span>成功保留 → 定向恢复 → 顺序汇总</span></div>
+ <h3>先补三个 Python 概念</h3>
+ <dl class="term-list"><dt>async / await</dt><dd>等待网络响应时，让其他任务有机会执行。<code>await</code>表示等待异步操作完成；不是保证创建一个新线程。</dd><dt>gather</dt><dd><code>asyncio.gather</code>把一批异步操作一起等待。结果槽位按传入顺序排列，不能按完成先后拼接结果。</dd><dt>fallback</dt><dd>当前模型尝试失败后，使用已配置的备用模型 / deployment。它可能有不同容量、速度和服务行为，不是简单再发一次完全一样的请求。</dd></dl>
+ <p>如果没有处理好异常，一块失败可能使外层直接转去整批 fallback，成功的结果不能保留下来。<code>return_exceptions=True</code>让普通异常以结果对象的形式返回，程序才有机会识别哪个槽位失败。</p>
+ <h3>两次贡献，接上同一个故事</h3>
+ <div class="grid-2"><div class="panel"><span class="tag">#2829</span><h4>先保住局部成功</h4><p>串行和并行路径隔离普通分块异常，留下成功结果。如果部分成功，仍能汇总出建议；不会因为一块失败就抹掉其余块。</p></div><div class="panel"><span class="tag">#3324</span><h4>再恢复失败槽位</h4><p>在配置了可用备用模型的情况下，等待本批任务收齐，再为失败索引逐级尝试后续模型。成功索引不会重复调用。</p></div></div>
+ <div class="lab" id="recovery-lab"><div class="lab-kicker">EXPERIMENT 02 / 教学批次模拟</div><h4>A、B、C、D 四个槽位</h4><p class="caption">每个字母代表一块输入。这里简化为一次分块预测尝试；真实路径还可能包含建议的二次评估。本演示不调用模型，不模拟计费和调度时间。</p>
+  <div class="lab-controls"><div class="control"><label for="chunk-mode">本批发生什么？</label><select id="chunk-mode"><option value="partial">B 普通失败，其他成功</option><option value="healthy">四块都成功</option><option value="all">四块都普通失败</option><option value="cancel">请求被取消</option></select></div><div class="control"><label for="chunk-fallback">备用模型条件</label><select id="chunk-fallback"><option value="success">已配置，失败块可以恢复</option><option value="none">没有备用模型</option><option value="small">有备用模型，但失败块超出其预算</option><option value="exhausted">尝试完备用模型，仍然失败</option></select></div></div>
+  <div class="chunks" id="chunk-cards"></div><div class="output" id="chunk-result" aria-live="polite"></div><div class="trace" id="chunk-trace"></div><p class="print-only">局部失败反例：A、C、D 成功，B 失败。有可用备用模型时只恢复 B；没有或恢复失败时保留其余结果。全失败交给原有整批 fallback。取消需要向上传播。</p>
+ </div>
+ <h3>真实代码：把“失败”留在结果槽位里</h3>
+ <p class="code-label">#3324 合并代码的并行分支及取消检查；省略了中间串行分支，以 <code>…</code>标注。</p>
+ <pre><code>results = await asyncio.gather(
+    *[self._get_prediction(model, numbered, unnumbered) for numbered, unnumbered in chunk_pairs],
+    return_exceptions=True,
+)
+# … 这里省略串行分支 …
+for result in results:
+    if isinstance(result, BaseException) and not isinstance(result, Exception):
+        raise result</code></pre>
+ <p><code>Exception</code>是普通错误这一类，程序可以记下来后尝试恢复。<code>asyncio.CancelledError</code>属于 <code>BaseException</code>而非普通 <code>Exception</code>：请求要停止时，不能把它当作“某块失败，继续重试”。</p>
+ <h3>为什么等整批结束，才切备用模型？</h3>
+ <p>这些调用共享本次请求的模型相关配置。若 A、C、D 还在执行，就把 deployment 改成 B 的备用设置，可能干扰同批其他操作。实现先收齐本批结果，再定向恢复，并在 <code>finally</code>中还原 deployment。</p>
+ <p>有效模型链放在 <strong>ContextVar</strong>里。可以先把它理解成“跟随当前异步调用上下文的槽位”，避免把一个请求的有效 fallback 链误用于并发的另一个请求。它不是跨进程存储，也不是天然让所有对象都线程安全。</p>
+ <details><summary>为什么备用模型装不下时，不继续裁剪这一块？</summary><p>恢复逻辑用备用模型的 TokenHandler 对完整渲染 Prompt 计数并预留输出。如果超过预算，就跳过这次恢复尝试。这里不把 Diff 再截短，以免成功结果和被缩短输入的结果混在一起，改变分析覆盖范围。</p><p>本路径的预算计数用 TokenHandler 分别数 system / user；与 03 章 /ask_line 优先使用 LiteLLM 消息计数的实现细节有区别。</p></details>
+ <div class="note orange"><strong>局部失败、全部失败、取消：三种不同结局</strong>局部失败可以保留和恢复；全部失败仍交给原有整批 fallback；取消向上传播。它是当前请求内的恢复机制，不是进程崩溃后可恢复的持久化 checkpoint，也不保证每次都能取得完整覆盖。</div>
+ <h3>测试怎么证明“没有重复成功块”？</h3>
+ <p>真实恢复测试用 a、b、c 三块，把模型调用替换成可记录的假实现，让 b 第一次抛出普通异常。之后检查调用记录：主模型访问三块，备用模型只访问失败的 b；最后的建议仍按原始块顺序汇总。上面 A、B、C、D 四块是教学扩展示例，不代表默认分块数量。</p>
+ <p>另有回归检查等待同批结束后才切配置、较小模型预算跳过、取消传播与 deployment 还原、并发调用的有效链隔离。读这些测试时，关注<strong>访问了哪些输入、调用了几次、状态是否复原</strong>，不要只看有没有返回结果。</p>
+ <p class="source"><a href="https://github.com/The-PR-Agent/pr-agent/pull/2829" target="_blank" rel="noopener">PR #2829</a><a href="https://github.com/The-PR-Agent/pr-agent/pull/3324" target="_blank" rel="noopener">PR #3324</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/pr_agent/tools/pr_code_suggestions.py#L1511" target="_blank" rel="noopener">预测与恢复源码</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/tests/unittest/test_suggestion_chunk_recovery.py#L82" target="_blank" rel="noopener">定向恢复测试</a><a href="https://docs.python.org/3.12/library/asyncio-task.html#asyncio.gather" target="_blank" rel="noopener">Python 官方 · gather</a></p>
+</section>
+
+<section class="chapter" id="performance" aria-labelledby="title-performance">
+ <div class="eyebrow">05 / PREPARE ONCE · #3291</div><div class="chapter-head"><h2 class="chapter-title" id="title-performance">模型还没开始回答，<br>输入准备已经<em>重复做了一遍。</em></h2><span class="folio" aria-hidden="true">05</span></div>
+ <p class="intro">大型 Diff 的 review 路径，先准备普通输入，发现需要分块后又重复部分准备工作。#3291 复用已经准备的 Diff 数据和计数，减少推理前的重复处理。</p>
+ <div class="chapter-meta"><span>前置：02 / 03</span><span>优化对象：上下文准备阶段</span><span>关键词：PreparedPRDiff / 复用条件</span></div>
+ <h3>“准备一次”包含哪些工作？</h3>
+ <p>读到 Diff 后，需要按语言整理文件、扩展差异上下文、添加行号、计算各部分 Token、再按容量把材料打成块。<strong>打包（pack）</strong>可以先理解为“把文件片段分配进若干模型输入”。</p>
+ <div class="grid-2"><div class="panel"><h4>旧路径的重复</h4><p>普通准备先做一批处理和计数。大型 PR 转入分块路径后，又从输入材料开始准备，重复其中一部分工作。</p></div><div class="panel"><h4>新路径的复用</h4><p>通过 <code>PreparedPRDiff</code>携带已准备材料和计数结果。后续分块用共用 packer 继续打包，同时保留文件排序和剩余文件的语义。</p></div></div>
+ <h3>复用之前，必须证明输入条件相容</h3>
+ <p>切换模型可能改变 Token 容量和计数。换 Token handler 实例，可能代表另一套 Prompt 变量或计数状态。行号格式变化，也会改变模型看到的文本。代码因此限定<strong>当前请求内</strong>的复用。</p>
+ <div class="lab" id="reuse-lab"><div class="lab-kicker">EXPERIMENT 03 / 源码条件的教学镜像</div><h4>这些准备结果，还能接着用吗？</h4><p class="caption">预先准备对象固定为：模型 M1、handler 实例 H1、已添加行号、file_dict 存在。选择下一步条件，观察 guard 判断。</p>
+  <div class="lab-controls"><div class="control"><label for="reuse-model">当前尝试模型</label><select id="reuse-model"><option value="same">M1：与准备对象相同</option><option value="different">M2：换成备用模型</option></select></div><div class="control"><label for="reuse-handler">Token handler</label><select id="reuse-handler"><option value="same">H1：同一个实例</option><option value="different">H2：新实例，即使类相同</option></select></div><div class="control"><label for="reuse-lines">当前分块格式</label><select id="reuse-lines"><option value="true">带行号</option><option value="false">不带行号</option></select></div><div class="control"><label for="reuse-data">准备材料</label><select id="reuse-data"><option value="present">prepared_diff / file_dict 可用</option><option value="missing">没有可用准备材料</option></select></div></div><div class="output" id="reuse-result" aria-live="polite"></div><div class="trace" id="reuse-trace"></div><p class="print-only">只在准备材料可用、同模型、同 Token handler 实例、带行号且格式一致时复用。备用模型必须重新准备。</p>
+ </div>
+ <p class="code-label">#3291 真实复用 guard。这里的 <code>is</code>检查对象身份；它比“两个对象数值相等”更严格。</p>
+ <pre><code>if (
+    prepared_diff is not None
+    and prepared_diff.file_dict is not None
+    and prepared_diff.model == model
+    and add_line_numbers
+    and prepared_diff.add_line_numbers_to_hunks == add_line_numbers
+    and prepared_diff.token_handler is token_handler
+):</code></pre>
+ <p>特别留意 <code>and add_line_numbers</code>：这个复用分支要求带行号。不能把条件概括成“双方行号标志相同就行”，因为 false / false 也不会进入它。</p>
+ <h3>31.8% 应该怎样理解？</h3>
+ <div class="stats"><div class="stat"><b>59.169 → 40.365</b><small>毫秒 / 上下文准备 p50</small></div><div class="stat"><b>226 → 151</b><small>Token 计数调用次数</small></div><div class="stat"><b>31.8%</b><small>(59.169 − 40.365) / 59.169</small></div></div>
+ <p>证据来自 PR 的固定离线基准：<strong>Docker、Python 3.12.14、mock provider、50 个文件 × 38 行改动、8 个分块、20 次测量</strong>。p50 是这组测量的中位位置结果，不是线上所有用户的保证。</p>
+ <p>它只测<strong>上下文准备</strong>，不包含 LLM 推理。因此不能说“模型回答快了 31.8%”“整次审查快了 31.8%”或“模型费用下降了 31.8%”。准备中的计数调用次数减少，也不等于发送给 LLM 的输入 Token 数减少。</p>
+ <div class="note orange"><strong>数字的复现边界</strong>本册重新核对了 PR / Issue 中记录的基准范围，没有重新运行原基准，也没有独立原始采样文件。性能数值是该实验记录；若被追问你本人如何测量，应明确这个事实。</div>
+ <details><summary>是不是已经消除了所有重复计数和网络请求？</summary><p>不是。AI metadata 改变输入、较大 patch 被裁剪后，仍可能重计数。另一个容易混淆的点是：调用两次 <code>get_diff_files()</code>不一定发出两次网络请求，provider 本身可以有缓存。#3290 维护者也专门指出这一点。</p><p>这个优化针对准备流程的重复工作，不是把模型答案缓存起来，也不是跨请求缓存不同 PR 的准备结果。</p></details>
+ <h3>怎样验证“更快但没有换掉结果”？</h3>
+ <p>相关回归测试比较复用与重新准备得到的分块、文件名和剩余文件，检查复用没有新增相同准备的计数调用、不兼容模型 / 格式不复用，还使用不同大小 patch 的 fixture（测试输入样本）防止排序变化。这是正确性验证；离线基准负责另一个问题——耗时变化。</p>
+ <p class="source"><a href="https://github.com/The-PR-Agent/pr-agent/pull/3291" target="_blank" rel="noopener">PR #3291 / 基准记录</a><a href="https://github.com/The-PR-Agent/pr-agent/issues/3290" target="_blank" rel="noopener">Issue #3290 / 性能讨论</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/4d209abfac6f92ec6a76f3a71143818315dad8a5/pr_agent/algo/pr_processing.py#L561" target="_blank" rel="noopener">复用条件源码</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/4d209abfac6f92ec6a76f3a71143818315dad8a5/tests/unittest/test_review_large_diff_chunking.py" target="_blank" rel="noopener">大型 Diff 回归测试</a>性能与 A2A 详细笔记</p>
+</section>
+
+<section class="chapter" id="a2a" aria-labelledby="title-a2a">
+ <div class="eyebrow">06 / CONTINUITY ACROSS TASKS · #3643</div><div class="chapter-head"><h2 class="chapter-title" id="title-a2a">“再解释一下”，<br>到底是在问<em>哪一份改动？</em></h2><span class="folio" aria-hidden="true">06</span></div>
+ <p class="intro">第一次 A2A 消息带了 PR 链接或 Diff，第二次只说“解释刚才的问题”。第二次是新任务，但用户期待它接着上一轮。#3643 补上这条跨任务的上下文衔接。</p>
+ <div class="chapter-meta"><span>前置：PR / Diff / 一次模型调用</span><span>当前显式输入优先</span><span>按输入顺序找历史</span></div>
+ <h3>A2A 先理解到这里就够了</h3>
+ <p><strong>A2A（Agent2Agent）</strong>提供客户端与 Agent 服务交换消息、发起和查询任务等接口。本项目的 <code>mosaico</code>把协议请求接到已有代码审查 / 问答路径。这项 PR 解决多轮上下文，不代表它实现了多个 Agent 自动分工协作。</p>
+ <div class="table-wrap"><table><thead><tr><th>标识 / 对象</th><th>直观解释</th><th>为什么需要区分</th></tr></thead><tbody><tr><td><code>taskId</code></td><td>某一次任务的编号</td><td>每轮可以产生一个新任务。</td></tr><tr><td><code>contextId</code></td><td>把多轮任务放在同一上下文的编号</td><td>不同任务可以属于同一组对话。</td></tr><tr><td>owner / 用户范围</td><td>服务解析出的调用者范围</td><td>不能仅凭相同 contextId 读取另一个用户的历史。</td></tr><tr><td><code>TaskStore</code></td><td>存任务状态和历史消息的地方</td><td>这个实现里是进程内存，handler 与 executor 共用它。</td></tr></tbody></table></div>
+ <h3>若按完成顺序找历史，旧任务会把目标“倒带”</h3>
+ <div class="timeline"><div><b>t1 · 输入先到</b>Task A：审查 Diff A。<small>A 执行慢，还没结束。</small></div><div><b>t2 · 新输入到达</b>Task B：改审查 Diff B。<small>B 先完成，最新输入是 B。</small></div><div><b>t3 · 旧任务完成</b>Task A 现在完成。<small>若按完成顺序找“最新”，会错选 A。</small></div></div>
+ <p>用户之后说“解释一下”，应该继续针对 <strong>Diff B</strong>。输入顺序反映用户最近指定的目标，完成顺序只反映运行快慢。代码在任务开始时登记输入顺序，倒序查找最近的可路由用户输入。</p>
+ <div class="lab" id="a2a-lab"><div class="lab-kicker">EXPERIMENT 04 / 教学历史路由</div><h4>哪份 Diff 会被选中？</h4><p class="caption">历史约定：owner U1、context C1 先输入 A，再输入 B。演示镜像路由优先级；没有运行 A2A 服务或真实 TaskStore。</p>
+  <div class="lab-controls"><div class="control"><label for="a2a-finish">谁最后完成？</label><select id="a2a-finish"><option value="A">旧任务 A 最后完成</option><option value="B">新任务 B 最后完成</option><option value="working">B 仍在 working</option></select></div><div class="control"><label for="a2a-explicit">当前消息</label><select id="a2a-explicit"><option value="none">只有“解释一下”</option><option value="C">显式提供新的 Diff C</option></select></div><div class="control"><label for="a2a-owner">当前 owner</label><select id="a2a-owner"><option value="U1">U1：与历史相同</option><option value="U2">U2：另一个用户范围</option></select></div><div class="control"><label for="a2a-context">当前 contextId</label><select id="a2a-context"><option value="C1">C1：与历史相同</option><option value="C2">C2：新上下文</option></select></div></div><div class="output" id="a2a-result" aria-live="polite"></div><div class="trace" id="a2a-trace"></div><p class="print-only">同 owner / context 时，最新输入 B 优先于晚完成的 A；B 尚未完成也可以恢复其已登记输入。当前显式 C 覆盖历史。另 owner / context 不继承 U1 / C1 的 A、B。</p>
+ </div>
+ <h3>把修复拆成五步</h3>
+ <ol><li>服务创建同一个 <code>InMemoryTaskStore</code>，供请求 handler 和 executor 使用。</li><li>开始处理任务时，登记 <code>(owner, contextId)</code>下的 taskId，并保存 working Task 的用户输入。</li><li>当前消息已有 PR / Diff，直接使用当前消息；无需查历史。</li><li>否则按输入顺序倒查以前任务，只读 user 消息，找到最近 PR / Diff 后停止。</li><li>历史和当前消息以显式消息边界交给 dispatcher；从当前往前选择上下文，保持当前输入优先。</li></ol>
+ <p class="code-label">#3643 原源码摘录。<code>current</code>就是当前消息；<code>key</code>定义历史索引的查找范围。</p>
+ <pre><code>current = context.get_user_input() or ""
+if self.task_store is None or _find_pr_url(current) or _looks_like_diff(current):
+    return []
+# … 这里省略 limit 校验 …
+key = (resolve_user_scope(context.call_context), context.context_id)</code></pre>
+ <h3>这是“找回审查对象”，还不是无限记忆</h3>
+ <p>历史查询默认最多考虑 <strong>100 个以前的任务</strong>，可配置范围 <strong>1–1000</strong>。这是任务数量上限，不是 Token 或消息数量上限。找到了最近可路由输入就停止，不需要把所有过去的 PR 都送进本次调用。</p>
+ <p>TaskStore 和输入索引都在进程内，服务重启或请求落到其他副本时，这份历史可能不可用。owner 隔离依赖服务的调用者范围解析；这项 PR 不是完整认证系统或跨进程持久记忆。</p>
+ <details><summary>为什么不能把用户文字中的 “assistant:” 当成角色？</summary><p>A2A 已经给出了消息边界。用户可能在 Diff、日志或问题中写 <code>assistant:</code>等字样。dispatcher 把每条历史输入明确作为 user 消息，不再把这些内容重新拆成角色，避免把代码文本误当成对话结构。</p></details>
+ <h3>真实测试做到了哪一层？</h3>
+ <p>本册引用的 StubbedLLM 类用 A2A 应用、JSON-RPC 请求、共享 InMemoryTaskStore 和 HTTP ASGITransport 验证多轮交互，覆盖前序 completed / working、较新 Diff、旧任务晚完成等。ASGITransport 在同进程里把 HTTP 请求送给应用；执行 Diff 的函数被 stub 替换，<strong>这组场景没有真实调用 LLM</strong>。同文件另有 LiveLLM 测试，实践章节会明确选择前一组。</p>
+ <p>查询上限可以从 <code>prior_count</code>的源码条件直接核实。有一个名为 <code>test_follow_up_bounds_history_store_reads</code>的测试监听的是 <code>store.list</code>，最终源码使用 <code>store.get</code>；不能仅凭该测试名就声称它严格验证了 get 次数。这个具体局限也保留在详细笔记里。</p>
+ <div class="note"><strong>学完应能讲清</strong>taskId 和 contextId 的区别；为什么完成顺序会错；为什么当前显式输入更可靠；为什么查历史要同时约束 owner 和 context。</div>
+ <p class="source"><a href="https://github.com/The-PR-Agent/pr-agent/pull/3643" target="_blank" rel="noopener">PR #3643</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/eb645a4f2d052793c2959780bd750d94cf86d7e7/pr_agent/mosaico/executor.py#L49" target="_blank" rel="noopener">历史恢复源码</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/eb645a4f2d052793c2959780bd750d94cf86d7e7/pr_agent/mosaico/dispatch.py#L390" target="_blank" rel="noopener">当前输入与消息边界</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/eb645a4f2d052793c2959780bd750d94cf86d7e7/tests/unittest/test_mosaico_a2a_roundtrip.py" target="_blank" rel="noopener">HTTP 回归场景</a></p>
+</section>
+<section class="chapter" id="reading" aria-labelledby="title-reading">
+ <div class="eyebrow">07 / READ THE CODE, THEN THE ASSERTION</div><div class="chapter-head"><h2 class="chapter-title" id="title-reading">第一次打开 Python，<br><em>只沿一条主线读。</em></h2><span class="folio" aria-hidden="true">07</span></div>
+ <p class="intro">你不需要先通读整个项目，也不需要马上能重写这些函数。先认出输入、条件、输出，再找到对应测试的安排和断言。</p>
+ <div class="chapter-meta"><span>前置：03 / 04，或选一个熟悉的主题</span><span>每次只读一个函数和一个测试</span></div>
+ <h3>会影响理解的最小语法</h3>
+ <div class="table-wrap"><table><thead><tr><th>看到的写法</th><th>怎么读</th><th>在贡献里的用途</th></tr></thead><tbody><tr><td><code>self</code></td><td>当前对象本身</td><td>读取工具的 vars / handler / 状态。</td></tr><tr><td><code>dict.get(key, default)</code></td><td>查字典；没有时用默认值</td><td>读取历史、配置、模型等字段。</td></tr><tr><td><code>text[-n:]</code></td><td>n &gt; 0 时取末尾 n 个字符；n = 0 要单独处理</td><td>#2862 保留历史后缀。</td></tr><tr><td><code>==</code> / <code>is</code></td><td>值相等 / 同一个对象</td><td>#3291 的模型名比较 / handler 身份比较。</td></tr><tr><td><code>async def</code> / <code>await</code></td><td>异步函数 / 等待异步结果</td><td>模型网络调用、TaskStore 访问。</td></tr><tr><td><code>try / except / finally</code></td><td>尝试 / 处理异常 / 最后清理</td><td>失败保留、配置复原。</td></tr><tr><td><code>assert</code></td><td>断言这个条件必须成立</td><td>检查预算、顺序、调用次数和状态。</td></tr><tr><td><code>monkeypatch</code></td><td>测试中临时替换实现</td><td>用假 provider / 计数器 / 模型制造边界。</td></tr></tbody></table></div>
+ <h3>读测试：输入 → 动作 → 断言</h3>
+ <p>例如 #3324 的 <code>test_recovery_restores_missing_results_without_replacing_successes</code>，真实测试使用<strong>三块 a、b、c</strong>，不是 04 章教学实验里的四块。先让 b 在主模型上抛出 TimeoutError，再运行带 fallback 的完整准备入口。</p>
+ <pre><code>tool, calls = make_tool(monkeypatch, {("gpt-4o", "b"): TimeoutError("provider timeout")})
+result = await retry_with_fallback_models(tool.prepare_prediction_main)
+assert [s["relevant_file"] for s in result["code_suggestions"]] == ["a.py", "b.py", "c.py"]
+assert [(m, chunk, dep) for m, chunk, dep, _ in calls] == [
+    ("gpt-4o", "a", "primary"), ("gpt-4o", "b", "primary"),
+    ("gpt-4o", "c", "primary"), ("gpt-4o-mini", "b", "secondary"),
+]</code></pre>
+ <p class="code-label">原测试连续摘录。列表推导式 <code>[s["relevant_file"] for s in ...]</code>只是从每条建议里取出文件名，拼成列表。</p>
+ <div class="grid-2"><div class="panel"><h4>输入与动作</h4><p><code>make_tool</code>提供假工具和调用记录。主模型只在 b 上失败；入口执行主模型并按配置恢复。</p></div><div class="panel"><h4>两个断言</h4><p>第一个证明最终顺序 a、b、c。第二个证明备用模型只收到 b，a、c 没有被重复预测。</p></div></div>
+ <h3>预算测试的断言：短不等于正确</h3>
+ <pre><code>assert prompt_tokens &lt;= 600
+assert "Why is this change needed?" in request["user"]
+assert "+    c = 3" in request["user"]
+assert "reply 199" in request["user"]</code></pre>
+ <p class="code-label">#2862 测试摘录，省略了中间另一个长度断言。第一行只证明预算；后面几行证明当前问题、代码和最近历史没有被全部删掉。</p>
+ <p>如果只断言长度，空字符串也能通过。测试需要同时检查输入仍在回答原问题。这种“容量约束 + 关键内容保留”的组合，比镜像实现细节更有说服力。</p>
+ <h3>沿着这四条线，找自己的证据</h3>
+ <div class="table-wrap"><table><thead><tr><th>故事</th><th>代码先读哪里</th><th>测试先读哪里</th></tr></thead><tbody><tr><td>上下文预算</td><td><code>_get_prediction</code> → <code>_fit_conversation_history</code></td><td><code>test_ask_line_keeps_final_prompt_within_budget_after_loading_history</code></td></tr><tr><td>分块恢复</td><td><code>_predict_chunks</code> → <code>_recover_failed_chunks</code> → 有效 fallback 链</td><td><code>test_recovery_restores_missing_results_without_replacing_successes</code></td></tr><tr><td>准备复用</td><td><code>PreparedPRDiff</code> → <code>get_pr_multi_diffs</code> guard → 共用 packer</td><td><code>test_chunked_review_reuses_the_prepared_diff_for_the_same_model_attempt</code></td></tr><tr><td>A2A 多轮</td><td><code>build_app</code> → <code>execute</code> → <code>_history_for_context</code> → dispatcher</td><td>HTTP roundtrip 中的 follow-up / working / late completion 场景</td></tr></tbody></table></div>
+ <div class="note"><strong>mock 能证明什么？</strong>mock 回归证明特定输入下程序的控制流、结果和状态。它不证明线上模型永不超限、备用服务永远可用，也不证明真实模型建议的准确率。HTTP 往返测试虽然经过协议层，执行函数仍可能被替换。</div>
+ <h3>自己做一个微小改动，再预测后果</h3>
+ <p>在专用学习副本里试着把“只恢复失败块”改成“恢复全部块”。<strong>先写出你预计增加哪些调用，再运行相关测试。</strong>如果测试报告 a / c 也被重复调用，你就建立了代码行为、测试证据和自己的理解之间的联系。做完用版本对比看清改动并还原。</p>
+ <p class="source"><a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/tests/unittest/test_suggestion_chunk_recovery.py#L82" target="_blank" rel="noopener">三块恢复测试</a><a href="https://github.com/The-PR-Agent/pr-agent/blob/8ef8f2de719a457959fbcbcb5f848cca08df5a71/tests/unittest/test_pr_line_questions_context_budget.py#L131" target="_blank" rel="noopener">预算与内容保留断言</a><a href="https://docs.python.org/3.12/tutorial/index.html" target="_blank" rel="noopener">Python 官方教程</a></p>
+</section>
+
+<section class="chapter" id="interview" aria-labelledby="title-interview">
+ <div class="eyebrow">08 / EXPLAIN WHAT YOU UNDERSTAND</div><div class="chapter-head"><h2 class="chapter-title" id="title-interview">先讲触发场景，<br>再用<em>机制和边界</em>支持。</h2><span class="folio" aria-hidden="true">08</span></div>
+ <p class="intro">面试参考表达是学习目标。你能脱离答案讲清楚、打开代码定位、解释测试以后，再把它换成自己的语言。</p>
+ <div class="chapter-meta"><span>句式：问题 → 原因 → 机制 → 验证 → 限制</span><span>先回答，再展开答案</span></div>
+ <h3>项目介绍 · 约 30 秒的内容</h3>
+ <div class="big-quote">PR-Agent 是开源的 AI 代码审查工具，支持审查 PR、生成代码改进建议和代码问答。它读取 Git 平台的改动，组织 Prompt 调用模型，再把结果返回给用户。我的已合并贡献主要集中在上下文预算、分块调用可靠性、输入准备性能，以及 A2A 多轮上下文。</div>
+ <p class="caption">这是项目与贡献范围的事实介绍。若被问到你如何开发，应接着如实解释 AI 的参与和你本人已经完成的验证。</p>
+ <h3>四个贡献，逐条练习</h3>
+ <details><summary>上下文预算：为什么要在最后重新计数？</summary><p>“行级问答加载历史和代码之后，最终 Prompt 可能比早期估计长。实现按实际尝试模型计数，扣掉输出预留，再二分裁剪历史后缀；当前问题和 hunk 保留。换备用模型时也重新预算。测试同时检查长度上限和关键内容保留。若不带历史仍超限，就在模型调用前报错。”</p><p><strong>追问：</strong>裁剪单位是字符后缀，不是完整轮次；计数存在本地估算路径，所以不能承诺所有供应商都精确一致。</p></details>
+ <details><summary>分块恢复：为什么不直接重跑全部块？</summary><p>“一批分块里只有部分失败时，成功块已经有结果。第一项修复把普通失败留在结果槽位，第二项修复只用备用模型恢复失败索引，按原顺序汇总。先等待本批结束，避免切模型配置干扰尚未完成的调用。备用模型装不下该块就跳过，取消则向上传播。全失败仍用原来的整批 fallback。”</p><p><strong>追问：</strong>恢复可能增加延迟和费用；不是持久 checkpoint，也没有保证最终覆盖所有块。</p></details>
+ <details><summary>准备性能：31.8% 的分母是什么？</summary><p>“review 处理大型 Diff 时，分块准备存在重复处理和计数。改动在请求内复用 PreparedPRDiff，并限定同模型、同 handler 实例以及带行号的相同格式；备用模型重新准备。固定离线基准里准备耗时 p50 从 59.169 ms 到 40.365 ms，约降低 31.8%。这只测准备阶段，不包括 LLM 推理。”</p><p><strong>追问：</strong>现有记录的基准是 mock provider、50 文件 × 38 行、8 分块、20 次测量；你本人尚未亲手重跑。读过记录后再用自己的语言解释实验条件。Token 计数调用减少不等于模型 Token 费用减少。</p></details>
+ <details><summary>A2A：为什么不能按最近完成的任务找上下文？</summary><p>“多个任务可能完成顺序与输入顺序不同。旧任务晚完成，不代表用户重新选择了旧 Diff。实现按同 owner / contextId 的任务输入索引倒查，只找用户消息中的最近 PR / Diff，当前显式输入优先，并限制历史任务数量。服务和 executor 共用 TaskStore，working 任务的输入也可被接续。”</p><p><strong>追问：</strong>历史在进程内；重启或跨副本可能丢失。这个功能恢复审查对象，不是完整长期记忆系统或认证系统。</p></details>
+ <h3>六道自测：验证机制，不猜名词</h3>
+ <fieldset class="quiz" data-answer="1"><legend>1. 当前问题很短，为什么仍会超限？</legend><button type="button">只要问题短，就不可能超限。</button><button type="button">最终 Prompt 还包含模板、代码和历史，并需要输出预留。</button><button type="button">这是所有模型都存在的固定 API 故障。</button><p class="feedback" aria-live="polite"></p><details><summary>答案与理由</summary><p>第二项。需要计数最终模型输入；不是只计算用户最后一句话。</p></details></fieldset>
+ <fieldset class="quiz" data-answer="2"><legend>2. A、C 成功，B 普通失败，备用模型能装下 B。应该怎么恢复？</legend><button type="button">全部重跑，丢弃旧结果。</button><button type="button">按完成顺序汇总，B 最后回来就放最后。</button><button type="button">保留 A、C，只恢复 B，仍按 A、B、C 汇总。</button><p class="feedback" aria-live="polite"></p><details><summary>答案与理由</summary><p>第三项。避免重复成功块，保持原始槽位顺序。</p></details></fieldset>
+ <fieldset class="quiz" data-answer="0"><legend>3. 收到取消时，为什么不能按普通失败恢复？</legend><button type="button">调用者要停止请求，应向上传播取消并清理配置。</button><button type="button">取消表示模型容量变大了。</button><button type="button">取消一定要切换备用模型再试一次。</button><p class="feedback" aria-live="polite"></p><details><summary>答案与理由</summary><p>第一项。取消与服务故障的语义不同；继续重试违背停止意图。</p></details></fieldset>
+ <fieldset class="quiz" data-answer="1"><legend>4. 31.8% 直接描述什么？</legend><button type="button">线上整次审查的普遍耗时改善。</button><button type="button">固定离线基准的上下文准备耗时中位数下降。</button><button type="button">所有模型账单都下降相同幅度。</button><p class="feedback" aria-live="polite"></p><details><summary>答案与理由</summary><p>第二项。分母是旧准备阶段 p50 59.169 ms；没有计入 LLM 推理。</p></details></fieldset>
+ <fieldset class="quiz" data-answer="2"><legend>5. 已输入 A 后再输入 B，A 晚完成。下一轮无显式目标，同 owner / context 下选谁？</legend><button type="button">选 A，因为它最后完成。</button><button type="button">把 A 和 B 自动合并成同一个 PR。</button><button type="button">选 B，因为它是更新的目标输入。</button><p class="feedback" aria-live="polite"></p><details><summary>答案与理由</summary><p>第三项。输入顺序反映用户最近指定的对象；显式新输入仍可覆盖 B。</p></details></fieldset>
+ <fieldset class="quiz" data-answer="0"><legend>6. 换了备用模型，但模型名相似，PreparedPRDiff 能直接复用吗？</legend><button type="button">不能，复用 guard 要求同模型及其他条件。</button><button type="button">可以，所有模型都用一样的 Token 容量。</button><button type="button">只要调用者是同一个用户就能复用。</button><p class="feedback" aria-live="polite"></p><details><summary>答案与理由</summary><p>第一项。用户相同并不是这个 guard 的判断条件。模型、handler 身份和输入格式必须兼容。</p></details></fieldset>
+ <h3>被问到“AI 做了多少”</h3>
+ <p>按你现在提供的事实，可以说：“这些提交主要由 AI 辅助完成，我当时没有深入读过全部代码。现在我在逐条补齐问题背景、源码和测试理解。”</p>
+ <p>以后实际读完、复现完，可以补上<strong>具体亲手做过的活动</strong>：“我复现了 B 分块失败，核对备用模型只收到 B 的调用记录，还检查了取消后的配置还原。”这句只有你做完这些活动后才适用。</p>
+ <div class="note"><strong>卡住时，把不确定性说具体</strong>“我能解释恢复顺序和预算条件；LiteLLM 在这个模型上的精确计数差异，我还需要核对。”比编造底层细节更容易继续讨论，也能让你知道下一步该学什么。</div>
+ <h3>写一段自己的回答</h3><p class="caption">先闭上上面的参考答案。写下一个问题、一个反例、一条修复机制、一个真实测试，以及一项限制。</p><textarea data-note="interview" aria-label="我的面试回答" placeholder="我的项目介绍：&#10;我最能讲清的一条贡献：&#10;触发场景和旧行为：&#10;修复机制：&#10;测试证据：&#10;方案限制和仍不确定的地方："></textarea><div class="save-status" data-save-status>记录状态会在输入后显示。</div>
+</section>
+
+<section class="chapter" id="evidence" aria-labelledby="title-evidence">
+ <div class="eyebrow">09 / TRACE EACH CLAIM</div><div class="chapter-head"><h2 class="chapter-title" id="title-evidence">每一个解释，<br>都能<em>回到合并代码。</em></h2><span class="folio" aria-hidden="true">09</span></div>
+ <p class="intro">本册以最终合并版本为准。PR 描述可能保留早期方案，所以读到与代码不一致时，应打开固定提交源码核对。</p>
+ <div class="chapter-meta"><span>核对日期：2026-10-02 · Asia/Shanghai</span><span>5 个核心 PR 均已合并</span></div>
+ <h3>五个 PR 的固定入口</h3>
+ <div class="table-wrap"><table><thead><tr><th>主题 / 北京时间合并日</th><th>合并版本代码</th><th>合并版本测试</th></tr></thead><tbody><tr><td><a href="https://github.com/The-PR-Agent/pr-agent/pull/2862" target="_blank" rel="noopener">#2862 · /ask_line 预算</a><br>2026-08-28<br><code>8ef8f2d…</code></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/8ef8f2de719a457959fbcbcb5f848cca08df5a71/pr_agent/tools/pr_line_questions.py#L219" target="_blank" rel="noopener">历史预算函数</a><br><a href="https://github.com/The-PR-Agent/pr-agent/blob/8ef8f2de719a457959fbcbcb5f848cca08df5a71/pr_agent/algo/token_handler.py" target="_blank" rel="noopener">Token handler / encoder</a></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/8ef8f2de719a457959fbcbcb5f848cca08df5a71/tests/unittest/test_pr_line_questions_context_budget.py" target="_blank" rel="noopener">输入容量与关键内容</a></td></tr><tr><td><a href="https://github.com/The-PR-Agent/pr-agent/pull/2829" target="_blank" rel="noopener">#2829 · 局部成功保留</a><br>2026-08-28<br><code>db3f2a5…</code></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/db3f2a5a8c487c28efaf566bebabb1778fb08ed7/pr_agent/tools/pr_code_suggestions.py" target="_blank" rel="noopener">改进建议工具</a></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/db3f2a5a8c487c28efaf566bebabb1778fb08ed7/tests/unittest/test_pr_code_suggestions_core.py" target="_blank" rel="noopener">串行 / 并行部分失败</a></td></tr><tr><td><a href="https://github.com/The-PR-Agent/pr-agent/pull/3324" target="_blank" rel="noopener">#3324 · 定向恢复</a><br>2026-09-14<br><code>2c5967e…</code></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/pr_agent/tools/pr_code_suggestions.py#L1553" target="_blank" rel="noopener">失败槽位恢复</a><br><a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/pr_agent/algo/pr_processing.py#L480" target="_blank" rel="noopener">调用内有效模型链</a></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/tests/unittest/test_suggestion_chunk_recovery.py" target="_blank" rel="noopener">顺序 / 预算 / 取消 / 配置</a></td></tr><tr><td><a href="https://github.com/The-PR-Agent/pr-agent/pull/3291" target="_blank" rel="noopener">#3291 · 准备复用</a><br>2026-09-11<br><code>4d209ab…</code></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/4d209abfac6f92ec6a76f3a71143818315dad8a5/pr_agent/algo/pr_processing.py#L561" target="_blank" rel="noopener">复用 guard / packer</a><br><a href="https://github.com/The-PR-Agent/pr-agent/blob/4d209abfac6f92ec6a76f3a71143818315dad8a5/pr_agent/tools/pr_reviewer.py#L755" target="_blank" rel="noopener">review 传递准备对象</a></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/4d209abfac6f92ec6a76f3a71143818315dad8a5/tests/unittest/test_pr_processing_core.py" target="_blank" rel="noopener">分块等价 / 不兼容条件</a><br><a href="https://github.com/The-PR-Agent/pr-agent/blob/4d209abfac6f92ec6a76f3a71143818315dad8a5/tests/unittest/test_review_large_diff_chunking.py#L129" target="_blank" rel="noopener">review 准备复用</a></td></tr><tr><td><a href="https://github.com/The-PR-Agent/pr-agent/pull/3643" target="_blank" rel="noopener">#3643 · 多轮上下文</a><br>2026-09-23<br><code>eb645a4…</code></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/eb645a4f2d052793c2959780bd750d94cf86d7e7/pr_agent/mosaico/server.py#L80" target="_blank" rel="noopener">共享 store</a><br><a href="https://github.com/The-PR-Agent/pr-agent/blob/eb645a4f2d052793c2959780bd750d94cf86d7e7/pr_agent/mosaico/executor.py#L49" target="_blank" rel="noopener">历史恢复 / 输入索引</a><br><a href="https://github.com/The-PR-Agent/pr-agent/blob/eb645a4f2d052793c2959780bd750d94cf86d7e7/pr_agent/mosaico/dispatch.py#L390" target="_blank" rel="noopener">消息边界 / 优先级</a></td><td><a href="https://github.com/The-PR-Agent/pr-agent/blob/eb645a4f2d052793c2959780bd750d94cf86d7e7/tests/unittest/test_mosaico_a2a_roundtrip.py" target="_blank" rel="noopener">多轮 HTTP 场景</a><br><a href="https://github.com/The-PR-Agent/pr-agent/blob/eb645a4f2d052793c2959780bd750d94cf86d7e7/tests/unittest/test_mosaico_executor.py" target="_blank" rel="noopener">executor / owner 隔离</a></td></tr></tbody></table></div>
+ <details><summary>PR 描述与最终实现的三处差别</summary><p>#3324 描述有早期 opt-in 文字，最终实现只要配置 fallback 就启用恢复，没有 <code>recover_failed_chunks</code>开关。#3643 早期描述说无新增配置，最终新增历史任务上限。项目 README 的单次 LLM 调用宣传语，也不能覆盖大 Diff 分块、fallback 和有建议时的二次评估路径。</p></details>
+ <h3>术语速查</h3><label class="tiny" for="glossary-search">按术语或中文含义搜索</label><input class="glossary-search" id="glossary-search" type="search" placeholder="例如：取消、输出、owner、计数、hunk"><p class="tiny" id="glossary-count" aria-live="polite"></p>
+ <div id="glossary-items">
+  <div class="glossary-item"><b>PR / Pull Request</b><span>把分支改动申请合并到目标分支的协作请求。不是 Prompt。</span></div>
+  <div class="glossary-item"><b>Diff / patch / hunk</b><span>版本差异 / 文件改动文本 / 文件内的一段差异片段。</span></div>
+  <div class="glossary-item"><b>Prompt / render</b><span>发给模型的任务与材料；render 是把真实数据填入模板。</span></div>
+  <div class="glossary-item"><b>Token / tokenizer</b><span>模型处理文本的单位 / 切分计数工具。不同模型可有不同计数规则。</span></div>
+  <div class="glossary-item"><b>Context window</b><span>一次调用的容量。本文输入预算还需要扣除输出预留。</span></div>
+  <div class="glossary-item"><b>Output reserve</b><span>给模型生成结果预留的空间；不是历史长度。</span></div>
+  <div class="glossary-item"><b>Git provider</b><span>访问 GitHub、GitLab 等平台的适配器。</span></div>
+  <div class="glossary-item"><b>LiteLLM / handler</b><span>模型服务的调用库 / 项目的适配类。不能自动消除模型差异。</span></div>
+  <div class="glossary-item"><b>asyncio / gather</b><span>Python 异步执行支持 / 等待一批操作并按输入顺序返回槽位。</span></div>
+  <div class="glossary-item"><b>Exception / cancel</b><span>普通失败可记录或恢复；取消代表停止请求，需要向上传播。</span></div>
+  <div class="glossary-item"><b>Fallback / deployment</b><span>备用模型链 / 对应服务部署配置。恢复前要检查预算，结束后还原配置。</span></div>
+  <div class="glossary-item"><b>ContextVar</b><span>跟随当前调用上下文的变量槽位，用于隔离并发请求的有效模型链。</span></div>
+  <div class="glossary-item"><b>PreparedPRDiff / pack</b><span>准备好的 Diff 数据容器 / 把材料分配为多个输入块的过程。</span></div>
+  <div class="glossary-item"><b>p50 / benchmark</b><span>测量结果的中位位置 / 在明确条件下做的性能实验。</span></div>
+  <div class="glossary-item"><b>A2A / TaskStore</b><span>Agent 消息与任务协议 / 存放任务状态和历史的对象。</span></div>
+  <div class="glossary-item"><b>owner / contextId</b><span>调用者范围 / 多轮任务的上下文编号；共同限定历史查找范围。</span></div>
+  <div class="glossary-item"><b>taskId / working</b><span>某次任务的编号 / 任务执行中的状态。执行中的输入也可接续。</span></div>
+  <div class="glossary-item"><b>mock / stub / assert</b><span>测试中替换外部依赖的模拟 / 简化实现 / 必须成立的断言。</span></div>
+ </div>
+ <h3>第二遍的研读材料</h3><ul><li>项目基础、真实调用链与最小概念</li><li>预算、异步分块恢复与测试的详细解释</li><li>准备性能与 A2A 的详细解释</li><li>此前确定的简历写作与完整贡献素材</li></ul>
+ <p class="footnote">代码短摘录源自 The-PR-Agent/pr-agent，按原项目 MIT 许可引用。Copyright (c) 2026 The PR Agent。<a href="https://github.com/The-PR-Agent/pr-agent/blob/2c5967ea1a32356fe7c6f6cbdd986463b059c149/LICENSE" target="_blank" rel="noopener">原项目 LICENSE 与版权声明</a>。教学省略、模拟输入、假模型均已标明。本册不收集联系信息，不请求外部 API。</p>
+ <details><summary>源码摘录的 MIT 许可全文</summary><pre><code>MIT License
+
+Copyright (c) 2026 The PR Agent
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.</code></pre></details>
+</section>
+
+<section class="chapter" id="practice" aria-labelledby="title-practice">
+ <div class="eyebrow">10 / MAKE ONE UNDERSTANDING YOUR OWN</div><div class="chapter-head"><h2 class="chapter-title" id="title-practice">今天先讲清一个反例，<br>下一步再<em>亲手验证。</em></h2><span class="folio" aria-hidden="true">10</span></div>
+ <p class="intro">阅读、解释、执行测试是三个不同阶段。下面把每个阶段的完成条件写清楚，你可以知道自己已经会什么，以及哪一步还没有做。</p>
+ <div class="chapter-meta"><span>先选一个主题完成闭环</span><span>练习命令未在本轮执行</span></div>
+ <h3>第一轮：先完成 01 → 02 → 03</h3>
+ <ol><li>用两句话解释 PR-Agent 的输入和输出。</li><li>在预算实验中，从“历史能装下”切到“切换更小模型”。说出哪个预算变小了。</li><li>制造“固定输入本身超限”，解释为什么再剪历史也没用。</li><li>不看答案，回答“为什么计数最终 Prompt”。再打开真实预算函数检查自己的解释。</li></ol>
+ <h3>第二轮：只打开一个真实文件</h3>
+ <p>下面的 PowerShell 命令通过 <code>gh</code>读取固定合并版本，不需要先配置模型。版本写在 URL 的 <code>?ref=...</code>参数里；整段可以复制到 PowerShell。</p>
+ <pre><code># 先看 PR 的修改范围
+gh pr view 2862 --repo The-PR-Agent/pr-agent --json title,mergedAt,mergeCommit,files
+gh pr diff 2862 --repo The-PR-Agent/pr-agent
+
+# 只读合并版本的预算函数文件（API 内容是 base64，下面将其解码）
+$learningSourceBase64 = gh api "repos/The-PR-Agent/pr-agent/contents/pr_agent/tools/pr_line_questions.py?ref=8ef8f2de719a457959fbcbcb5f848cca08df5a71" --jq ".content"
+[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String(($learningSourceBase64 -join "")))</code></pre>
+ <p>在文件中查 <code>_fit_conversation_history</code>，把三件事用中文标出来：预算怎样得出、哪个输入可以裁剪、哪些输入要保留。首次不必追到所有日志与配置函数。</p>
+ <h3>第三轮：在专用学习副本运行一个测试</h3>
+ <p>先按对应提交的 README / CONTRIBUTING 准备 Python、依赖和虚拟环境。以下是<strong>已有专用学习 clone</strong>时的版本与测试入口，不要在带未保存修改的工作仓库里照抄切换版本。浏览器演示不能替代这些真实测试。</p>
+ <details><summary>预算测试 / #2862</summary><pre><code>git switch --detach 8ef8f2de719a457959fbcbcb5f848cca08df5a71
+python -m pytest tests/unittest/test_pr_line_questions_context_budget.py -q</code></pre><p>先读 200 回复的测试，预测哪些文字应该保留，再执行。记录实际命令、版本、结果和失败原因。</p></details>
+ <details><summary>分块恢复测试 / #3324</summary><pre><code>git switch --detach 2c5967ea1a32356fe7c6f6cbdd986463b059c149
+python -m pytest tests/unittest/test_suggestion_chunk_recovery.py -q</code></pre><p>挑“恢复缺失结果”的一个测试，解释主模型与备用模型的调用列表。之后再读取消和预算跳过。</p></details>
+ <details><summary>性能正确性测试 / #3291</summary><pre><code>git switch --detach 4d209abfac6f92ec6a76f3a71143818315dad8a5
+python -m pytest tests/unittest/test_pr_processing_core.py tests/unittest/test_review_large_diff_chunking.py -q</code></pre><p>这组测试检查复用正确性；通过它不能声称你复现了 31.8% 的基准。</p></details>
+ <details><summary>A2A 协议场景 / #3643</summary><pre><code>git switch --detach eb645a4f2d052793c2959780bd750d94cf86d7e7
+python -m pytest tests/unittest/test_mosaico_a2a_roundtrip.py::TestA2ARoundTripStubbedLLM tests/unittest/test_mosaico_executor.py -q</code></pre><p>显式选择 StubbedLLM 类，先看 follow-up / working / late completion 对话输入。这组选择的执行函数被替换；整个 roundtrip 文件另外包含真实 LLM 测试，不要混成同一组。</p></details>
+ <h3>这次文档做了哪些核验？</h3>
+ <p>使用 gh 核对五个核心 PR 的合并状态、最终 diff、固定提交源码与测试，核对性能 PR / Issue 的基准记录。学习页面另做布局和交互检查。</p>
+ <p>尚未执行上游 Python 测试、原性能基准、真实 LLM 调用或外网 A2A 服务实验。这些是下一阶段的亲手练习；不要把本册展示的测试代码说成你已经运行过。</p>
+ <h3>我的学习记录</h3><p class="caption">保存在当前浏览器；更换浏览器或清除数据可能丢失。直接打开 file:// 时，各浏览器的存储策略也可能不同。可以导出一份 Markdown 备份。</p>
+ <textarea data-note="practice" aria-label="学习与验证记录" placeholder="今天读懂了：&#10;还没理解的概念：&#10;我打开过的固定提交 / 文件 / 函数：&#10;我亲手运行的命令与结果（未运行就写未运行）：&#10;一个能独立讲清的反例：&#10;下一步只做："></textarea><div class="save-status" data-save-status>记录状态会在输入后显示。</div>
+ <div class="preset-row no-print"><button class="preset" id="export-notes" type="button">导出学习记录 .md</button><button class="preset" id="reset-progress" type="button">清除本页记录</button></div><p class="tiny" id="record-status" aria-live="polite">标记掌握只代表你的自评；本册不会根据阅读时间自动替你打勾。</p>
+ <div class="note"><strong>从一条真实理解开始</strong>如果现在只记住一件事：模型调用的输入需要在最终组成后，按实际模型检查预算。下一轮我们可以围绕这一条，从一个函数和一个测试开始讨论。</div>
+</section>
+ </main>
+</div>
+<script>
+(()=>{
+ 'use strict';
+ const $=id=>document.getElementById(id), chapters=[...document.querySelectorAll('.chapter')], nav=[...document.querySelectorAll('#chapter-nav a')];
+ const ids=chapters.map(x=>x.id), key='pr-agent-learning-v1';
+ let state={done:[],notes:{}}, storageOK=true;
+ try{const s=JSON.parse(localStorage.getItem(key)||'null');if(s&&typeof s==='object'){state.done=Array.isArray(s.done)?s.done.filter(x=>ids.includes(x)):[];if(s.notes&&typeof s.notes==='object')for(const n of ['interview','practice'])if(typeof s.notes[n]==='string')state.notes[n]=s.notes[n];}localStorage.setItem(key,JSON.stringify(state));}catch(e){storageOK=false;}
+ function save(){try{localStorage.setItem(key,JSON.stringify(state));storageOK=true;return true;}catch(e){storageOK=false;return false;}}
+ function progress(){const n=state.done.length;$('progress-label').textContent=`已标记掌握 ${n} / ${ids.length} 章`;$('progress-fill').style.width=100*n/ids.length+'%';nav.forEach(a=>a.classList.toggle('done',state.done.includes(a.hash.slice(1))));document.querySelectorAll('[data-complete]').forEach(b=>{const done=state.done.includes(b.dataset.complete);b.setAttribute('aria-pressed',String(done));b.textContent=done?'已标记掌握 ✓':'我能复述这一章';});}
+ chapters.forEach((chapter,i)=>{
+  const complete=document.createElement('div');complete.className='completion';
+  const b=document.createElement('button');b.type='button';b.dataset.complete=chapter.id;b.setAttribute('aria-pressed','false');b.textContent='我能复述这一章';
+  b.addEventListener('click',()=>{const id=b.dataset.complete;state.done=state.done.includes(id)?state.done.filter(x=>x!==id):[...state.done,id];save();progress();});
+  const hint=document.createElement('span');hint.textContent='先合上答案：能解释场景、机制和一个边界，再标记。';complete.append(b,hint);chapter.append(complete);
+  const footer=document.createElement('div');footer.className='chapter-footer';
+  for(const index of [i-1,i+1]){if(index>=0&&index<chapters.length){const a=document.createElement('a');a.href='#'+ids[index];a.textContent=(index<i?'← 上一章：':'下一章：')+nav[index].textContent.replace(/^\s*\d+\s*/,'');footer.append(a);}else footer.append(document.createElement('span'));}chapter.append(footer);
+ });
+ function show(id,focus=false){if(!ids.includes(id))id='start';chapters.forEach(c=>c.hidden=c.id!==id);nav.forEach(a=>{const active=a.hash==='#'+id;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});$('current-crumb').textContent=nav[ids.indexOf(id)].textContent.replace(/^\s*\d+\s*/,'');document.querySelector('.rail').classList.remove('open');document.querySelector('.mobile-menu').setAttribute('aria-expanded','false');if(focus){$('main').focus({preventScroll:true});window.scrollTo({top:0,behavior:'auto'});}}
+ show(location.hash.slice(1));progress();window.addEventListener('hashchange',()=>show(location.hash.slice(1),true));
+ document.querySelector('.mobile-menu').addEventListener('click',e=>{const on=document.querySelector('.rail').classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(on));});
+ $('glossary-shortcut').addEventListener('click',()=>{location.hash='evidence';show('evidence');$('glossary-search').focus();$('glossary-search').scrollIntoView({block:'center'});});
+ const explanations=[
+  '入口收到请求后，PRAgent.handle_request 根据命令选择 PRCodeSuggestions 等工具。这里是程序选择流程，并非模型临时规划工具序列。',
+  'Git provider 读取 PR 标题、描述和改动文件。它连接 Git 平台，与接入模型服务的 LiteLLM 是两层不同适配。',
+  '工具组织变量，模板渲染出 system / user Prompt。Diff 准备与 Token handler 决定输入能否容纳、是否需要分块；不是只发送一句问题。',
+  '分块调用可串行或并行。普通失败先保留为失败槽；有可用 fallback 才定向恢复。真实非空建议还会进入二次评估，不应承诺恒定单次 LLM 调用。',
+  '各块结果按输入顺序汇总、解析和后续处理，再根据运行模式返回或发布建议。恢复失败的块可能仍留下覆盖缺口。'
+ ];
+ document.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-step]').forEach(x=>{const on=x===b;x.classList.toggle('active',on);x.setAttribute('aria-pressed',String(on));});$('pipeline-explain').textContent=explanations[Number(b.dataset.step)];}));
+ function budget(){const W=Number($('budget-window').value),R=Number($('budget-reserve').value),F=Number($('budget-fixed').value),H=Number($('budget-history').value),cap=Math.max(W-R,0);let keep=H,marker=0,blocked=F>cap;const trace=[];
+  $('reserve-value').value=R;$('fixed-value').value=F;$('history-value').value=H;
+  if(blocked){keep=0;trace.push(`空历史仍有 ${F} > 输入预算 ${cap}；真实代码在模型调用前报错。`);}else if(F+H<=cap){trace.push(`最终输入 ${F+H} ≤ ${cap}，原历史直接保留，不加裁剪标记。`);}else{let low=0,high=H/50,best=0;while(low<=high){const mid=Math.floor((low+high)/2),cost=F+mid*50+(mid?20:0),fits=cost<=cap;trace.push(`试保留 ${mid*50} 历史 + ${mid?20:0} 标记：总输入 ${cost}，${fits?'装得下 → 多试一些':'超限 → 少留一些'}`);if(fits){best=mid;low=mid+1;}else high=mid-1;}keep=best*50;marker=keep?20:0;}
+  const title=blocked?'停止：固定输入本身已经超限':keep===H?'可以调用：完整历史保留':'可以调用：保留预算内的较新历史';const used=F+keep+marker,free=Math.max(W-used-R,0);$('budget-result').classList.toggle('warn',blocked);$('budget-result').replaceChildren();const strong=document.createElement('strong');strong.textContent=title;$('budget-result').append(strong,document.createTextNode(`输入预算 ${cap}；固定输入 ${F}；保留历史 ${keep}${marker?' + 标记 20':''}；输出预留 ${R}。${blocked?'裁剪历史不能解决。':`总输入 ${used} ≤ ${cap}。`}`));$('budget-trace').textContent=trace.join('\n');$('budget-meter').replaceChildren();for(const [cls,n] of [['fixed',F],['history',keep+marker],['reserve',R],['space',free]])if(n){const span=document.createElement('span');span.className=cls;span.style.width=n/W*100+'%';span.style.flexShrink='0';span.textContent=n;$('budget-meter').append(span);}
+ }
+ ['budget-window','budget-reserve','budget-fixed','budget-history'].forEach(id=>$(id).addEventListener('input',()=>{document.querySelectorAll('[data-budget]').forEach(b=>b.classList.remove('active'));budget();}));
+ const presets={fits:[1000,200,450,200],trim:[1000,200,450,700],fallback:[600,100,350,700],blocked:[600,200,650,700]};
+ document.querySelectorAll('[data-budget]').forEach(b=>b.addEventListener('click',()=>{const v=presets[b.dataset.budget];['budget-window','budget-reserve','budget-fixed','budget-history'].forEach((id,i)=>$(id).value=v[i]);document.querySelectorAll('[data-budget]').forEach(x=>x.classList.toggle('active',x===b));budget();}));budget();
+ function output(id,title,body,warn=false){const box=$(id);box.classList.toggle('warn',warn);box.replaceChildren();const b=document.createElement('strong');b.textContent=title;box.append(b,document.createTextNode(body));}
+ function recovery(){const mode=$('chunk-mode').value,fb=$('chunk-fallback').value,labels=['A','B','C','D'];let states=labels.map((x,i)=>mode==='healthy'?'成功':mode==='partial'?(i===1?'失败':'成功'):mode==='all'?'失败':'取消'),trace=[],title='',body='';
+  if(mode==='cancel'){title='取消向上传播，停止恢复';body='不把取消当作普通失败。清理路径还原 deployment / 有效模型链；不承诺撤销已发生的外部副作用。';trace=['请求取消 → 不进入定向 fallback → 向上传播 CancelledError'];}
+  else if(mode==='healthy'){title='四块成功，无需恢复';body='按 A、B、C、D 汇总；没有额外 fallback 分块预测。';trace=['主模型：A, B, C, D','失败槽：[]','备用模型：无调用'];}
+  else if(mode==='all'){title='全部失败：交给原有整批 fallback';body=fb==='success'?'这里没有可保留的成功块，外层尝试下一模型处理整批。':'这里没有可保留的成功块。外层仍走既有整批 fallback；能否成功取决于配置与模型行为。';trace=['主模型：A, B, C, D → 全部普通失败','定向恢复：不接管全失败批次','外层整批 fallback：A, B, C, D'];if(fb==='success')states=labels.map(()=>'整批恢复');}
+  else{trace=['主模型：A, B, C, D；B 普通失败','等本批完成；成功 A, C, D 保留'];if(fb==='success'){states[1]='恢复成功';title='只恢复 B，按原顺序汇总';body='A、C、D 没有重复预测。备用模型替换 B 的失败槽，结果仍是 A、B、C、D。';trace.push('备用模型：只调用 B','原序汇总：A, B, C, D','finally：还原调用配置');}else{title='保留 A、C、D，B 仍缺失';body=fb==='none'?'没有备用模型，不做定向恢复。':fb==='small'?'备用模型的完整 Prompt 超预算，跳过本次恢复，不再裁剪这块 Diff。':'已用尽可用备用模型，仍保留成功结果。';trace.push(fb==='none'?'备用模型：无配置':fb==='small'?'备用模型：B 超预算 → 不调用':'备用模型：B 尝试后仍失败','汇总成功槽：A, C, D；留下 B 缺口');}}
+  $('chunk-cards').replaceChildren();states.forEach((s,i)=>{const div=document.createElement('div');div.className='chunk '+(s==='成功'?'good':s.includes('恢复')?'recovered':'bad');const b=document.createElement('b');b.textContent=labels[i];div.append(b,document.createTextNode(s));$('chunk-cards').append(div);});output('chunk-result',title,body,mode==='cancel'||states.includes('失败'));$('chunk-trace').textContent=trace.join('\n');
+ }
+ ['chunk-mode','chunk-fallback'].forEach(id=>$(id).addEventListener('change',recovery));recovery();
+ function reuse(){const m=$('reuse-model').value==='same',h=$('reuse-handler').value==='same',l=$('reuse-lines').value==='true',d=$('reuse-data').value==='present',ok=m&&h&&l&&d;output('reuse-result',ok?'复用：继续用准备好的 Diff 和计数':'重新准备：复用条件不满足',ok?'进入共用 packer；必要的输入变更仍可能产生额外计数。':'这不是缓存错误，而是 guard 在保护输入与计数的一致性。',!ok);$('reuse-trace').textContent=`prepared_diff / file_dict 可用：${d}\n模型一致：${m}\nToken handler 同一实例：${h}\n当前带行号且格式一致：${l}\n结论：${ok?'复用 prepared_diff':'走普通准备路径'}`;}
+ ['reuse-model','reuse-handler','reuse-lines','reuse-data'].forEach(id=>$(id).addEventListener('change',reuse));reuse();
+ function a2a(){const finish=$('a2a-finish').value,explicit=$('a2a-explicit').value==='C',sameOwner=$('a2a-owner').value==='U1',sameContext=$('a2a-context').value==='C1';let title,body,trace=[];
+  if(explicit){title='使用当前显式 Diff C';body='当前输入优先；无需从历史 A / B 恢复审查对象。';trace=['当前消息明确带 Diff C','跳过历史恢复','路由目标：C'];}
+  else if(!sameOwner||!sameContext){title='无法从这组历史继承目标';body='U1 / C1 的 A、B 不属于当前查找范围。请在当前消息提供 PR / Diff，或检查实际会话标识。';trace=[`owner 相同：${sameOwner}；context 相同：${sameContext}`,'当前索引里没有这组历史','这不意味着整个项目只能报错；这里只说明没有恢复 A / B。'];}
+  else{title='恢复最新输入 Diff B';body=finish==='working'?'B 虽仍在 working，输入已登记；最新目标仍为 B。':'完成顺序不会覆盖输入顺序；旧 A 晚完成也不会成为最新目标。';trace=['输入索引：A → B','从最新输入倒查：先读 B 的 user 消息',finish==='working'?'B 的 working Task 已保存 Diff B':'完成顺序只改变状态，不改变目标输入顺序','路由目标：B'];}
+  output('a2a-result',title,body,!explicit&&(!sameOwner||!sameContext));$('a2a-trace').textContent=trace.join('\n');
+ }
+ ['a2a-finish','a2a-explicit','a2a-owner','a2a-context'].forEach(id=>$(id).addEventListener('change',a2a));a2a();
+ document.querySelectorAll('.quiz').forEach(q=>{const buttons=[...q.querySelectorAll(':scope > button')];buttons.forEach((b,i)=>b.addEventListener('click',()=>{buttons.forEach(x=>{x.classList.toggle('selected',x===b);x.setAttribute('aria-pressed',String(x===b));});const right=i===Number(q.dataset.answer),p=q.querySelector('.feedback');p.textContent=right?'正确。再用自己的话解释一次理由。':'再想一想：打开“答案与理由”，对照输入、机制和边界。';p.classList.toggle('wrong',!right);}));});
+ const glossary=[...document.querySelectorAll('.glossary-item')];function search(){const s=$('glossary-search').value.trim().toLowerCase();let n=0;glossary.forEach(item=>{const match=item.textContent.toLowerCase().includes(s);item.hidden=!match;if(match)n++;});$('glossary-count').textContent=`显示 ${n} / ${glossary.length} 个术语`;} $('glossary-search').addEventListener('input',search);search();
+ document.querySelectorAll('[data-note]').forEach(t=>{t.value=state.notes[t.dataset.note]||'';const status=t.nextElementSibling;if(!storageOK)status.textContent='当前浏览器不允许持久保存；仍可输入，建议导出备份。';t.addEventListener('input',()=>{state.notes[t.dataset.note]=t.value;status.textContent=save()?'已保存在当前浏览器。':'持久保存不可用；当前页面中仍保留内容，建议导出备份。';});});
+ $('export-notes').addEventListener('click',()=>{const text=['# PR-Agent 学习记录','','已自评掌握章节：'+state.done.map(id=>nav[ids.indexOf(id)].textContent).join('、'),'','## 我的面试回答','',state.notes.interview||'尚未记录','','## 学习与验证','',state.notes.practice||'尚未记录',''].join('\n');const blob=new Blob([text],{type:'text/markdown;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='pr-agent-learning-notes.md';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('record-status').textContent='已生成学习记录下载。请保留个人验证活动的真实完成状态。';});
+ let resetArmed=false; $('reset-progress').addEventListener('click',()=>{if(!resetArmed){resetArmed=true;$('reset-progress').textContent='再次点击，确认清除';$('record-status').textContent='这会清除本页的掌握标记和两处笔记。先导出备份，或切换章节取消确认。';return;}state={done:[],notes:{}};save();progress();document.querySelectorAll('[data-note]').forEach(t=>t.value='');document.querySelectorAll('[data-save-status]').forEach(s=>s.textContent='本页记录已清除。');resetArmed=false;$('reset-progress').textContent='清除本页记录';$('record-status').textContent='本页记录已清除；没有更改其他学习文档的记录。';});window.addEventListener('hashchange',()=>{resetArmed=false;$('reset-progress').textContent='清除本页记录';});
+ let closedForPrint=[];window.addEventListener('beforeprint',()=>{closedForPrint=[...document.querySelectorAll('details:not([open])')];closedForPrint.forEach(d=>d.open=true);glossary.forEach(x=>x.hidden=false);});window.addEventListener('afterprint',()=>{closedForPrint.forEach(d=>d.open=false);closedForPrint=[];search();});$('print-button').addEventListener('click',()=>window.print());
+})();
+</script>
+</body>
+</html>

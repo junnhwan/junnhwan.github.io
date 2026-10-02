@@ -1,96 +1,114 @@
 ---
-interface Heading {
-  depth: number;
-  slug: string;
-  text: string;
-}
-
-interface Props {
-  headings: Heading[];
-}
-
+interface Heading { depth: number; slug: string; text: string; }
+interface Props { headings: Heading[]; }
 const { headings } = Astro.props;
-const items = headings.filter((h) => h.depth > 1 && h.depth < 4);
+const items = headings.filter((heading) => heading.depth > 1 && heading.depth < 4);
 ---
 
-{
-  items.length > 0 && (
-    <nav class="sticky top-28" aria-label="目录">
-      <div class="relative pl-4">
-        {/* Rail plus a slider that tracks the active section */}
-        <div class="absolute left-0 inset-y-0 w-px bg-line" />
-        <div
-          id="toc-indicator"
-          class="absolute left-0 w-px bg-accent transition-all duration-[400ms]"
-          style="top: 0; height: 0; opacity: 0;"
-        />
-
-        <ul class="space-y-2 max-h-[calc(100vh-11rem)] overflow-y-auto no-scrollbar">
-          {items.map((h) => (
-            <li>
-              <a
-                href={`#${h.slug}`}
-                data-slug={h.slug}
-                class={`toc-link block text-[12px] leading-snug text-fg-subtle hover:text-fg transition-colors line-clamp-2 ${
-                  h.depth === 3 ? 'pl-3' : ''
-                }`}
-              >
-                {h.text}
-              </a>
-            </li>
-          ))}
-        </ul>
+{items.length > 0 && (
+  <nav class="toc" aria-label="本文目录">
+    <details class="toc-panel" open>
+      <summary class="toc-summary">
+        <span>本文目录</span><span class="toc-count">{items.length} 个章节</span>
+        <svg class="toc-chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+      </summary>
+      <div class="toc-body">
+        <div class="toc-track">
+          <span class="toc-rail" aria-hidden="true" />
+          <span class="toc-indicator" aria-hidden="true" />
+          <ol class="toc-list">
+            {items.map((heading) => <li><a href={'#' + heading.slug} data-slug={heading.slug} class:list={['toc-link', { 'toc-nested': heading.depth === 3 }]}>{heading.text}</a></li>)}
+          </ol>
+        </div>
+        <a href="#article-top" class="toc-top">回到顶部 <span aria-hidden="true">↑</span></a>
       </div>
-    </nav>
-  )
-}
+    </details>
+  </nav>
+)}
+
+<style>
+  .toc { position: sticky; top: 7.5rem; font-family: var(--font-ui); }
+  .toc-summary { display: flex; align-items: center; gap: .5rem; padding-bottom: 1.2rem; cursor: pointer; color: var(--fg-muted); font-size: .72rem; font-weight: 500; list-style: none; }
+  .toc-summary::-webkit-details-marker { display: none; }
+  .toc-count { margin-left: auto; color: var(--fg-subtle); font-size: .6rem; font-weight: 400; white-space: nowrap; }
+  .toc-chevron { display: none; flex-shrink: 0; transition: transform var(--dur-fast) var(--ease); }
+  .toc-track { position: relative; max-height: calc(100dvh - 15rem); overflow-y: auto; scrollbar-width: thin; }
+  .toc-rail { position: absolute; left: 0; inset-block: 0; width: 1px; background: var(--line); }
+  .toc-indicator { position: absolute; top: 0; left: 0; width: 2px; height: 1px; background: var(--accent); opacity: 0; transform-origin: top; transition: transform 180ms var(--ease), opacity 180ms var(--ease); }
+  .toc-list { display: grid; gap: .15rem; margin: 0; padding: 0; list-style: none; }
+  .toc-link { display: block; padding: .5rem .25rem .5rem 1rem; color: var(--fg-subtle); font-size: .74rem; line-height: 1.7; overflow-wrap: anywhere; transition: color var(--dur-fast) var(--ease); }
+  .toc-nested { padding-left: 1.8rem; font-size: .7rem; }
+  .toc-link[aria-current='location'] { color: var(--accent); }
+  .toc-top { display: flex; justify-content: space-between; align-items: center; margin-top: 1.25rem; padding-top: .9rem; border-top: 1px solid var(--line); color: var(--fg-subtle); font-size: .65rem; }
+  .toc-top span { color: var(--accent); font-size: .9rem; }
+  @media (hover: hover) and (pointer: fine) { .toc-link:hover, .toc-top:hover { color: var(--accent); } }
+  @media (min-width: 1024px) { .toc-summary { pointer-events: none; } }
+  @media (max-width: 1023px) {
+    .toc { position: static; border: 1px solid var(--line); border-radius: .5rem; background: var(--surface-hover); }
+    .toc-summary { padding: .9rem 1rem; min-height: 48px; font-size: .8rem; }
+    .toc-count { font-size: .66rem; }
+    .toc-chevron { display: block; }
+    .toc-panel[open] .toc-chevron { transform: rotate(180deg); }
+    .toc-body { padding: 0 1rem 1rem; }
+    .toc-track { max-height: 20rem; }
+    .toc-top { display: none; }
+    .toc-link { min-height: 38px; font-size: .8rem; }
+    .toc-nested { font-size: .74rem; }
+  }
+  @media (prefers-reduced-motion: reduce) { .toc-indicator, .toc-chevron { transition: none; } }
+</style>
 
 <script>
-  let observer: IntersectionObserver | undefined;
-
+  let cleanupToc = () => {};
   function setupToc() {
-    observer?.disconnect();
-
-    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc-link'));
-    const indicator = document.getElementById('toc-indicator');
-    if (!links.length || !indicator) return;
-
-    const setActive = (slug: string) => {
-      links.forEach((link) => {
-        const active = link.dataset.slug === slug;
-        link.classList.toggle('text-accent', active);
-        link.classList.toggle('text-fg-subtle', !active);
-
-        if (active) {
-          indicator.style.top = `${link.offsetTop}px`;
-          indicator.style.height = `${link.offsetHeight}px`;
-          indicator.style.opacity = '1';
-        }
-      });
-    };
-
-    const visible = new Set<string>();
-
-    observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const id = entry.target.id;
-          if (entry.isIntersecting) visible.add(id);
-          else visible.delete(id);
+    cleanupToc();
+    const toc = document.querySelector<HTMLElement>('.toc');
+    const panel = toc?.querySelector<HTMLDetailsElement>('.toc-panel');
+    const indicator = toc?.querySelector<HTMLElement>('.toc-indicator');
+    if (!toc || !panel || !indicator) return;
+    const links = Array.from(toc.querySelectorAll<HTMLAnchorElement>('.toc-link'));
+    const targets = links.map((link) => document.getElementById(link.dataset.slug || '')).filter((target): target is HTMLElement => !!target);
+    if (!targets.length) return;
+    const controller = new AbortController();
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    let frame = 0;
+    let activeSlug = '';
+    const update = () => {
+      frame = 0;
+      let active = targets[0];
+      const readingLine = Math.min(180, window.innerHeight * .25);
+      for (const target of targets) {
+        if (target.getBoundingClientRect().top <= readingLine) active = target;
+        else break;
+      }
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) active = targets[targets.length - 1];
+      if (activeSlug !== active.id) {
+        activeSlug = active.id;
+        links.forEach((link) => {
+          if (link.dataset.slug === activeSlug) link.setAttribute('aria-current', 'location');
+          else link.removeAttribute('aria-current');
         });
-
-        // Pick the topmost heading currently inside the reading band.
-        const first = links.find((link) => link.dataset.slug && visible.has(link.dataset.slug));
-        if (first?.dataset.slug) setActive(first.dataset.slug);
-      },
-      { rootMargin: '-80px 0px -65% 0px' }
-    );
-
-    links.forEach((link) => {
-      const target = link.dataset.slug ? document.getElementById(link.dataset.slug) : null;
-      if (target) observer!.observe(target);
-    });
+      }
+      const link = links.find((entry) => entry.dataset.slug === activeSlug);
+      if (link && panel.open) {
+        indicator.style.transform = 'translateY(' + link.offsetTop + 'px) scaleY(' + link.offsetHeight + ')';
+        indicator.style.opacity = '1';
+      }
+    };
+    const schedule = () => { if (!frame) frame = window.requestAnimationFrame(update); };
+    const updateBreakpoint = () => { panel.open = desktop.matches; schedule(); };
+    updateBreakpoint();
+    window.addEventListener('scroll', schedule, { passive: true, signal: controller.signal });
+    window.addEventListener('resize', schedule, { passive: true, signal: controller.signal });
+    panel.addEventListener('toggle', schedule, { signal: controller.signal });
+    desktop.addEventListener('change', updateBreakpoint, { signal: controller.signal });
+    // The desktop label is static; keep keyboard focus on the section links.
+    const summary = panel.querySelector<HTMLElement>('summary');
+    const updateSummaryFocus = () => { if (summary) summary.tabIndex = desktop.matches ? -1 : 0; };
+    updateSummaryFocus();
+    desktop.addEventListener('change', updateSummaryFocus, { signal: controller.signal });
+    cleanupToc = () => { controller.abort(); window.cancelAnimationFrame(frame); };
   }
-
   document.addEventListener('astro:page-load', setupToc);
+  document.addEventListener('astro:before-swap', () => cleanupToc());
 </script>

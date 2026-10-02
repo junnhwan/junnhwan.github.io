@@ -26,7 +26,7 @@ const {
   ogType = 'website',
 } = Astro.props;
 
-const allPosts = await getCollection('blog');
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const searchPosts = allPosts.map((p) => ({
   slug: p.slug,
   data: {
@@ -47,6 +47,7 @@ const searchPosts = allPosts.map((p) => ({
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     <meta name="author" content="junnhwan" />
+    <slot name="head" />
 
     <!-- Applied before first paint so the theme never flashes, and re-applied
          after a view transition swaps the <html> element's attributes. -->
@@ -79,8 +80,17 @@ const searchPosts = allPosts.map((p) => ({
     <link rel="icon" type="image/png" href="/avatar.png" />
 
     <ClientRouter />
+    <noscript>
+      <style is:global>
+        .signature-stroke, .signature-motto i, .signature-motto path {
+          animation: none !important; opacity: 1 !important; stroke-dashoffset: 0 !important;
+        }
+        [data-reveal] { opacity: 1 !important; transform: none !important; }
+      </style>
+    </noscript>
   </head>
   <body class="min-h-screen flex flex-col relative text-fg-muted antialiased">
+    <a class="skip-link" href="#main-content">跳转到正文</a>
     <ReadingProgressBar />
 
     <!-- Ambient layers: grid, pointer light, film grain -->
@@ -90,7 +100,7 @@ const searchPosts = allPosts.map((p) => ({
 
     <Header />
 
-    <main class="flex-1 w-full pt-20">
+    <main id="main-content" tabindex="-1" class="flex-1 w-full pt-20">
       <slot />
     </main>
 
@@ -104,35 +114,50 @@ const searchPosts = allPosts.map((p) => ({
       // Pointer light trails the cursor with heavy damping — felt, not noticed.
       function setupPointerGlow() {
         const glow = document.getElementById('pointer-glow');
-        if (!glow || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        const motion = matchMedia('(prefers-reduced-motion: reduce)');
+        const fine = matchMedia('(hover: hover) and (pointer: fine)');
+        if (!glow) return;
 
         let targetX = window.innerWidth / 2;
         let targetY = 0;
         let x = targetX;
         let y = targetY;
         let raf = 0;
+        let last = 0;
 
         const onMove = (e: PointerEvent) => {
+          if (motion.matches || !fine.matches || document.hidden) return;
           targetX = e.clientX;
           targetY = e.clientY;
+          if (!raf) { last = 0; raf = requestAnimationFrame(tick); }
         };
 
-        const tick = () => {
-          x += (targetX - x) * 0.02;
-          y += (targetY - y) * 0.02;
+        const tick = (time: number) => {
+          raf = 0;
+          const dt = Math.min((time - (last || time - 16)) / 1000, .05);
+          last = time;
+          const damping = 1 - Math.exp(-dt * 4);
+          x += (targetX - x) * damping;
+          y += (targetY - y) * damping;
           glow.style.setProperty('--px', `${x}px`);
           glow.style.setProperty('--py', `${y}px`);
-          raf = requestAnimationFrame(tick);
+          if (Math.abs(targetX - x) + Math.abs(targetY - y) > .5) raf = requestAnimationFrame(tick);
         };
 
+        const stop = () => { cancelAnimationFrame(raf); raf = 0; };
         window.addEventListener('pointermove', onMove, { passive: true });
-        raf = requestAnimationFrame(tick);
+        document.addEventListener('visibilitychange', stop);
+        motion.addEventListener('change', stop);
+        fine.addEventListener('change', stop);
 
         document.addEventListener(
           'astro:before-swap',
           () => {
             cancelAnimationFrame(raf);
             window.removeEventListener('pointermove', onMove);
+            document.removeEventListener('visibilitychange', stop);
+            motion.removeEventListener('change', stop);
+            fine.removeEventListener('change', stop);
           },
           { once: true }
         );
@@ -142,13 +167,14 @@ const searchPosts = allPosts.map((p) => ({
         const items = document.querySelectorAll('[data-reveal]');
         if (!items.length) return;
 
+        const timers: number[] = [];
         const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
               if (!entry.isIntersecting) return;
               const el = entry.target as HTMLElement;
               const delay = Number(el.dataset.revealDelay || 0);
-              window.setTimeout(() => el.classList.add('is-visible'), delay);
+              timers.push(window.setTimeout(() => el.classList.add('is-visible'), delay));
               observer.unobserve(el);
             });
           },
@@ -156,6 +182,10 @@ const searchPosts = allPosts.map((p) => ({
         );
 
         items.forEach((el) => observer.observe(el));
+        document.addEventListener('astro:before-swap', () => {
+          observer.disconnect();
+          timers.forEach(id => clearTimeout(id));
+        }, { once: true });
       }
 
       function setupLightbox() {
@@ -164,6 +194,7 @@ const searchPosts = allPosts.map((p) => ({
 
         const close = () => {
           overlay()?.classList.remove('is-open');
+          overlay()?.setAttribute('aria-hidden', 'true');
           document.body.style.overflow = '';
         };
 
@@ -183,6 +214,7 @@ const searchPosts = allPosts.map((p) => ({
           target.src = img.currentSrc || img.src;
           target.alt = img.alt;
           box.classList.add('is-open');
+          box.setAttribute('aria-hidden', 'false');
           document.body.style.overflow = 'hidden';
         });
 

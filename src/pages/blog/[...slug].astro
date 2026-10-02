@@ -6,151 +6,144 @@ import { calculateReadingTime, formatDate } from '../../utils/readingTime';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.slug },
-    props: { post },
-  }));
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
 }
 
 const { post } = Astro.props;
 const { Content, headings } = await post.render();
-
+const hasContents = headings.some((heading) => heading.depth > 1 && heading.depth < 4);
 const allPosts = await getCollection('blog', ({ data }) => !data.draft);
 const sortedPosts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-const currentIndex = sortedPosts.findIndex((p) => p.slug === post.slug);
+const currentIndex = sortedPosts.findIndex((entry) => entry.slug === post.slug);
 const prevPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
-
-const readingTime = calculateReadingTime(post.body || '');
+const readingTime = calculateReadingTime(post.body || '').replace(' min read', ' 分钟阅读');
 ---
 
-<BaseLayout
-  title={`${post.data.title} · junnhwan`}
-  description={post.data.description}
-  keywords={post.data.tags.join(', ')}
-  ogType="article"
->
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
-    <div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_13rem] gap-12">
-      <article class="min-w-0">
-        <header class="mb-10 animate-rise">
-          <a
-            href="/blog"
-            class="inline-flex items-center gap-1.5 mb-7 text-xs text-fg-subtle hover:text-accent transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.75"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            <span>文章</span>
+<BaseLayout title={post.data.title + ' · junnhwan'} description={post.data.description} keywords={post.data.tags.join(', ')} ogType="article">
+  <div class="reading-page">
+    <article class:list={['reading-article', { 'without-toc': !hasContents }]}>
+      <header id="article-top" class="article-header animate-rise">
+        <div class="article-breadcrumb">
+          <a href="/blog/" class="article-back">
+            <svg aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5m7 7-7-7 7-7" /></svg>
+            全部文章
           </a>
-
-          <h1 class="text-[26px] sm:text-[30px] font-semibold text-fg leading-tight">
-            {post.data.title}
-          </h1>
-
-          <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[11px] text-fg-subtle">
-            <time>{formatDate(post.data.pubDate)}</time>
-            <span>·</span>
-            <span>{readingTime}</span>
-            {
-              post.data.category && (
-                <>
-                  <span>·</span>
-                  <span>{post.data.category}</span>
-                </>
-              )
-            }
-          </div>
-        </header>
-
-        <div class="prose max-w-none">
-          <Content />
+          {post.data.category && <a href={'/blog/?category=' + encodeURIComponent(post.data.category)} class="article-category">{post.data.category}</a>}
         </div>
+        <h1>{post.data.title}</h1>
+        {post.data.description && <p class="article-description">{post.data.description}</p>}
+        <div class="article-meta">
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          <span aria-hidden="true">/</span>
+          <span>{readingTime}</span>
+          <span aria-hidden="true">/</span>
+          <a href="/about/">junnhwan</a>
+        </div>
+      </header>
 
-        {
-          post.data.tags && post.data.tags.length > 0 && (
-            <div class="mt-12 flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-fg-subtle">
-              {post.data.tags.map((tag: string) => (
-                <a href={`/blog?tag=${encodeURIComponent(tag)}`} class="hover:text-accent transition-colors">
-                  #{tag}
-                </a>
-              ))}
-            </div>
-          )
-        }
+      {hasContents && <aside class="article-toc"><TableOfContents headings={headings} /></aside>}
 
-        <div class="mt-10 pt-6 border-t border-line flex items-center justify-between gap-4">
-          <div class="flex items-center gap-3">
-            <img
-              src="/avatar.png"
-              alt="junnhwan"
-              class="w-9 h-9 rounded-full object-cover border border-line"
-              loading="lazy"
-            />
-            <div class="text-[13px]">
-              <div class="text-fg">hwan</div>
-              <div class="text-[11px] text-fg-subtle font-mono">@junnhwan</div>
-            </div>
-          </div>
-          <a
-            href="https://github.com/junnhwan"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="h-8 px-3.5 grid place-items-center rounded-full pill text-[12px] text-fg-muted"
-          >
-            GitHub
+      <div class="article-content prose">
+        <Content />
+      </div>
+
+      <footer class="article-end">
+        {post.data.tags.length > 0 && (
+          <nav class="article-tags" aria-label="文章标签">
+            {post.data.tags.map((tag: string) => <a href={'/blog/?tag=' + encodeURIComponent(tag)}>#{tag}</a>)}
+          </nav>
+        )}
+        <div class="article-author">
+          <a href="/about/" class="article-author-profile">
+            <img src="/avatar.png" alt="" width="40" height="40" loading="lazy" />
+            <div><span class="article-author-name">junnhwan</span><span class="article-author-label">项目实践与学习记录</span></div>
           </a>
+          <a href="https://github.com/junnhwan" target="_blank" rel="noopener noreferrer" class="article-github">GitHub <span aria-hidden="true">↗</span></a>
         </div>
-
-        <nav class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {
-            prevPost ? (
-              <a
-                href={`/blog/${prevPost.slug}`}
-                class="group p-4 rounded-xl border border-line hover:border-line-strong hover:bg-surface-hover transition-colors"
-              >
-                <span class="block font-mono text-[11px] text-fg-subtle">← 上一篇</span>
-                <span class="mt-1 block text-[13px] text-fg-muted group-hover:text-fg transition-colors line-clamp-1">
-                  {prevPost.data.title}
-                </span>
-              </a>
-            ) : (
-              <div />
-            )
-          }
-
-          {
-            nextPost ? (
-              <a
-                href={`/blog/${nextPost.slug}`}
-                class="group p-4 rounded-xl border border-line hover:border-line-strong hover:bg-surface-hover transition-colors sm:text-right"
-              >
-                <span class="block font-mono text-[11px] text-fg-subtle">下一篇 →</span>
-                <span class="mt-1 block text-[13px] text-fg-muted group-hover:text-fg transition-colors line-clamp-1">
-                  {nextPost.data.title}
-                </span>
-              </a>
-            ) : (
-              <div />
-            )
-          }
+        <nav class="article-navigation" aria-label="相邻文章">
+          {prevPost && <a href={'/blog/' + prevPost.slug + '/'} class="article-nav-link article-nav-prev"><span class="article-nav-label">← 上一篇</span><span class="article-nav-title">{prevPost.data.title}</span></a>}
+          {nextPost && <a href={'/blog/' + nextPost.slug + '/'} class="article-nav-link article-nav-next"><span class="article-nav-label">下一篇 →</span><span class="article-nav-title">{nextPost.data.title}</span></a>}
         </nav>
-      </article>
-
-      <aside class="hidden lg:block">
-        <TableOfContents headings={headings} />
-      </aside>
-    </div>
+      </footer>
+    </article>
   </div>
 </BaseLayout>
+
+<style>
+  .reading-page { max-width: 1088px; margin-inline: auto; padding: 3.5rem 1.5rem 6rem; }
+  .reading-article { display: grid; grid-template-columns: minmax(0, 44rem) minmax(10rem, 13rem); gap: 0 4rem; }
+  .reading-article.without-toc { display: block; max-width: 44rem; margin-inline: auto; }
+  .article-header { grid-column: 1; grid-row: 1; min-width: 0; padding-bottom: 2.25rem; margin-bottom: 2.5rem; border-bottom: 1px solid var(--line); scroll-margin-top: 7rem; }
+  .article-breadcrumb { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; margin-bottom: 2rem; }
+  .article-back { display: inline-flex; align-items: center; gap: .6rem; min-height: 32px; color: var(--fg-subtle); font-size: .78rem; transition: color var(--dur-fast) var(--ease); }
+  .article-back svg { transition: transform var(--dur-fast) var(--ease); }
+  .article-category { padding: .35rem .65rem; border: 1px solid var(--accent-line); border-radius: .3rem; background: var(--accent-soft); color: var(--accent); font-family: 'JetBrains Mono Variable', monospace; font-size: .65rem; }
+  .article-header h1 { color: var(--fg); font-family: var(--font-reading); font-size: clamp(1.8rem, 3.1vw, 2.55rem); line-height: 1.48; font-weight: 600; letter-spacing: -.03em; text-wrap: pretty; }
+  .article-description { margin-top: 1.3rem; color: var(--fg-subtle); font-size: .95rem; line-height: 1.85; text-wrap: pretty; }
+  .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 1.6rem; color: var(--fg-subtle); font-size: .72rem; }
+  .article-meta time { font-family: 'JetBrains Mono Variable', monospace; font-size: .68rem; font-variant-numeric: tabular-nums; }
+  .article-meta > span[aria-hidden] { color: var(--line-strong); }
+  .article-meta a { transition: color var(--dur-fast) var(--ease); }
+  .article-toc { grid-column: 2; grid-row: 1 / span 3; padding-top: 5rem; min-width: 0; }
+  .article-content { grid-column: 1; grid-row: 2; min-width: 0; max-width: none; font-family: var(--font-reading); font-size: 1.08rem; line-height: 1.95; letter-spacing: .005em; overflow-wrap: anywhere; }
+  .article-content :global(> :first-child) { margin-top: 0; }
+  .article-content :global(p) { margin-block: 1.35em; text-wrap: pretty; }
+  .article-content :global(h2) { margin-top: 3.25rem; margin-bottom: 1.2rem; padding-bottom: 0; border-bottom: none; font-size: 1.5rem; font-weight: 650; line-height: 1.6; letter-spacing: -.025em; }
+  .article-content :global(h3) { margin-top: 2.4rem; margin-bottom: .85rem; font-size: 1.22rem; font-weight: 600; line-height: 1.65; }
+  .article-content :global(h2), .article-content :global(h3), .article-content :global(h4) { scroll-margin-top: 7.5rem; }
+  .article-content :global(li) { margin-block: .55em; line-height: 1.9; }
+  .article-content :global(li > p) { margin-block: .45em; }
+  .article-content :global(blockquote) { padding: .15rem 1.3rem; border-left: 2px solid var(--accent-line); background: var(--surface-hover); border-radius: 0 .4rem .4rem 0; color: var(--fg-muted); }
+  .article-content :global(blockquote p) { margin-block: .8rem; }
+  .article-content :global(code) { font-family: 'JetBrains Mono Variable', monospace; font-size: .8em; letter-spacing: -.025em; overflow-wrap: anywhere; }
+  .article-content :global(pre code) { overflow-wrap: normal; }
+  .article-content :global(table) { display: block; max-width: 100%; overflow-x: auto; font-family: var(--font-ui); font-size: .85rem; line-height: 1.7; }
+  .article-content :global(thead th) { min-width: 6rem; background: var(--surface-hover); }
+  .article-content :global(img) { display: block; max-width: 100%; max-height: 44rem; margin: 2rem auto; object-fit: contain; }
+  .article-content :global(.heading-anchor:focus-visible) { opacity: 1; }
+  .article-end { grid-column: 1; grid-row: 3; min-width: 0; margin-top: 3.5rem; }
+  .article-tags { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 2rem; }
+  .article-tags a { display: inline-flex; align-items: center; min-height: 32px; padding: .25rem .65rem; border: 1px solid var(--line); border-radius: .3rem; color: var(--fg-subtle); font-size: .72rem; transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease); }
+  .article-author { display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-top: 1px solid var(--line); padding-block: 1.5rem; }
+  .article-author-profile { display: inline-flex; align-items: center; gap: .8rem; }
+  .article-author-profile img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--line); object-fit: cover; }
+  .article-author-profile > div { display: grid; gap: .25rem; }
+  .article-author-name { color: var(--fg); font-size: .85rem; font-weight: 500; }
+  .article-author-label { color: var(--fg-subtle); font-size: .7rem; }
+  .article-github { display: inline-flex; gap: .5rem; align-items: center; min-height: 36px; color: var(--fg-subtle); font-size: .75rem; }
+  .article-github span { color: var(--accent); font-size: 1rem; }
+  .article-navigation { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem; border-top: 1px solid var(--line); }
+  .article-nav-link { display: grid; align-content: start; gap: .65rem; min-width: 0; padding-top: 1.5rem; }
+  .article-nav-next { grid-column: 2; text-align: right; }
+  .article-nav-label { color: var(--fg-subtle); font-size: .68rem; }
+  .article-nav-title { color: var(--fg-muted); font-family: var(--font-reading); font-size: .93rem; line-height: 1.7; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; transition: color var(--dur-fast) var(--ease); }
+  @media (hover: hover) and (pointer: fine) {
+    .article-back:hover, .article-meta a:hover, .article-github:hover, .article-nav-link:hover .article-nav-title { color: var(--accent); }
+    .article-back:hover svg { transform: translateX(-3px); }
+    .article-tags a:hover { color: var(--accent); border-color: var(--accent-line); }
+  }
+  @media (max-width: 1023px) {
+    .reading-page { max-width: 48rem; padding-top: 2.5rem; }
+    .reading-article { display: block; }
+    .article-header { margin-bottom: 1.5rem; }
+    .article-toc { padding: 0; margin-bottom: 2rem; }
+    .article-content { padding-top: .75rem; }
+  }
+  @media (max-width: 639px) {
+    .reading-page { padding: 1.8rem 1.25rem 4rem; }
+    .article-breadcrumb { margin-bottom: 1.5rem; }
+    .article-header h1 { font-size: 1.8rem; line-height: 1.52; }
+    .article-description { margin-top: 1rem; font-size: .85rem; line-height: 1.85; }
+    .article-meta { gap: .6rem; margin-top: 1.3rem; font-size: .68rem; }
+    .article-header { padding-bottom: 1.6rem; }
+    .article-content { font-size: 1rem; line-height: 1.95; }
+    .article-content :global(h2) { margin-top: 2.75rem; font-size: 1.3rem; }
+    .article-content :global(h3) { font-size: 1.1rem; }
+    .article-content :global(blockquote) { padding-inline: .9rem; }
+    .article-author-label { font-size: .65rem; }
+    .article-navigation { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; }
+    .article-nav-next { grid-column: 1; text-align: left; padding-top: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .article-back svg { transform: none !important; } }
+</style>

@@ -22,10 +22,10 @@ interface Props {
 }
 
 const NAVIGATION: SearchItem[] = [
-  { id: 'nav-home', title: '首页', category: 'Page', url: '/' },
-  { id: 'nav-blog', title: '文章', category: 'Page', url: '/blog' },
-  { id: 'nav-archive', title: '归档', category: 'Page', url: '/archive' },
-  { id: 'nav-about', title: '关于', category: 'Page', url: '/about' },
+  { id: 'nav-home', title: 'Home', category: 'Page', url: '/' },
+  { id: 'nav-blog', title: 'Writing', category: 'Page', url: '/blog' },
+  { id: 'nav-archive', title: 'Archive', category: 'Page', url: '/archive' },
+  { id: 'nav-about', title: 'About', category: 'Page', url: '/about' },
 ];
 
 export const CommandPalette: React.FC<Props> = ({ posts = [] }) => {
@@ -33,6 +33,7 @@ export const CommandPalette: React.FC<Props> = ({ posts = [] }) => {
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const items = useMemo<SearchItem[]>(
     () => [
@@ -88,12 +89,37 @@ export const CommandPalette: React.FC<Props> = ({ posts = [] }) => {
   }, []);
 
   useEffect(() => {
-    if (isOpen) {
-      setSelected(0);
-      const id = window.setTimeout(() => inputRef.current?.focus(), 40);
-      return () => window.clearTimeout(id);
+    if (!isOpen) { setQuery(''); return; }
+    setSelected(0);
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const lightbox = document.getElementById('lightbox');
+    if (lightbox?.classList.contains('is-open')) {
+      lightbox.classList.remove('is-open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
     }
-    setQuery('');
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    inputRef.current?.focus();
+    const trapFocus = (event: KeyboardEvent) => {
+      if (event.key !== 'Tab') return;
+      const controls = Array.from(dialogRef.current?.querySelectorAll<HTMLElement>('input, button') ?? []);
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault(); last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); first?.focus();
+      }
+    };
+    const onNavigate = () => setIsOpen(false);
+    document.addEventListener('keydown', trapFocus);
+    document.addEventListener('astro:before-swap', onNavigate);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', trapFocus);
+      document.removeEventListener('astro:before-swap', onNavigate);
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -125,10 +151,11 @@ export const CommandPalette: React.FC<Props> = ({ posts = [] }) => {
       />
 
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label="搜索"
-        className="relative w-full max-w-lg rounded-2xl surface overflow-hidden animate-rise"
+        aria-label="Search"
+        className="relative w-full max-w-xl rounded-2xl surface overflow-hidden"
       >
         <div className="flex items-center gap-2.5 px-4 h-12 border-b border-line">
           <svg
@@ -147,6 +174,7 @@ export const CommandPalette: React.FC<Props> = ({ posts = [] }) => {
             <path d="m20 20-3.6-3.6" />
           </svg>
           <input
+            aria-label="Search articles or pages"
             ref={inputRef}
             type="text"
             value={query}
@@ -155,17 +183,15 @@ export const CommandPalette: React.FC<Props> = ({ posts = [] }) => {
               setSelected(0);
             }}
             onKeyDown={onInputKeyDown}
-            placeholder="搜索文章或页面"
-            className="w-full bg-transparent text-[14px] text-fg placeholder:text-fg-subtle outline-none border-none p-0 focus:ring-0"
+            placeholder="Search articles or pages"
+            className="w-full bg-transparent text-base text-fg placeholder:text-fg-subtle outline-none border-none p-0 focus:ring-0"
           />
-          <kbd className="shrink-0 px-1.5 py-0.5 rounded border border-line font-mono text-[10px] text-fg-subtle">
-            ESC
-          </kbd>
+          <button type="button" aria-label="Close search" onClick={() => setIsOpen(false)} className="shrink-0 px-2 py-1 rounded border border-line font-mono text-[10px] text-fg-subtle hover:text-fg">ESC</button>
         </div>
 
         <div className="max-h-[52vh] overflow-y-auto p-1.5">
           {results.length === 0 ? (
-            <p className="py-10 text-center text-[13px] text-fg-subtle">没有结果</p>
+            <p className="py-10 text-center text-sm text-fg-subtle">No results</p>
           ) : (
             results.map((item, index) => (
               <button

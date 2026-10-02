@@ -1,0 +1,28 @@
+[
+  {
+    "slug": "k8sgpt-learning",
+    "title": "K8sGPT · 从概念到贡献的研读手册",
+    "description": "从 Kubernetes 基础到状态诊断、资源分析器和 AI 解释链路的研读手册。",
+    "topic": "Kubernetes",
+    "tags": [
+      "Go",
+      "Kubernetes",
+      "开源"
+    ],
+    "updatedAt": "2026-10-02",
+    "entry": "k8sgpt-learning.html"
+  },
+  {
+    "slug": "pr-agent-learning",
+    "title": "PR-Agent · 从零读懂四项开源贡献",
+    "description": "围绕上下文预算、分块恢复、准备性能与 A2A 会话的源码研读和交互练习。",
+    "topic": "AI & Agents",
+    "tags": [
+      "Python",
+      "Agent",
+      "开源"
+    ],
+    "updatedAt": "2026-10-02",
+    "entry": "pr-agent-learning.html"
+  }
+]

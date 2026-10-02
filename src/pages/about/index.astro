@@ -2,50 +2,89 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getContributions, allMergedUrl, GH_USER } from '../../utils/contributions';
 
-// Repo-wide numbers come from GitHub at build time (see utils/contributions.ts);
-// the PRs below are a hand-picked selection, not the full list.
-const { counts, updatedAt, source } = await getContributions();
+const { counts, total, repoCount, updatedAt, source } = await getContributions();
 
-const openSource = [
+// Curated from the resume. Dates are upstream merge dates, verified on GitHub.
+const featured = [
   {
     repo: 'The-PR-Agent/pr-agent',
-    note: 'AI-powered code review · command handling, diff chunk reuse and token budgets',
-    prs: [
-      { number: 3011, title: 'feat(github): trigger commands after submitted reviews', date: '2026.09' },
-      { number: 3291, title: 'perf(review): reuse prepared diff chunks', date: '2026.09' },
-      { number: 2862, title: 'fix(ask-line): enforce conversation history token budget', date: '2026.08' },
-      { number: 2993, title: 'feat(codecommit): review all pull request targets', date: '2026.09' },
+    name: 'PR-Agent',
+    stack: 'Python · LiteLLM · A2A',
+    note: '开源代码审查 Agent',
+    topics: [
+      {
+        title: '模型上下文预算',
+        description: '/ask_line 在发送请求前按实际模型重新计算 Prompt，裁剪历史并保留当前问题。',
+        prs: [{ number: 2862, title: 'fix(ask-line): enforce conversation history token budget', date: '2026-08-28' }],
+      },
+      {
+        title: '分块容错与恢复',
+        description: '保留成功分块，提供可选的失败分块补跑；按顺序汇总结果，并恢复模型部署配置。',
+        prs: [
+          { number: 2829, title: 'fix(suggestions): retain successful chunks after partial failure', date: '2026-08-28' },
+          { number: 3324, title: 'feat(improve): recover failed chunks with fallback models', date: '2026-09-14' },
+        ],
+      },
+      {
+        title: '上下文准备性能',
+        description: '在同一请求中复用 Diff 预处理与 Token 计数，切换备用模型时单独准备。',
+        prs: [{ number: 3291, title: 'perf(review): reuse prepared diff chunks', date: '2026-09-11' }],
+      },
+      {
+        title: 'A2A 多轮上下文',
+        description: '在同一用户与会话范围内恢复 PR / Diff 上下文，继续处理后续任务。',
+        prs: [{ number: 3643, title: 'fix(mosaico): retain A2A context across follow-up tasks', date: '2026-09-23' }],
+      },
     ],
   },
   {
     repo: 'k8sgpt-ai/k8sgpt',
-    note: 'Kubernetes diagnostics · removing false positives from health reports',
-    prs: [
-      { number: 1740, title: 'fix: report Deployment ProgressDeadlineExceeded when replica counts still match', date: '2026.08' },
-      { number: 1725, title: 'fix: skip failure report for jobs that completed successfully after retries', date: '2026.08' },
-      { number: 1737, title: 'fix: inspect Gateway Accepted and Programmed by type', date: '2026.08' },
-    ],
-  },
-  {
-    repo: 'ag2ai/ag2',
-    note: 'Multi-agent framework · making streaming retries observable',
-    prs: [
-      { number: 3216, title: 'fix(middleware): stop retries after streaming chunks', date: '2026.09' },
-    ],
-  },
-  {
-    repo: 'kubevela/kubevela',
-    note: 'Cloud-native applications · admission validation',
-    prs: [
-      { number: 7303, title: 'Fix: enforce TraitDefinition conflictsWith at admission', date: '2026.08' },
+    name: 'k8sgpt',
+    stack: 'Go · Kubernetes',
+    note: 'Kubernetes 智能诊断工具',
+    topics: [
+      {
+        title: '新增资源分析器',
+        description: '新增 ValidatingAdmissionPolicy 与 ResourceClaim 分析器，识别类型检查告警与缺失引用。',
+        prs: [
+          { number: 1765, title: 'feat: add ValidatingAdmissionPolicy analyzer', date: '2026-09-14' },
+          { number: 1768, title: 'feat: add ResourceClaim analyzer for missing DeviceClasses', date: '2026-09-26' },
+        ],
+      },
+      {
+        title: 'Deployment 状态诊断',
+        description: '结合状态更新与 Progressing 条件，减少正常滚动更新误报，并补充发布超时诊断。',
+        prs: [
+          { number: 1740, title: 'fix: report Deployment ProgressDeadlineExceeded when replica counts still match', date: '2026-08-19' },
+          { number: 1743, title: 'fix: ignore in-progress Deployment replica mismatches', date: '2026-09-25' },
+        ],
+      },
     ],
   },
 ];
 
-const totalMerged = Object.values(counts).reduce((sum, n) => sum + n, 0);
-const repoCount = Object.keys(counts).length;
-const synced = `${updatedAt.getFullYear()}.${String(updatedAt.getMonth() + 1).padStart(2, '0')}`;
+const more = [
+  {
+    repo: 'The-PR-Agent/pr-agent',
+    prs: [
+      { number: 3011, title: 'GitHub Review 提交后触发命令' },
+      { number: 2993, title: 'CodeCommit 多目标 PR 审查' },
+    ],
+  },
+  {
+    repo: 'k8sgpt-ai/k8sgpt',
+    prs: [
+      { number: 1725, title: 'Job 重试成功后的状态诊断' },
+      { number: 1737, title: '按类型识别 Gateway 状态条件' },
+    ],
+  },
+  { repo: 'ag2ai/ag2', prs: [{ number: 3216, title: '流式输出后的重试边界' }] },
+  { repo: 'kubevela/kubevela', prs: [{ number: 7303, title: 'TraitDefinition 准入冲突校验' }] },
+];
 
+const synced = new Intl.DateTimeFormat('sv-SE', {
+  timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+}).format(updatedAt);
 const elsewhere = [
   { label: 'GitHub', href: `https://github.com/${GH_USER}` },
   { label: 'Email', href: 'mailto:3373484735@qq.com' },
@@ -54,220 +93,211 @@ const elsewhere = [
 
 <BaseLayout
   title="About · junnhwan"
-  description="About junnhwan — CS student at Shenzhen University, building full-stack apps and AI agents."
+  description="junnhwan, a Computer Science student at Shenzhen University. Notes on full-stack development, AI agents and open source."
 >
-  <div class="max-w-[1120px] mx-auto px-4 sm:px-6 py-12">
-    <header class="profile" data-reveal>
-      <img
-        src="/avatar.png"
-        alt="junnhwan"
-        class="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border border-line shrink-0"
-        loading="eager"
-      />
-      <div class="min-w-0">
-        <div class="flex flex-wrap items-baseline justify-center gap-x-3 gap-y-1">
-          <h1 class="text-[30px] sm:text-[36px] font-semibold text-fg leading-tight">hwan</h1>
-          <span class="font-mono text-[13px] text-fg-subtle">@{GH_USER}</span>
+  <div class="about-page">
+    <header class="profile" lang="en" data-reveal>
+      <div class="profile-copy">
+        <h1 class="eyebrow">About</h1>
+        <div class="about-body">
+          <p>Computer Science student at Shenzhen University, class of 2028.</p>
+          <p>Working on full-stack applications, AI agents and open source with Go, Java, Python and TypeScript.</p>
+          <p>Project updates, engineering notes and reflections on learning.</p>
         </div>
-        <p class="tagline mt-2 text-fg-muted">
-          Building full-stack apps and AI agents.
-        </p>
-        <div class="mt-5 flex flex-wrap items-center justify-center gap-2">
-          {
-            elsewhere.map((item) => (
-              <a
-                href={item.href}
-                target={item.href.startsWith('http') ? '_blank' : undefined}
-                rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                class="h-9 px-4 inline-flex items-center rounded-full pill text-[13px] text-fg-muted"
-              >
-                {item.label}
-              </a>
-            ))
-          }
+        <div class="profile-links">
+          {elsewhere.map((item) => (
+            <a href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined}
+              rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+              {item.label}<span aria-hidden="true">↗</span>
+            </a>
+          ))}
         </div>
+      </div>
+      <div class="profile-portrait">
+        <img src="/avatar.png" alt="junnhwan's avatar" width="160" height="160" loading="eager" />
+        <span>@{GH_USER}</span>
       </div>
     </header>
 
-    <section class="about-body" data-reveal data-reveal-delay="60">
-      <p>
-        I'm <span class="text-fg">Junnhwan</span>, majoring in Computer Science at Shenzhen
-        University (Class of 2028).
-      </p>
-      <p>
-        Most of my time goes into full-stack apps and AI agents. Working mostly in
-        <span class="font-mono text-[0.92em] text-fg">Go</span>,
-        <span class="font-mono text-[0.92em] text-fg">Java</span>,
-        <span class="font-mono text-[0.92em] text-fg">Python</span> and
-        <span class="font-mono text-[0.92em] text-fg">TypeScript</span>.
-      </p>
-      <p class="text-fg-subtle">Open to full-stack &amp; AI agent internships.</p>
-    </section>
-
-    <!-- Everything above is centred; this rule marks where the page switches to
-         a left-aligned reading column for the contribution list. -->
-    <hr class="section-rule" data-reveal data-reveal-delay="90" />
-
-    <section data-reveal data-reveal-delay="120">
-      <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 class="font-mono text-[11px] uppercase tracking-[0.12em] text-fg-subtle">
-          Selected Contributions
-        </h2>
-        <span class="font-mono text-[11px] text-fg-subtle">
-          {totalMerged} merged across {repoCount} repos since 2026.08
-        </span>
+    <section class="contributions" aria-labelledby="contributions-heading" data-reveal>
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow" lang="en">Selected work</p>
+          <h2 id="contributions-heading" lang="en">Open-source contributions</h2>
+          <p class="section-description" lang="en">Selected contributions to open-source projects.</p>
+        </div>
+        <a class="contribution-stat" href={allMergedUrl()} target="_blank" rel="noopener noreferrer"
+          aria-label={`查看全部 ${total} 个已合并 PR，涉及 ${repoCount} 个仓库`}>
+          <span class="stat-number">{total}<span aria-hidden="true">↗</span></span>
+          <span>已合并 PR · {repoCount} 个仓库</span>
+        </a>
       </div>
 
-      <div class="mt-8 border-t border-line">
-        {
-          openSource.map((repo) => {
-            const repoUrl = `https://github.com/${repo.repo}`;
-            const count = counts[repo.repo];
-            return (
-              <article class="py-6 border-b border-line">
-                <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                  <h3 class="text-sm font-semibold text-fg">
-                    <a
-                      href={repoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="link inline-flex max-w-full items-baseline gap-2 font-mono"
-                    >
-                      <span class="min-w-0 break-words">{repo.repo}</span>
-                      <span aria-hidden="true" class="shrink-0 text-accent">↗</span>
-                    </a>
-                  </h3>
-                  {count !== undefined && (
-                    <span
-                      class="font-mono text-[11px] text-fg-subtle tabular-nums"
-                      title={`Read from GitHub on ${synced}`}
-                    >
-                      {count} merged in total
-                    </span>
-                  )}
-                </div>
-                <p class="mt-1.5 text-[13px] leading-relaxed text-fg-muted">{repo.note}</p>
-                <ul class="mt-4 space-y-0.5">
-                  {repo.prs.map((pr) => (
-                    <li>
-                      <a
-                        href={`${repoUrl}/pull/${pr.number}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="pr-link grid grid-cols-[3.5rem_minmax(0,1fr)_auto] gap-2 rounded-md px-2 py-2 -mx-2 text-[13px] leading-relaxed"
-                      >
-                        <span class="font-mono text-accent">#{pr.number}</span>
-                        <span>{pr.title}</span>
-                        <time class="font-mono text-[11px] text-fg-subtle tabular-nums">
-                          {pr.date}
-                        </time>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-                <a
-                  href={allMergedUrl(repo.repo)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="link mt-3 inline-flex items-center gap-1.5 text-[12px] text-accent"
-                >
-                  All in {repo.repo.split('/')[1]} <span aria-hidden="true">↗</span>
+      <div class="featured-repos">
+        {featured.map((repo, index) => {
+          const repoUrl = `https://github.com/${repo.repo}`;
+          return (
+            <article class="repo-group">
+              <div class="repo-intro">
+                <span class="repo-index" aria-hidden="true">0{index + 1}</span>
+                <h3><a href={repoUrl} target="_blank" rel="noopener noreferrer">{repo.name}<span aria-hidden="true">↗</span></a></h3>
+                <p class="repo-note">{repo.note}</p>
+                <p class="repo-stack">{repo.stack}</p>
+                {counts[repo.repo] !== undefined && <span class="repo-count">{counts[repo.repo]} 个 PR 已合并</span>}
+                <a class="text-link repo-all" href={allMergedUrl(repo.repo)} target="_blank" rel="noopener noreferrer">
+                  查看全部贡献 <span aria-hidden="true">↗</span>
                 </a>
-              </article>
-            );
-          })
-        }
+              </div>
+              <ul class="topic-list">
+                {repo.topics.map((topic) => (
+                  <li class="topic">
+                    <h4>{topic.title}</h4>
+                    <p>{topic.description}</p>
+                    <div class="topic-prs">
+                      {topic.prs.map((pr) => (
+                        <a class="pr-link" href={`${repoUrl}/pull/${pr.number}`} target="_blank" rel="noopener noreferrer"
+                          title={pr.title} aria-label={`PR ${pr.number}：${pr.title}，于 ${pr.date} 合并`}>
+                          <span class="pr-number">#{pr.number}</span>
+                          <time datetime={pr.date}>{pr.date.replaceAll('-', '.')}</time>
+                          <span class="pr-arrow" aria-hidden="true">↗</span>
+                        </a>
+                      ))}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          );
+        })}
       </div>
 
-      <p class="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-1 font-mono text-[11px] text-fg-subtle">
-        <a
-          href={allMergedUrl()}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="link text-accent">All merged contributions ↗</a
-        >
-        <span title={updatedAt.toISOString()}>
-          counts synced {synced}{source === 'fallback' && ' · GitHub unreachable, showing cached values'}
-        </span>
+      <details class="more-contributions">
+        <summary>
+          <span>更多贡献 <span class="summary-note">命令处理、流式重试与云原生校验</span></span>
+          <span class="disclosure-icon" aria-hidden="true">+</span>
+        </summary>
+        <div class="more-content">
+          {more.map((repo) => (
+            <div class="more-repo">
+              <h3>{repo.repo}</h3>
+              <ul>
+                {repo.prs.map((pr) => (
+                  <li><a href={`https://github.com/${repo.repo}/pull/${pr.number}`} target="_blank" rel="noopener noreferrer">
+                    <span class="pr-number">#{pr.number}</span><span>{pr.title}</span><span aria-hidden="true">↗</span>
+                  </a></li>
+                ))}
+              </ul>
+              <a class="text-link" href={allMergedUrl(repo.repo)} target="_blank" rel="noopener noreferrer">查看全部 <span aria-hidden="true">↗</span></a>
+            </div>
+          ))}
+        </div>
+      </details>
+
+      <p class="counts-note">
+        <span>{source === 'live' ? 'GitHub 统计更新于' : 'GitHub 暂时无法访问，显示统计快照'} <time datetime={synced}>{synced}</time></span>
+        <a class="text-link" href={allMergedUrl()} target="_blank" rel="noopener noreferrer">全部已合并贡献 <span aria-hidden="true">↗</span></a>
       </p>
     </section>
   </div>
 </BaseLayout>
 
 <style>
-  .profile {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 1.25rem;
-    padding-bottom: 2rem;
-    border-bottom: 1px solid var(--line);
+  .about-page { max-width: 1120px; margin-inline: auto; padding: 4rem 1.5rem 6rem; font-family: var(--font-reading); }
+  .profile { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 4rem; padding: 1.5rem 0 4.5rem; border-bottom: 1px solid var(--line-strong); }
+  .eyebrow { display: flex; align-items: center; gap: .75rem; margin: 0 0 1.2rem; color: var(--fg-subtle); font-family: var(--font-reading); font-size: 12px; font-weight: 400; line-height: 1.5; letter-spacing: .06em; }
+  .about-body { max-width: 36rem; color: var(--fg-muted); font-size: 17px; line-height: 1.8; text-wrap: pretty; }
+  .about-body p + p { margin-top: .5rem; }
+  .profile-links { display: flex; gap: 1.75rem; margin-top: 1.7rem; font-family: var(--font-reading); font-size: 13px; }
+  .profile-links a { display: inline-flex; align-items: center; gap: .65rem; color: var(--fg); padding-block: .4rem; }
+  .profile-links a span { color: var(--accent); transition: transform var(--dur) var(--ease); }
+  .profile-links a:hover span { transform: translate(2px, -2px); }
+  .profile-portrait { display: grid; justify-items: center; gap: 1rem; }
+  .profile-portrait img { width: clamp(112px, 14vw, 160px); height: auto; aspect-ratio: 1; object-fit: cover; border-radius: 32%; border: 1px solid var(--line-strong); }
+  .profile-portrait > span, .repo-index, .repo-stack, .pr-link time, .pr-number, .counts-note { font-family: 'JetBrains Mono Variable', monospace; }
+  .profile-portrait > span { color: var(--fg-subtle); font-size: 12px; }
+  .contributions { padding-top: 3.6rem; }
+  .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; margin-bottom: 2.5rem; }
+  .section-heading > div { min-width: 0; }
+  .section-heading .eyebrow { margin-bottom: .8rem; }
+  h2 { color: var(--fg); font-family: var(--font-reading); font-size: clamp(29px, 3.3vw, 39px); font-weight: 400; line-height: 1.18; letter-spacing: -.025em; text-wrap: balance; }
+  .section-description { margin-top: .7rem; color: var(--fg-muted); font-size: 14px; line-height: 1.75; }
+  .contribution-stat { display: grid; gap: .3rem; flex-shrink: 0; text-align: right; font-family: var(--font-reading); font-size: 11px; color: var(--fg-subtle); }
+  .stat-number { display: flex; align-items: center; justify-content: flex-end; gap: .7rem; color: var(--fg); font-size: 38px; font-weight: 450; font-variant-numeric: tabular-nums; letter-spacing: -.05em; line-height: 1.1; }
+  .stat-number > span { color: var(--accent); font-size: 18px; transition: transform var(--dur) var(--ease); }
+  .contribution-stat:hover .stat-number > span { transform: translate(2px, -2px); }
+  .repo-group { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1.7fr); gap: 3rem; padding-block: 2.6rem; border-top: 1px solid var(--line); }
+  .repo-index { display: block; margin-bottom: .85rem; color: var(--fg-subtle); font-size: 11px; }
+  h3 { font-family: var(--font-reading); color: var(--fg); font-size: 21px; font-weight: 550; letter-spacing: -.035em; }
+  .repo-intro h3 a { display: inline-flex; align-items: center; gap: .7rem; }
+  .repo-intro h3 a span { color: var(--accent); font-size: 15px; transition: transform var(--dur) var(--ease); }
+  .repo-intro h3 a:hover span { transform: translate(2px, -2px); }
+  .repo-note { margin-top: .6rem; color: var(--fg-muted); font-size: 14px; }
+  .repo-stack { margin-top: .9rem; color: var(--fg-subtle); font-size: 11px; line-height: 1.7; }
+  .repo-count { display: inline-block; margin-top: 1.5rem; color: var(--fg-muted); font-family: var(--font-reading); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .text-link { color: var(--accent); font-size: 12px; text-underline-offset: 4px; transition: color var(--dur-fast) var(--ease); }
+  .text-link:hover { color: var(--accent-hover); text-decoration: underline; }
+  .repo-all { display: flex; align-items: center; gap: .4rem; width: fit-content; margin-top: .7rem; }
+  .topic-list { display: grid; gap: 1.65rem; }
+  .topic { position: relative; padding-left: 1.2rem; border-left: 1px solid var(--line); }
+  .topic::before { content: ''; position: absolute; width: 3px; height: 18px; top: .1rem; left: -2px; background: var(--accent); opacity: .55; transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease); transform: scaleY(.6); }
+  .topic:focus-within::before, .topic:hover::before { opacity: 1; transform: scaleY(1); }
+  h4 { color: var(--fg); font-size: 16px; font-weight: 550; line-height: 1.5; }
+  .topic > p { margin-top: .45rem; color: var(--fg-muted); font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; text-wrap: pretty; }
+  .topic-prs { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+  .pr-link { display: inline-flex; align-items: center; gap: .65rem; min-height: 34px; padding: .35rem .65rem; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-hover); transition: border-color var(--dur) var(--ease), background-color var(--dur) var(--ease), transform var(--dur) var(--ease); }
+  .pr-number { color: var(--accent); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .pr-link time { color: var(--fg-subtle); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .pr-arrow { color: var(--fg-subtle); font-size: 12px; }
+  .pr-link:hover, .pr-link:focus-visible { border-color: var(--accent-line); background: var(--accent-soft); transform: translateY(-2px); }
+  .pr-link:active { transform: translateY(0); }
+  .more-contributions { margin-top: .5rem; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .more-contributions summary { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; padding-block: 1.25rem; color: var(--fg); cursor: pointer; list-style: none; font-size: 15px; }
+  .more-contributions summary::-webkit-details-marker { display: none; }
+  .summary-note { display: inline-block; margin-left: 1rem; font-size: 12px; color: var(--fg-subtle); }
+  .disclosure-icon { display: grid; place-items: center; width: 26px; height: 26px; flex-shrink: 0; border: 1px solid var(--line); border-radius: 50%; color: var(--accent); font-family: var(--font-reading); font-size: 18px; transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease); }
+  .more-contributions summary:hover .disclosure-icon { background: var(--accent-soft); }
+  .more-contributions[open] .disclosure-icon { transform: rotate(45deg); }
+  .more-content { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2rem 3rem; padding: .5rem 0 2rem; }
+  .more-repo h3 { font-size: 12px; font-weight: 500; color: var(--fg-subtle); letter-spacing: 0; overflow-wrap: anywhere; }
+  .more-repo ul { margin-top: .5rem; }
+  .more-repo li a { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; align-items: baseline; gap: .6rem; padding-block: .6rem; color: var(--fg-muted); font-size: 13px; line-height: 1.65; transition: color var(--dur-fast) var(--ease); }
+  .more-repo li a:hover { color: var(--fg); }
+  .more-repo > .text-link { display: inline-block; margin-top: .4rem; }
+  .counts-note { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .65rem 2rem; margin-top: 1.2rem; color: var(--fg-subtle); font-size: 10px; line-height: 1.8; }
+  .counts-note .text-link { font-size: 11px; }
+  @media (max-width: 767px) {
+    .about-page { padding: 2rem 1.25rem 4rem; }
+    .profile { gap: 1.5rem; padding: .75rem 0 2.75rem; align-items: start; }
+    .profile-portrait img { width: 92px; }
+    .profile-portrait > span { font-size: 10px; }
+    .about-body { font-size: 16px; }
+    .section-heading { align-items: flex-start; gap: 1rem; }
+    .contributions { padding-top: 2.75rem; }
+    .repo-group { grid-template-columns: minmax(0, 1fr); gap: 1.5rem; padding-block: 2rem; }
+    .repo-intro { position: relative; padding-right: 4rem; }
+    .repo-index { position: absolute; right: 0; top: .25rem; }
+    .repo-count { margin-top: .85rem; }
+    .repo-all { display: inline-flex; margin-left: 1rem; }
+    .repo-stack { margin-top: .55rem; }
+    .summary-note { display: block; margin: .35rem 0 0; }
+    .more-content { gap: 1.5rem; }
   }
-
-  /* Sits between --fg and --fg-muted so the name block reads as the page title
-     instead of fading into the background it shares a tone with. */
-  .tagline {
-    font-size: clamp(16px, 1.6vw, 19px);
-    line-height: 1.6;
+  @media (max-width: 479px) {
+    .about-page { padding-inline: 1rem; }
+    .profile { grid-template-columns: minmax(0, 1fr); }
+    .profile-portrait { grid-row: 1; display: flex; gap: .85rem; align-items: center; }
+    .profile-portrait img { width: 56px; border-radius: 35%; }
+    .profile-portrait > span { font-size: 12px; }
+    .section-heading { flex-wrap: wrap; row-gap: 1.3rem; }
+    .section-heading > div { flex-basis: 100%; }
+    h2 { max-width: 18rem; font-size: 31px; }
+    .section-description { max-width: 17rem; }
+    .stat-number { font-size: 30px; }
+    .contribution-stat { max-width: none; display: flex; align-items: center; gap: .8rem; text-align: left; font-size: 11px; line-height: 1.8; }
+    .more-content { grid-template-columns: minmax(0, 1fr); }
   }
-
-  /* No measure limit: the bio is a few short sentences, and capping the width
-     only broke them across lines that had room to fit. Centred to line up with
-     the profile block above it. */
-  .about-body {
-    margin-top: 2.25rem;
-    font-size: 16px;
-    line-height: 1.95;
-    color: var(--fg);
-    text-align: center;
-  }
-
-  .about-body > * + * {
-    margin-top: 1rem;
-  }
-
-  /* Deliberately heavier than the hairline rules inside the section: this one
-     has to read as the boundary between two layouts, not as a row divider. */
-  .section-rule {
-    height: 0;
-    margin-top: 3.5rem;
-    border: 0;
-    border-top: 1px solid var(--line-strong);
-  }
-
-  .link {
-    text-underline-offset: 4px;
-    transition: color var(--dur-fast) var(--ease);
-  }
-
-  .link:hover,
-  .link:focus-visible {
-    color: var(--accent);
-    text-decoration: underline;
-  }
-
-  .pr-link {
-    transition: background-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
-  }
-
-  .pr-link:hover,
-  .pr-link:focus-visible {
-    background-color: var(--surface-hover);
-    color: var(--fg);
-  }
-
-  @media (max-width: 639px) {
-    .profile {
-      gap: 1rem;
-    }
-
-    .pr-link {
-      grid-template-columns: 3rem minmax(0, 1fr);
-    }
-
-    .pr-link time {
-      display: none;
-    }
+  @media (prefers-reduced-motion: reduce) {
+    .profile-links a span, .stat-number > span, .repo-intro h3 a span, .pr-link, .topic::before, .disclosure-icon { transition: none; }
+    .profile-links a:hover span, .contribution-stat:hover .stat-number > span, .repo-intro h3 a:hover span, .pr-link:hover, .pr-link:focus-visible { transform: none; }
   }
 </style>

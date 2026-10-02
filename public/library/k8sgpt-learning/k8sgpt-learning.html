@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>K8sGPT · 从概念到贡献的研读手册</title>
+<style>
+:root{--paper:#f6f3ec;--white:#fffdf8;--ink:#233435;--muted:#63716f;--line:#d9ddd3;--accent:#ba4b2c;--sage:#55785f;--navy:#243d49;--wash:#e8eee5;--orange:#f4e5d8;--mono:Consolas,'Cascadia Code',monospace;--body:'Microsoft YaHei','PingFang SC','Noto Sans CJK SC',sans-serif;--serif:Georgia,'Source Han Serif SC','Songti SC','SimSun',serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.9}button,input,select,textarea{font:inherit}a{color:var(--accent);text-underline-offset:4px}button,a,input,select,textarea,summary{outline-offset:4px}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent)}button{cursor:pointer}button:disabled{cursor:default;opacity:.45}.skip{position:fixed;top:-80px;left:20px;z-index:20;background:var(--white);padding:10px}.skip:focus{top:10px}.rail{position:fixed;inset:0 auto 0 0;width:262px;padding:32px 24px;background:#eeeee5;border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:4;overflow-y:auto}.brand{font:italic 30px/1.2 var(--serif);letter-spacing:-1px}.brand span{font-style:normal;color:var(--accent)}.rail small{color:var(--muted);font-size:11px;letter-spacing:1.4px}.edition{margin:12px 0 25px}.progress{height:3px;background:#d5d9ce;margin:10px 0}.progress i{display:block;height:100%;background:var(--sage);width:0;transition:width .3s}.progress-label{font-size:12px;color:var(--muted)}nav{margin:22px -10px}nav a{display:flex;align-items:center;gap:12px;border-radius:3px;padding:8px 10px;color:var(--muted);text-decoration:none;font-size:13px;line-height:1.6;margin:4px 0}nav a b{font:12px var(--mono);opacity:.75}nav a.active{background:var(--navy);color:var(--white)}nav a.done:after{content:'✓';margin-left:auto;color:var(--sage)}nav a.active.done:after{color:#b5d3bb}.rail-bottom{margin-top:auto;padding-top:20px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.rail-bottom button{padding:0;border:0;background:none;color:var(--muted);font-size:11px;text-decoration:underline}.mobile-menu{display:none}.workspace{margin-left:262px}.topbar{height:67px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 5vw;gap:16px}.crumb{font-size:11px;letter-spacing:1.5px;color:var(--muted)}.top-actions{display:flex;gap:18px}.plain{border:0;background:none;font-size:12px;color:var(--muted);padding:4px}.main{max-width:1140px;margin:auto;padding:58px 5vw 40px}.chapter[hidden]{display:none}.eyebrow{color:var(--accent);font:12px var(--mono);letter-spacing:2px;text-transform:uppercase;margin-bottom:22px}.chapter-title{font-family:var(--serif);font-weight:600;line-height:1.35;letter-spacing:-1.5px;font-size:clamp(32px,3.5vw,48px);margin:0 0 20px;max-width:760px}.chapter-title em{font-weight:500;color:var(--accent);font-style:normal}.intro{font-size:16px;max-width:740px;color:var(--muted);margin:0 0 30px;line-height:2}.chapter-meta{display:flex;gap:20px;border-bottom:1px solid var(--line);padding-bottom:24px;margin-bottom:32px;font:11px var(--mono);color:var(--muted);flex-wrap:wrap}h2{font:600 26px/1.5 var(--serif);margin:44px 0 18px;letter-spacing:-.4px}h3{font-size:17px;line-height:1.5;margin:26px 0 12px}p{margin:12px 0}strong{font-weight:600}code{font-family:var(--mono);font-size:.92em;color:#89422f;background:#eee9df;padding:2px 5px;border-radius:3px}pre{margin:0;white-space:pre;overflow:auto;padding:23px 26px;background:#20343b;color:#e0e9df;border-radius:3px;font:12px/1.85 var(--mono);tab-size:4}pre code{font-size:inherit;color:inherit;background:none;padding:0}.code-label{font:11px var(--mono);color:var(--muted);margin:8px 0}.caption{font-size:12px;color:var(--muted);line-height:1.8;margin-top:12px}.source{font-size:12px;line-height:1.8;color:var(--muted);margin:16px 0}.source a{margin-right:12px}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:22px}.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.panel{background:var(--white);border:1px solid var(--line);border-radius:4px;padding:24px}.panel h3:first-child{margin-top:0}.note{padding:18px 22px;border-left:3px solid var(--sage);background:var(--wash);margin:24px 0;font-size:14px}.note.orange{background:var(--orange);border-color:var(--accent)}.note strong{display:block;margin-bottom:5px}.big-quote{font:24px/1.7 var(--serif);border-top:1px solid var(--ink);border-bottom:1px solid var(--ink);padding:22px 0;margin:30px 0}.tag{display:inline-block;font:11px var(--mono);padding:3px 8px;border:1px solid var(--line);border-radius:30px;color:var(--muted)}.tag.green{background:var(--wash);color:var(--sage)}.tag.rust{background:var(--orange);color:var(--accent)}.chapter-head{display:flex;justify-content:space-between;gap:25px}.folio{font:italic 90px/1 var(--serif);color:#d8ddd1;align-self:flex-start}.route{border-top:1px solid var(--ink);margin-top:25px}.route-item{display:grid;grid-template-columns:50px 1fr auto;align-items:center;gap:15px;padding:20px 0;border-bottom:1px solid var(--line);text-decoration:none;color:var(--ink)}.route-item .num{font:22px var(--serif);color:var(--accent)}.route-item strong{display:block;font-size:16px}.route-item span{font-size:12px;color:var(--muted)}.route-item:hover strong{color:var(--accent)}.route-item .arrow{font-size:20px}.hero-graphic{position:relative;padding:28px 20px;background:var(--navy);border-radius:4px;color:var(--white);overflow:hidden}.hero-graphic:before{content:'';position:absolute;inset:0;background-image:linear-gradient(#ffffff08 1px,transparent 1px),linear-gradient(90deg,#ffffff08 1px,transparent 1px);background-size:24px 24px}.hero-graphic>*{position:relative}.diagram-kicker{font:10px var(--mono);letter-spacing:2px;color:#bccabd}.diagram-title{font:24px var(--serif);margin:14px 0 22px}.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap}.flow-node{flex:1;min-width:110px;border:1px solid #73908b;padding:14px 12px;font-size:12px}.flow-node b{display:block;font:15px var(--mono);color:#e3eadd}.flow-arrow{align-self:center;color:#9dbaa2}.term-list{display:grid;grid-template-columns:135px 1fr;gap:12px 22px;margin:22px 0}.term-list dt{font-family:var(--mono);font-size:13px;font-weight:600}.term-list dd{margin:0;font-size:14px}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13px}th{text-align:left;color:var(--muted);font-weight:500;font-size:12px}td,th{padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}td:first-child,th:first-child{padding-left:0}.table-wrap{overflow:auto}.table-wrap table{min-width:560px}details{border-bottom:1px solid var(--line);padding:14px 0}summary{cursor:pointer;font-weight:600;font-size:14px;line-height:1.8}details p,details ul{font-size:14px}ul,ol{padding-left:23px}li{padding:3px 0}.lab{background:var(--white);border:1px solid var(--line);padding:26px;margin:22px 0;border-radius:4px}.lab-header{display:flex;justify-content:space-between;gap:16px;margin-bottom:18px;align-items:center}.lab-header h3{margin:0}.lab-kicker{font:11px var(--mono);color:var(--accent)}.lab-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}label.field{display:flex;flex-direction:column;font-size:12px;color:var(--muted);gap:5px}input[type=number],select,input[type=search]{border:1px solid #b6c4b6;padding:8px 10px;background:var(--paper);color:var(--ink);border-radius:3px;width:100%;min-width:0}label.check{display:flex;align-items:center;gap:8px;font-size:13px;margin:12px 0}.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.preset{border:1px solid var(--line);background:var(--paper);color:var(--ink);font-size:12px;padding:7px 12px;border-radius:3px}.preset:hover{border-color:var(--accent)}.output-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:22px}.output{border:1px solid var(--line);padding:18px;background:var(--paper);font-size:13px}.output small{display:block;color:var(--muted);font:10px var(--mono);letter-spacing:1px;margin-bottom:8px}.output strong{display:block;font-size:17px}.output.good{background:var(--wash);border-color:#b5c8b1}.output.bad{background:var(--orange);border-color:#ddb69d}.steps{counter-reset:step;list-style:none;padding:0}.steps li{counter-increment:step;border-top:1px solid var(--line);padding:17px 0 17px 48px;position:relative}.steps li:before{content:counter(step,decimal-leading-zero);position:absolute;left:0;font:18px var(--serif);color:var(--accent)}.steps strong{display:block}.completion{display:flex;gap:12px;align-items:flex-start;margin:38px 0 0;padding:20px;border:1px solid var(--line);background:var(--white);font-size:13px}.completion input{margin-top:7px;accent-color:var(--sage);width:16px;height:16px}.completion small{display:block;color:var(--muted)}.chapter-footer{display:flex;justify-content:space-between;align-items:center;margin-top:35px;padding-top:22px;border-top:1px solid var(--line);gap:15px}.next,.primary{border:0;color:var(--white);background:var(--navy);border-radius:3px;padding:12px 18px;font-size:13px}.prev{border:0;background:none;color:var(--muted);font-size:13px;padding:8px 0}.legend{font-size:12px;color:var(--muted);margin:12px 0}.pod-box{border:1px dashed #a5b8a6;padding:18px;border-radius:4px;position:relative;background:#f4f7ef}.pod-label{font:12px var(--mono);color:var(--sage);margin-bottom:12px}.container-box{background:var(--navy);color:var(--white);padding:15px 10px;font:12px var(--mono);text-align:center;border-radius:3px}.layer-buttons{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.layer-buttons button[aria-pressed=true]{background:var(--navy);color:var(--white);border-color:var(--navy)}.layer-text{min-height:90px}.quiz{border:1px solid var(--line);padding:22px;background:var(--white);margin:20px 0}.quiz h3{margin:0 0 15px}.quiz button{display:block;width:100%;text-align:left;margin:9px 0;padding:12px 15px;background:var(--paper);border:1px solid var(--line);color:var(--ink);font-size:13px;border-radius:3px}.quiz button[aria-pressed=true]{border-color:var(--accent)}.quiz button.correct{border-color:var(--sage);background:var(--wash)}.quiz-feedback{margin:14px 0 0;font-size:13px}.search-panel{border:1px solid var(--line);padding:24px;background:var(--white);margin:24px 0}.glossary-results{margin-top:16px}.glossary-item{display:grid;grid-template-columns:170px 1fr;gap:18px;padding:13px 0;border-bottom:1px solid var(--line);font-size:13px}.glossary-item b{font:13px var(--mono)}textarea{display:block;width:100%;min-height:140px;border:1px solid var(--line);background:var(--white);border-radius:3px;padding:14px;resize:vertical;color:var(--ink);font-size:14px;line-height:1.8}.status-text{font-size:11px;color:var(--muted)}.filter-world{display:grid;grid-template-columns:1fr 1fr;gap:18px}.resource{padding:14px;background:var(--paper);border:1px solid var(--line);margin:10px 0;font-size:13px}.resource b{font-family:var(--mono)}.resource .dim{font-size:11px;color:var(--muted)}.empty{border-style:dashed;color:var(--muted)}.footnote{font-size:11px;color:var(--muted);margin-top:30px}.noscript{padding:20px;background:var(--orange)}.mini-state{font-family:var(--mono);font-size:11px;white-space:pre-wrap}.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}.timeline div{border-top:2px solid var(--sage);padding:12px 8px;font-size:12px}.timeline b{display:block;font-family:var(--mono);font-size:13px;margin-bottom:8px}.callout-title{font:21px var(--serif);color:var(--accent)}.print-only{display:none}.kbd{font:10px var(--mono);border:1px solid var(--line);padding:2px 5px;border-radius:3px}
+.grid-2>*,.grid-3>*,.output-grid>*,.filter-world>*{min-width:0}body,code{overflow-wrap:anywhere}pre,pre code{overflow-wrap:normal}.panel,.chapter{min-width:0}.main:focus{outline:none}
+@media(min-width:1450px){.main{padding-left:65px;padding-right:65px}.topbar{padding-left:65px;padding-right:65px}}
+@media(max-width:1050px){.rail{width:225px;padding:26px 18px}.workspace{margin-left:225px}.main{padding:40px 4vw}.grid-3{grid-template-columns:1fr}.folio{font-size:65px}.lab-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.timeline{grid-template-columns:1fr 1fr}}
+@media(max-width:760px){.rail{position:static;width:auto;height:auto;padding:18px 22px;border-right:0;border-bottom:1px solid var(--line)}.brand{font-size:27px}.rail .edition,.rail-bottom{display:none}.rail .progress{margin:8px 0}.rail nav{display:none;margin:8px -8px}.rail.open nav{display:grid;grid-template-columns:1fr 1fr}.mobile-menu{display:block;position:absolute;right:20px;top:22px;border:1px solid var(--line);background:none;font-size:12px;padding:5px 10px}.workspace{margin-left:0}.topbar{height:50px;padding:0 22px}.crumb{font-size:9px;letter-spacing:.5px}.main{padding:30px 22px}.chapter-title{font-size:34px;letter-spacing:-.7px}.folio{display:none}.grid-2,.output-grid,.filter-world{grid-template-columns:1fr}.intro{font-size:15px}.top-actions{gap:8px}.term-list{grid-template-columns:100px 1fr;gap:12px}.panel,.lab{padding:19px}.flow-arrow{display:none}.flow-node{min-width:125px}.glossary-item{grid-template-columns:1fr;gap:4px}.route-item{grid-template-columns:35px 1fr 15px}pre{padding:18px;font-size:11px}.lab-controls{gap:10px}.chapter-meta{gap:10px}.timeline{gap:8px}.chapter-footer{align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+@media print{body{background:white;font-size:11pt}.rail,.topbar,.chapter-footer,.completion,.lab-controls,.preset-row,.mobile-menu,.layer-buttons,.top-actions{display:none!important}.workspace{margin:0}.main{max-width:none;padding:0}.chapter,.chapter[hidden]{display:block!important;break-before:page}.chapter:first-child{break-before:auto}.folio{display:none}.chapter-title{font-size:30pt}.print-only{display:block}.panel,.lab,.hero-graphic,pre,.note{break-inside:avoid}pre{white-space:pre-wrap;font-size:8pt}.quiz button{display:block}a{color:inherit}textarea{min-height:100px}.lab input,.lab select{display:none}.grid-2{grid-template-columns:1fr 1fr}.footnote{font-size:8pt}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<aside class="rail" aria-label="学习章节">
+ <div class="brand">K8s<span>GPT</span><br>Field Notes.</div>
+ <div class="edition"><small>开源贡献研读手册 · 01</small></div>
+ <button class="mobile-menu" type="button" aria-expanded="false" aria-controls="chapter-nav">章节目录</button>
+ <div class="progress-label" id="progress-label">已掌握 0 / 12 章</div><div class="progress" aria-hidden="true"><i id="progress-fill"></i></div>
+ <nav id="chapter-nav">
+  <a href="#start" class="active"><b>00</b>从哪里开始</a>
+  <a href="#basics"><b>01</b>Kubernetes 的最小地图</a>
+  <a href="#project"><b>02</b>贡献在项目的哪里</a>
+  <a href="#deployment"><b>03</b>副本数为什么会骗人</a>
+  <a href="#policy"><b>04</b>读懂准入策略分析器</a>
+  <a href="#claim"><b>05</b>读懂资源申请分析器</a>
+  <a href="#code"><b>06</b>第一次读 Go 与测试</a>
+  <a href="#interview"><b>07</b>把理解变成回答</a>
+  <a href="#evidence"><b>08</b>贡献与证据索引</a>
+  <a href="#practice"><b>09</b>动手研读与复盘</a>
+  <a href="#ai-application"><b>10</b>AI 应用的解释链路</a>
+  <a href="#agent-interview"><b>11</b>Agent 边界与设计追问</a>
+ </nav>
+ <div class="rail-bottom">核对：2026.10.02 · Asia/Shanghai<br>离线正文 / 本地保存进度<br><button type="button" id="reset-progress">清除本页学习记录</button></div>
+</aside>
+<div class="workspace">
+ <header class="topbar"><span class="crumb">RESEARCH NOTEBOOK / <span id="current-crumb">从哪里开始</span></span><div class="top-actions"><button class="plain" id="glossary-shortcut" type="button">查术语</button><button class="plain" id="print-button" type="button">打印全册 ↗</button></div></header>
+ <main class="main" id="main" tabindex="-1">
+ <noscript><p class="noscript">脚本未启用：全部章节仍可阅读，交互演示与本地学习记录需要启用 JavaScript。</p></noscript>
+
+ <article class="chapter" id="start" data-name="从哪里开始">
+  <div class="eyebrow">00 / Start with the objects</div>
+  <div class="chapter-head"><h1 class="chapter-title">先看懂系统，<br>再看懂<em>自己的贡献。</em></h1><span class="folio" aria-hidden="true">00</span></div>
+  <p class="intro">这不是一份让你背 PR 标题的速记。我们从“一个应用怎么被 Kubernetes 管理”开始，走到四个已合并 PR 的判断逻辑、测试和局限。每个名词第一次出现都会解释；你不需要先上完一门 Kubernetes 课程。</p>
+  <div class="chapter-meta"><span>FOCUS / #1740 · #1743 · #1765 · #1768</span><span>FORMAT / 概念 → 场景 → 代码 → 自测</span></div>
+  <div class="grid-2">
+   <div class="hero-graphic"><div class="diagram-kicker">THE LEARNING PATH</div><div class="diagram-title">两条简历，四个 PR，<br>三个需要真正理解的问题。</div><div class="flow"><div class="flow-node"><b>STATE</b>现在的状态<br>可靠吗？</div><div class="flow-node"><b>REFERENCE</b>引用的对象<br>在哪里？</div><div class="flow-node"><b>EVIDENCE</b>什么测试能<br>证明判断正确？</div></div><p class="caption" style="color:#bed0c2">先理解一个具体反例，再理解那几行 Go。</p></div>
+   <div class="panel"><span class="tag rust">学习目标</span><h3>能用自己的话讲清楚</h3><ol><li>k8sgpt 从哪里拿到数据，谁负责判断异常，LLM 负责哪一步。</li><li>为什么副本数不一致可能正常，副本数一致也可能发布失败。</li><li>为什么筛选“我要检查的对象”，不能顺便筛掉它引用的对象。</li><li>能指出一段代码和一个对应的回归测试，也知道它没有覆盖什么。</li></ol></div>
+  </div>
+  <div class="note"><strong>你的第一步很小</strong>今天先读 01、02 两章，再在 03 章点击四种 Deployment 场景。不急着记 CEL、DRA 或完整的 Go 语法。看到陌生词时，可以点右上角“查术语”。准备 AI 应用岗位时，读完 02 可先进入新增的 <a href="#ai-application">10 · AI 应用链路</a> 和 <a href="#agent-interview">11 · Agent 与设计追问</a>。</div>
+  <h2>按这个顺序走</h2>
+  <div class="route">
+   <a class="route-item" href="#basics"><span class="num">01</span><div><strong>建立最小地图</strong><span>容器、Pod、Deployment、spec / status。先知道每个对象是干什么的。</span></div><span class="arrow">↗</span></a>
+   <a class="route-item" href="#project"><span class="num">02</span><div><strong>找到你的代码所在层</strong><span>API 查询 → Analyzer → 诊断结果 → 可选 LLM 解释。</span></div><span class="arrow">↗</span></a>
+   <a class="route-item" href="#deployment"><span class="num">03</span><div><strong>先学最容易形成故事的贡献</strong><span>#1740 / #1743：正常过渡、旧状态、明确失败。</span></div><span class="arrow">↗</span></a>
+   <a class="route-item" href="#policy"><span class="num">04–06</span><div><strong>再学新增分析器与 Go</strong><span>两种新资源，一个共同的引用查询问题，真实源码与 fake-client 测试。</span></div><span class="arrow">↗</span></a>
+   <a class="route-item" href="#interview"><span class="num">07–09</span><div><strong>用反例、代码和边界复述</strong><span>自测、证据目录、可执行的研读步骤。</span></div><span class="arrow">↗</span></a>
+   <a class="route-item" href="#ai-application"><span class="num">10–11</span><div><strong>补齐 AI 应用岗位的讨论视角</strong><span>Prompt、模型输入、缓存、失败处理、评估，以及 Agent / MCP 的边界。</span></div><span class="arrow">↗</span></a>
+  </div>
+  <div class="note orange"><strong>把“贡献事实”和“个人掌握程度”分别确认</strong>PR 是否合并、代码是否实现某个行为，可以查证；“亲自定位、手写代码、在生产复现”等过程，只能依据真实经历表述。AI 参与实现的经历，也可以通过理解代码、验证反例与说明边界，形成诚实而扎实的面试回答。</div>
+  <p class="source">本册依据两个前序会话确定的简历选点，重新使用 gh 核对 PR。<a href="#evidence">查看合并状态与固定提交源码 →</a></p>
+ </article>
+
+ <article class="chapter" id="basics" data-name="Kubernetes 的最小地图">
+  <div class="eyebrow">01 / A minimum map</div><div class="chapter-head"><h1 class="chapter-title">从一个应用，<br>认识 <em>Kubernetes 对象。</em></h1><span class="folio" aria-hidden="true">01</span></div>
+  <p class="intro">假设你有一个 Go 写的订单服务。你希望它始终运行三份，更新版本时继续提供服务。Kubernetes 接收这个目标，再由后台程序持续尝试让实际情况接近它。</p>
+  <div class="chapter-meta"><span>必会 / Pod · ReplicaSet · Deployment · spec / status</span><span>暂缓 / etcd 内部机制、网络插件、调度算法</span></div>
+  <h2>容器和 Pod 不是同一层</h2>
+  <div class="grid-2"><div class="panel"><h3>Container / 容器</h3><p>把应用及其运行所需内容打包成镜像，再启动一个隔离的运行环境。你见过的 Docker 容器，能帮助理解这一层。</p><p class="caption">Kubernetes 可以使用不同容器运行时；这里无需把 Kubernetes 与 Docker 软件绑定。</p></div><div class="panel"><h3>Pod / Kubernetes 管理的运行单元</h3><div class="pod-box"><div class="pod-label">Pod: orders-abc</div><div class="grid-2"><div class="container-box">订单应用容器</div><div class="container-box">可选辅助容器</div></div><p class="caption">共享网络环境，可共享卷；作为一个单元调度到同一 Node。</p></div><p>常见情况是一个 Pod 里只有一个应用容器。也可以有多个紧密配合的容器。因此“Pod ≈ 一份应用实例”有助于入门，但“Pod 就是一个容器”会误导。</p></div></div>
+  <p class="source">概念依据：<a href="https://kubernetes.io/docs/concepts/workloads/pods/" target="_blank" rel="noopener">Kubernetes 官方 · Pods</a></p>
+  <h2>谁负责让应用一直运行？</h2>
+  <div class="hero-graphic"><div class="diagram-kicker">OWNERSHIP / 简化关系图</div><div class="flow"><div class="flow-node"><b>Deployment</b>定义应用版本、份数<br>管理发布过程</div><span class="flow-arrow">→</span><div class="flow-node"><b>ReplicaSet</b>维持某个 Pod 模板<br>所需的副本数量</div><span class="flow-arrow">→</span><div class="flow-node"><b>Pod × 3</b>每个 Pod 里<br>运行应用容器</div></div></div>
+  <div class="layer-buttons" id="layer-controls"><button class="preset" type="button" data-layer="deployment" aria-pressed="true">Deployment</button><button class="preset" type="button" data-layer="replicaset" aria-pressed="false">ReplicaSet</button><button class="preset" type="button" data-layer="pod" aria-pressed="false">Pod</button><button class="preset" type="button" data-layer="controller" aria-pressed="false">Controller</button></div>
+  <div class="note layer-text" id="layer-text" aria-live="polite">Deployment 是 API 中的配置对象。你写“镜像版本 v2、期望 3 份”。Deployment controller 读它，协调 ReplicaSet。版本更新期间可能同时存在新旧两个 ReplicaSet。</div>
+  <dl class="term-list"><dt>Cluster</dt><dd>集群：由一组机器和管理组件组成的 Kubernetes 环境。</dd><dt>Node</dt><dd>工作节点：运行 Pod 的机器，可以是实体机或虚拟机。</dd><dt>API server</dt><dd>集群的统一 API 入口。kubectl 和 Go 客户端通过它读写资源对象。</dd><dt>Controller</dt><dd>持续观察“目标”和“现状”的后台程序，发现差距就尝试协调。对象本身与负责处理它的程序是两回事。</dd><dt>kubectl</dt><dd>命令行客户端。例如读取 Deployment 的状态；它不是整个 Kubernetes 系统。</dd></dl>
+  <h2>spec 是目标，status 是观察到的现状</h2>
+  <div class="grid-2"><div><div class="code-label">教学用片段 · 不是完整的可部署 YAML</div><pre><code>metadata:
+  name: orders
+  generation: 8       # 对象目标的版本标记
+spec:
+  replicas: 3         # 我希望有 3 份
+status:
+  observedGeneration: 7
+  readyReplicas: 2    # 状态记录了 2 份就绪</code></pre></div><div class="panel"><h3>这里有两个不同的问题</h3><p><strong>数量：</strong>希望 3 份，当前记录的就绪数量是 2。</p><p><strong>时效：</strong>目标已经到第 8 版，控制器状态仍只观察到第 7 版。这个状态可能还没反映新目标。</p><p>保存配置成功，不意味着应用立即到位。API 对象的更新、控制器的处理、容器启动和状态回写是异步过程。</p></div></div>
+  <div class="note"><strong>“副本数”不止一个字段</strong><code>spec.replicas</code> 是期望值；<code>status.replicas</code> 是状态里的总数量；<code>readyReplicas</code> 是就绪数量；<code>availableReplicas</code> 是满足可用条件的数量。就绪与可用有关，但不总相等，例如配置了最小就绪持续时间。你的修复主要围绕期望值、就绪数与条件展开。</div>
+  <p>“就绪”是 Pod 报告的 Ready 状态，可由应用就绪探针等影响。容器进程正在运行，不代表应用已经能接收流量。因此 <code>Running</code> 和 <code>Ready</code> 也不能当成同义词。</p>
+  <h2>资源、命名空间、标签：别混成一个概念</h2>
+  <dl class="term-list"><dt>Resource</dt><dd>通过 Kubernetes API 管理的一类对象。Deployment、Pod、ResourceClaim 都是资源类型。“资源”在这里不只指 CPU 或内存。</dd><dt>Namespace</dt><dd>对象的逻辑分组。某些对象属于命名空间；某些属于整个集群。例如 ResourceClaim 属于命名空间，DeviceClass 是集群级对象。</dd><dt>Label</dt><dd>贴在对象 metadata 上的键值标记，例如 <code>team=demo</code>。用于分组与查询，不自动传给所有被引用对象。</dd><dt>Selector</dt><dd>筛选规则，例如“只查询带 <code>team=demo</code> 的对象”。查询结果之外的对象仍可能真实存在。</dd><dt>Reference</dt><dd>一个对象通过名称指向另一个对象，例如 Binding 的 <code>policyName</code>。名称相同、作用域正确，才能确定引用目标。</dd></dl>
+  <div class="quiz" data-quiz="pod"><h3>自测 · 哪种理解更准确？</h3><button type="button" data-answer="wrong">Pod 就是 Docker 容器，名称不同而已。</button><button type="button" data-answer="correct">Pod 可以包含一个或多个容器，是 Kubernetes 管理和调度的单元。</button><p class="quiz-feedback" aria-live="polite"></p></div>
+  <p class="source"><a href="https://kubernetes.io/docs/concepts/architecture/controller/" target="_blank" rel="noopener">官方 · Controllers</a><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/" target="_blank" rel="noopener">官方 · Objects / spec / status</a><a href="https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/" target="_blank" rel="noopener">官方 · Labels</a></p>
+ </article>
+
+ <article class="chapter" id="project" data-name="贡献在项目的哪里">
+  <div class="eyebrow">02 / Locate the contribution</div><div class="chapter-head"><h1 class="chapter-title">k8sgpt 的“智能”，<br>从<em>规则诊断</em>开始。</h1><span class="folio" aria-hidden="true">02</span></div>
+  <p class="intro">你贡献的是扫描资源、判断异常的 Go 分析器。理解这条数据链，就能知道你的修改为什么有用，以及它和 LLM 的关系。</p>
+  <div class="chapter-meta"><span>必会 / client-go · Analyzer · Failure · Result</span><span>定位 / 核心贡献在诊断层</span></div>
+  <div class="hero-graphic"><div class="diagram-kicker">DATA FLOW / 简化后的 CLI 分析路径</div><div class="flow"><div class="flow-node"><b>Kubernetes API</b>Deployment 状态<br>Policy、Claim 等对象</div><span class="flow-arrow">→</span><div class="flow-node"><b>client-go</b>Go 程序查询<br>List / Get</div><span class="flow-arrow">→</span><div class="flow-node" style="border-color:#e6b79d"><b>Analyzer ★</b>按规则判断<br>结构化异常</div><span class="flow-arrow">→</span><div class="flow-node"><b>Result</b>对象名称、类型<br>错误列表</div></div><p style="font-size:12px;margin:20px 0 0;color:#c9d7cc">Result → 直接输出；启用 <code style="background:#3d5051;color:#fff">--explain</code> 时，再进入 AI 解释与相关缓存流程。</p></div>
+  <div class="note"><strong>一个直观例子</strong>规则先发现“Binding 引用的策略不存在”。启用解释后，模型可以用自然语言说明可能原因和排查建议。你的 PR 让规则更完整、更准确；它没有训练模型，也没有让模型替代这几个条件判断。</div>
+  <h2>一次分析里，每个组件在做什么</h2>
+  <ol class="steps"><li><strong>用户选择分析范围</strong>命名空间、标签、资源名称用于确定要扫描哪些对象。<code>--filter</code> 选择的是分析器类型，例如 Deployment；标签查询是另一层筛选。</li><li><strong>调用 Kubernetes API</strong>client-go 是 Kubernetes 官方 Go 客户端库。<code>List</code> 取一组对象，<code>Get</code> 按名称取一个对象。API 查询可能因权限、连通性或版本支持失败。</li><li><strong>Analyzer 检查对象</strong>读字段、查引用、生成 <code>Failure</code>。例如数量差异、CEL 告警、DeviceClass 缺失。</li><li><strong>组装 Result</strong>把同一对象的异常收集到输出结构里。异常文本不是 LLM 自由猜出来的。</li><li><strong>按选项输出或解释</strong>不启用解释也能看到诊断结果；启用 <code>--explain</code> 时走 AI 解释路径。这个项目还包含其他能力，本册只跟踪你的贡献相关路径。</li></ol>
+  <h2>两种“错误”必须分开</h2>
+  <div class="grid-2"><div class="panel"><span class="tag rust">诊断发现</span><h3>某个对象配置有问题</h3><p>例如一个 Claim 引用了不存在的 DeviceClass。查询成功，分析器把问题放入 <code>Result.Error</code>。这是工具要报告给用户的发现。</p></div><div class="panel"><span class="tag">程序执行错误</span><h3>工具无法完成查询</h3><p>例如 API 返回权限不足。Go 函数返回 <code>error</code>。这不证明被引用对象不存在；应该把查询失败传给调用者。</p></div></div>
+  <h2>新增分析器为什么还要“注册”？</h2>
+  <p>写完 <code>Analyze</code> 函数，只是有了功能实现。项目还需要知道“ValidatingAdmissionPolicy”这个名字对应哪个实现，以及用户怎样启用它。两个新分析器进入可选分析器注册表；#1765 还用测试单独验证了可选注册的边界。</p>
+  <div class="note orange"><strong>默认启用与可选支持不同</strong>#1765、#1768 新增的是可选分析器。不能把“项目支持这个资源”理解为每次默认扫描都会跑它。第 09 章给出检查与启用入口；命令必须在包含相关提交的版本上才有意义。</div>
+  <div class="quiz" data-quiz="llm"><h3>自测 · 这些 PR 主要改了哪一层？</h3><button type="button" data-answer="wrong">让 LLM 阅读整个集群，再自由判断异常。</button><button type="button" data-answer="correct">Go 分析器读取 API 对象，按规则生成诊断，LLM 可进一步解释。</button><p class="quiz-feedback" aria-live="polite"></p></div>
+  <p class="source">调用链基线：<a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/cmd/analyze/analyze.go#L115" target="_blank" rel="noopener">CLI 分析 → 解释</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/analysis/analysis.go#L415" target="_blank" rel="noopener">默认与可选分析器选择</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/common/types.go#L92" target="_blank" rel="noopener">Result / Failure</a></p>
+ </article>
+
+ <article class="chapter" id="deployment" data-name="副本数为什么会骗人">
+  <div class="eyebrow">03 / State is a moving observation</div><div class="chapter-head"><h1 class="chapter-title">“想要 3 个，只有 2 个”<br>就一定<em>出故障了吗？</em></h1><span class="folio" aria-hidden="true">03</span></div>
+  <p class="intro">这条贡献解决两个方向的问题：正常发布被报错，叫误报；发布已经失败却没被发现，叫漏报。#1743 减少误报，#1740 补上漏报。</p>
+  <div class="chapter-meta"><span>PR / #1740 + #1743</span><span>核心 / 异步状态 · 版本 · Conditions</span></div>
+  <h2>先看一段正常的发布过程</h2>
+  <p>订单服务从 v1 更新到 v2 时，Deployment 会协调新旧 ReplicaSet。新 Pod 启动需要时间，旧 Pod 也不一定同时退出。滚动更新允许一定的临时数量变化，避免所有实例一起停掉。</p>
+  <div class="timeline"><div><b>01 · 改目标</b>镜像更新或扩缩容<br>generation 前进</div><div><b>02 · 控制器观察</b>看到新的目标版本<br>开始协调对象</div><div><b>03 · 逐步过渡</b>新旧实例交替<br>数量可能暂时不同</div><div><b>04 · 状态收敛</b>发布成功，或控制器<br>报告进展失败</div></div>
+  <p class="caption">教学时间线，不是固定时长，也不代表所有滚动更新都出现相同数量差异。</p>
+  <h2>判断状态，需要三个维度</h2>
+  <div class="table-wrap"><table><thead><tr><th>维度</th><th>字段</th><th>你需要读出的含义</th></tr></thead><tbody><tr><td>数量</td><td><code>spec.replicas</code><br><code>status.readyReplicas</code></td><td>期望多少份？状态记录有多少份就绪？</td></tr><tr><td>状态时效</td><td><code>generation</code><br><code>observedGeneration</code></td><td>状态已经观察到新目标了吗？后者小于前者，说明状态还没有跟上目标版本。</td></tr><tr><td>条件</td><td><code>Available</code><br><code>Progressing</code></td><td>是否满足最低可用要求？发布进展是否被控制器判定为正常？看条件类型，不能依赖数组位置。</td></tr></tbody></table></div>
+  <div class="note orange"><strong>Progressing=True 不等于“此刻仍在更新”</strong>它也可以在发布已完成时保持 True，例如 reason 为 <code>NewReplicaSetAvailable</code>。<code>Available=True</code> 表示达到最低可用要求，不保证所有期望副本都已就绪。因此代码实际检查的是两个条件同时为 True，不能把任意一个 True 简写成“完全健康”。</div>
+  <h2>#1743：先决定是否应该报告数量差异</h2>
+  <ol class="steps"><li><strong>没有期望值，或期望数等于就绪数 → 不报告数量差异</strong><code>spec.replicas</code> 是指针，读取前要排除 <code>nil</code>。数量相等，仅说明没有这项差异。</li><li><strong>observedGeneration 小于 generation → 暂不报告数量差异</strong>状态仍停在旧目标版本。拿旧状态和新目标比较，容易制造误报。</li><li><strong>Available 和 Progressing 同时为 True → 暂不报告数量差异</strong>允许正常发布或扩缩容的过渡状态。它是一项抑制规则，不是对整个 Deployment 健康的完整证明。</li><li><strong>其余数量不一致 → 保留原有诊断</strong>抑制有条件，不能把所有差异一概跳过。</li></ol>
+  <h2>#1740：发布失败要独立检查</h2>
+  <p>例如旧版本仍有 3 个就绪 Pod，新版本发布却卡住。达到进展期限后，控制器可以报告 <code>Progressing=False</code>，reason 为 <code>ProgressDeadlineExceeded</code>。此时仅看“3 = 3”，会漏掉发布失败。</p>
+  <div class="big-quote">数量差异检查，与发布进展失败检查，<br>是两个独立的判断。</div>
+  <p>#1740 将 <code>Progressing=False</code> 检查放在数量差异条件之外。它报告这个条件的 reason 与 message；实现没有只限定某一个 reason，超时是关键测试场景。</p>
+  <div class="lab" id="deployment-lab"><div class="lab-header"><h3>动手看 · 改字段，观察诊断</h3><span class="lab-kicker">LAB 01 / 浏览器教学模拟</span></div><p class="caption">左边复现 #1740 之前的核心数量判断；右边复现 #1743 的抑制顺序，并保留 #1740 的独立失败检查。模拟只展示这两项诊断是否触发，不复刻全部输出文案，也不查询真实集群。</p>
+   <div class="preset-row"><button class="preset" type="button" data-scenario="stale">状态还没跟上</button><button class="preset" type="button" data-scenario="healthy">正常发布过渡</button><button class="preset" type="button" data-scenario="timeout">副本达标，但发布超时</button><button class="preset" type="button" data-scenario="shortage">数量不足且无正常条件</button></div>
+   <div class="lab-controls"><label class="field">期望副本 spec.replicas<input id="d-desired" type="number" min="0" max="20" value="3"></label><label class="field">就绪数 readyReplicas<input id="d-ready" type="number" min="0" max="20" value="2"></label><label class="field">目标版本 generation<input id="d-generation" type="number" min="0" max="20" value="8"></label><label class="field">观察版本 observedGeneration<input id="d-observed" type="number" min="0" max="20" value="7"></label><label class="field">Available 条件<select id="d-available"><option value="True">True</option><option value="False">False</option><option value="Unknown">Unknown / 未知</option><option value="Missing">未出现</option></select></label><label class="field">Progressing 条件<select id="d-progressing"><option value="True">True</option><option value="False">False · 超时示例</option><option value="Unknown">Unknown / 未知</option><option value="Missing">未出现</option></select></label></div>
+   <label class="check"><input id="d-nil" type="checkbox">教学边界：spec.replicas 为 nil（未提供指针值）</label>
+   <div class="output-grid"><div class="output" id="d-old" aria-live="polite"></div><div class="output" id="d-new" aria-live="polite"></div></div><p class="caption" id="d-trace"></p>
+  </div>
+  <h2>这段真实 Go 代码现在可以读了</h2>
+  <div class="code-label">#1743 合并提交 · deployment.go · 原始函数摘录</div><pre><code>func shouldReportReplicaMismatch(deployment appsv1.Deployment) bool {
+    if deployment.Spec.Replicas == nil || *deployment.Spec.Replicas == deployment.Status.ReadyReplicas {
+        return false
+    }
+
+    if deployment.Status.ObservedGeneration &lt; deployment.Generation {
+        return false
+    }
+
+    if hasHealthyProgress(deployment.Status.Conditions) {
+        return false
+    }
+
+    return true
+}</code></pre>
+  <p><code>bool</code> 是 Go 的布尔类型，值写作 <code>true / false</code>；API 条件状态则是字符串 <code>"True" / "False" / "Unknown"</code>。<code>*deployment.Spec.Replicas</code> 取指针指向的值；<code>||</code> 是“或者”，左侧成立时右侧不再求值。这个函数只回答“是否报告副本差异”，不回答“整个 Deployment 是否健康”。</p>
+  <details><summary>展开：hasHealthyProgress 到底怎么判断？</summary><pre><code>func hasHealthyProgress(conditions []appsv1.DeploymentCondition) bool {
+    progressing := false
+    available := false
+    for _, condition := range conditions {
+        switch condition.Type {
+        case appsv1.DeploymentProgressing:
+            progressing = condition.Status == corev1.ConditionTrue
+        case appsv1.DeploymentAvailable:
+            available = condition.Status == corev1.ConditionTrue
+        }
+    }
+
+    return progressing &amp;&amp; available
+}</code></pre><p>遍历条件列表，按类型收集两个状态。<code>&amp;&amp;</code> 是“并且”。缺少任何一个条件，就不能得到两个 True。</p></details>
+  <div class="note"><strong>这个方案的代价是什么？</strong>处于两个条件为 True 的过渡阶段时，数量差异被抑制。卡住的发布可能需要等 Kubernetes 报出进展失败才有明确提示；<code>progressDeadlineSeconds</code> 默认是 600 秒，配置可能不同，它约束缺少进展的窗口，不是整个发布的总时长。分析器没有新增自己的计时器，也没有自动回滚或修复 Deployment。</div>
+  <p class="caption">再确认一次：observedGeneration 落后只跳过数量差异，已有 Progressing=False 仍独立报告。nil 是防御性边界；真实 API 未填 spec.replicas 时通常默认成 1，不等于真实 Deployment 常常没有期望副本值。</p>
+  <div class="quiz" data-quiz="timeout"><h3>自测 · 期望 3、就绪 3、Progressing=False，应该怎样？</h3><button type="button" data-answer="wrong">数量相等，所以不需要诊断任何问题。</button><button type="button" data-answer="correct">没有副本差异，但仍应独立报告 Progressing=False。</button><p class="quiz-feedback" aria-live="polite"></p></div>
+  <p class="source"><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1740" target="_blank" rel="noopener">PR #1740</a><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1743" target="_blank" rel="noopener">PR #1743</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/cbaae54ed3890f6728ee4668dbff4f20041493e6/pkg/analyzer/deployment.go" target="_blank" rel="noopener">固定版本源码</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/cbaae54ed3890f6728ee4668dbff4f20041493e6/pkg/analyzer/deployment_test.go" target="_blank" rel="noopener">测试</a><a href="https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#deployment-status" target="_blank" rel="noopener">官方条件语义</a></p>
+ </article>
+
+ <article class="chapter" id="policy" data-name="读懂准入策略分析器">
+  <div class="eyebrow">04 / Inspect the existing signals</div><div class="chapter-head"><h1 class="chapter-title">规则写在哪？<br>谁在<em>使用这条规则？</em></h1><span class="folio" aria-hidden="true">04</span></div>
+  <p class="intro">先把长名字放一边。ValidatingAdmissionPolicy 保存“提交对象时要满足什么要求”；Binding 保存“使用哪条规则、用于什么范围”。你的新分析器分别检查规则的已有告警和引用是否有效。</p>
+  <div class="chapter-meta"><span>PR / #1765</span><span>必会 / Admission · Policy · Binding · CEL</span></div>
+  <h2>准入：对象提交后的检查环节</h2>
+  <p>用户提交一个 Deployment 创建或更新请求，API server 会经过认证、授权、准入等处理。准入检查可以约束要保存的对象，例如某类 Deployment 的副本数不能小于 2。这发生在 API 请求处理过程中，和“Pod 启动后是否正常”属于不同问题。</p>
+  <div class="hero-graphic"><div class="diagram-kicker">REQUEST / 简化处理路径</div><div class="flow"><div class="flow-node"><b>提交对象</b>创建 / 更新<br>Deployment 等</div><span class="flow-arrow">→</span><div class="flow-node"><b>API server</b>认证与授权<br>准入校验等</div><span class="flow-arrow">→</span><div class="flow-node"><b>保存对象</b>后续由控制器<br>协调实际状态</div></div><p class="caption" style="color:#bed0c2">#1765 读取与诊断策略对象，没有新增上述请求拦截流程。</p></div>
+  <h2>三个名词，对应三件具体事情</h2>
+  <dl class="term-list"><dt>Policy</dt><dd><code>ValidatingAdmissionPolicy</code>：保存校验规则。两个准入策略对象都是集群级对象。</dd><dt>Binding</dt><dd><code>ValidatingAdmissionPolicyBinding</code>：通过 <code>spec.policyName</code> 引用 Policy，并指定应用范围与校验动作。规则定义和使用规则的配置可以分开。</dd><dt>CEL</dt><dd><code>Common Expression Language</code>，一种表达式语言。先理解成“对提交对象写判断条件”即可。</dd></dl>
+  <div class="grid-2"><div class="panel"><h3>一条 CEL 判断，先读人话</h3><pre><code>object.spec.replicas &gt;= 2</code></pre><p>对正在提交的对象，读取期望副本数，判断是否至少为 2。这是表达式片段，不是完整 Policy。</p></div><div class="panel"><h3>类型检查告警是什么？</h3><p>例如访问了不存在的字段，或对不合适的类型做操作，Kubernetes 的类型检查可能记录 warning。</p><p>warning 不等于某次请求已经被拒绝。它是规则本身需要检查的信号；你的分析器读取它。</p></div></div>
+  <h2>第一条检查：把已有 warning 解释成定位信息</h2>
+  <div class="code-label">教学用 status 片段 · warning 文案为示意</div><pre><code>status:
+  typeChecking:
+    expressionWarnings:
+    - fieldRef: spec.validations[0].expression
+      warning: "字段或类型使用存在问题（教学示意）"</code></pre>
+  <p><code>fieldRef</code> 是字段路径：<code>[0]</code> 指第一条规则。分析器把 Policy 名字、出问题的位置、原 warning 文案放进诊断。没有 TypeChecking 时跳过这项检查；有 TypeChecking 但 warning 列表为空，也不产生 Policy Result。这不是证明规则绝对正确。</p>
+  <div class="code-label">原始代码摘录 · 读取已有状态</div><pre><code>if policy.Status.TypeChecking == nil {
+    continue
+}
+
+var failures []common.Failure
+for _, warning := range policy.Status.TypeChecking.ExpressionWarnings {
+    // 后续用 FieldRef 和 Warning 组装 Failure
+}</code></pre><p class="caption">最后一行是为教学添加的省略说明；完整 Failure 构造见源码。这里没有 CEL 解析器或求值逻辑。</p>
+  <h2>第二条检查：Binding 指向的 Policy 还在吗？</h2>
+  <div class="hero-graphic"><div class="diagram-kicker">REFERENCE / 实际检查的关系</div><div class="flow"><div class="flow-node"><b>Binding B</b>spec.policyName<br>= replica-policy</div><span class="flow-arrow">→</span><div class="flow-node"><b>Policy P</b>metadata.name<br>= replica-policy</div></div></div>
+  <p>Binding 被标签选择器选中了，不意味着它引用的 Policy 也有同样标签。如果只用“被筛选出来的 Policy 列表”判断存在性，就可能把真实存在的目标报成缺失。</p>
+  <div class="grid-2"><div class="panel"><span class="tag rust">容易出错的方式 · 教学反例</span><p>Binding B 有 <code>analyze=true</code> 标签；Policy P 没这个标签。按标签查 Policy 得到空列表，于是说“B 引用的 P 不存在”。</p><p>问题是 P 没被选中，并不等于 P 不存在。</p></div><div class="panel"><span class="tag green">最终实现</span><p>对被选中的 Binding，按 <code>policyName</code> 单独 <code>Get</code> 目标。这个 Get 不附带标签筛选。</p><p>Policy 自身的告警是否被分析，仍由原来的 Policy 标签筛选决定。</p></div></div>
+  <div class="code-label">原始查询与错误处理摘录 · 位于首次查询该名字的分支中</div><pre><code>_, getErr := client.ValidatingAdmissionPolicies().Get(a.Context, policyName, metav1.GetOptions{})
+switch {
+case getErr == nil:
+    policyExists[policyName] = true
+case apierrors.IsNotFound(getErr):
+    policyExists[policyName] = false
+default:
+    return nil, getErr
+}</code></pre>
+  <p>查询成功 → 目标存在。返回 NotFound → 不存在。其他错误，例如权限不足 → 分析操作失败，向上传递，不能当成缺失引用。空 <code>policyName</code> 会跳过 Get 并产生缺失引用诊断。</p>
+  <details><summary>为什么用了 policyChecked 和 policyExists 两张 map？</summary><p><code>policyChecked</code> 记住“这个名字查过了”；<code>policyExists</code> 记住“它是否存在”。多个 Binding 指向同一个名字时，本次分析不用重复查询。只看一个 bool=false，分不清“尚未查询”和“确认不存在”。这是本次调用中的缓存，不是跨请求、跨进程或持久化缓存。</p></details>
+  <h2>测试要验证的三个层次</h2>
+  <div class="table-wrap"><table><thead><tr><th>测试</th><th>输入</th><th>应该输出</th></tr></thead><tbody><tr><td>基础诊断</td><td>一个含两条 warning 的 Policy；一个引用缺失的 Binding；另有健康对象。</td><td>2 个 Result。Policy 含 2 条问题；Binding 含 1 条问题。</td></tr><tr><td>标签边界</td><td>选中的 Binding 指向未被标签选中的有效 Policy。</td><td>不会把存在的 Policy 报为缺失；未选对象的自身告警不进入结果。</td></tr><tr><td>可选注册</td><td>检查 core 和 additional 注册表。</td><td>默认 core 不含此分析器，additional 含它。</td></tr></tbody></table></div>
+  <div class="note orange"><strong>这个 PR 的边界</strong>没有实现 CEL 引擎、准入控制器或请求拦截；没有检查参数引用 <code>paramRef</code> 等所有关系。代码中的 Policy / Binding List 只传标签条件，没有接入 ResourceName 筛选。无 warning 与引用有效，也不保证任意请求一定能通过准入。</div>
+  <div class="quiz" data-quiz="policy"><h3>自测 · 按标签查不到目标，就能说它不存在吗？</h3><button type="button" data-answer="wrong">能，查出来的列表就是集群里全部对象。</button><button type="button" data-answer="correct">不能，需要按引用目标独立查询，区分不存在和查询失败。</button><p class="quiz-feedback" aria-live="polite"></p></div>
+  <p class="source"><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1765" target="_blank" rel="noopener">PR #1765</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/c520d4a1c0da6eb88fa0cfc506a5917a031b1813/pkg/analyzer/validating_admission_policy.go" target="_blank" rel="noopener">固定版本源码</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/c520d4a1c0da6eb88fa0cfc506a5917a031b1813/pkg/analyzer/validating_admission_policy_test.go" target="_blank" rel="noopener">测试</a><a href="https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/" target="_blank" rel="noopener">官方 · Policy / CEL / Binding</a></p>
+ </article>
+
+ <article class="chapter" id="claim" data-name="读懂资源申请分析器">
+  <div class="eyebrow">05 / Follow the reference</div><div class="chapter-head"><h1 class="chapter-title">设备申请单，<br>引用了<em>哪一种设备类？</em></h1><span class="folio" aria-hidden="true">05</span></div>
+  <p class="intro">ResourceClaim 可以先理解为“工作负载的设备需求申请”。#1768 新增检查：这张申请单写下的 DeviceClass 名字，在集群里是否真的存在。</p>
+  <div class="chapter-meta"><span>PR / #1768</span><span>历史 API / resource.k8s.io/v1beta1</span></div>
+  <h2>DRA 暂时只需要知道这三类对象</h2>
+  <p>DRA 是 Dynamic Resource Allocation，动态资源分配。在这套机制里，工作负载提出设备需求，其他组件完成设备选择和分配。本 PR 只负责其中一个很窄的引用检查。</p>
+  <dl class="term-list"><dt>DeviceClass</dt><dd>设备类别与选择规则。属于整个集群。名叫 <code>gpu</code> 的 DeviceClass 不代表某一块实体 GPU，也不代表分配已经完成。</dd><dt>ResourceClaim</dt><dd>某个命名空间里的设备需求对象。请求可以通过 <code>deviceClassName</code> 直接引用 DeviceClass。</dd><dt>ResourceClaimTemplate</dt><dd>用于生成 Claim 的模板。这是理解生态所需背景，没有被 #1768 分析。</dd></dl>
+  <div class="hero-graphic"><div class="diagram-kicker">SCOPE / ★ 表示本 PR 实际检查的箭头</div><div class="flow"><div class="flow-node"><b>Pod</b>使用 Claim<br>或通过 Template</div><span class="flow-arrow">→</span><div class="flow-node"><b>ResourceClaim</b>设备需求<br>直接引用 deviceClassName</div><span class="flow-arrow">★ →</span><div class="flow-node" style="border-color:#e6b79d"><b>DeviceClass</b>类别与选择条件<br>集群级对象</div></div><p class="caption" style="color:#bed0c2">Template 生成 Claim 的过程、Pod 引用、调度与分配结果，均在该检查范围之外。</p></div>
+  <h2>从输入到结果，只走六步</h2>
+  <ol class="steps"><li><strong>无筛选地 List DeviceClass</strong>DeviceClass 是引用目标集合，不能附带 Claim 的标签或名字条件。</li><li><strong>把已知名字放进集合</strong>用 <code>map[string]struct{}</code> 保存名字，快速判断有没有某个类别。</li><li><strong>按用户范围 List ResourceClaim</strong>命名空间、标签和资源名只用于选择要检查的 Claim。</li><li><strong>遍历每个 Claim 的设备请求</strong>读取每条请求的直接 <code>DeviceClassName</code>。</li><li><strong>跳过空名字、有效引用与重复缺失</strong>同一个 Claim 里，同一缺失名字只报告一次。不同 Claim 分别报告自己的问题。</li><li><strong>组装诊断结果</strong>一个异常 Claim 对应一个 Result，可含多个不同缺失类别的 Failure。</li></ol>
+  <div class="code-label">原始代码摘录 · 请比较两行 List 的查询范围</div><pre><code>deviceClasses, err := client.DeviceClasses().List(a.Context, metav1.ListOptions{})
+// 此处处理查询错误，再构建 knownDeviceClasses 集合
+
+claims, err := client.ResourceClaims(a.Namespace).List(a.Context, a.ListOptions())</code></pre><p class="caption">中间的注释为教学省略。空 ListOptions 是不附带标签/名称条件；a.ListOptions() 使用项目已有的标签与资源名查询能力。</p>
+  <h2>亲手制造一次“目标存在，却被报缺失”</h2>
+  <div class="lab" id="filter-lab"><div class="lab-header"><h3>动手看 · 筛选范围 ≠ 存在范围</h3><span class="lab-kicker">LAB 02 / 教学反例</span></div><p>我们只检查带 <code>app=selected</code> 的 Claim。它引用 <code>gpu</code>。DeviceClass 标签由下面的选项控制。</p><div class="lab-controls"><label class="field">DeviceClass 的真实状态<select id="f-class"><option value="different">存在，标签 tier=platform</option><option value="same">存在，标签 app=selected</option><option value="missing">集群里不存在</option></select></label><label class="field">所选 Claim 的请求<select id="f-requests"><option value="single">gpu 一次</option><option value="repeat">gpu 两次</option><option value="empty">空 deviceClassName</option></select></label></div><div class="filter-world"><div><h3>需要分析的对象</h3><div class="resource"><b>selected-claim</b><div class="dim">namespace=default · app=selected</div><div id="f-claim-text">deviceClassName: gpu</div></div><div class="resource empty"><b>other-claim</b><div class="dim">app=other · 被用户筛选排除</div></div></div><div><h3>引用目标</h3><div class="resource" id="f-target"></div><p class="caption">关联对象不需要同名，也不需要同标签。</p></div></div><div class="output-grid"><div class="output" id="f-old" aria-live="polite"></div><div class="output" id="f-new" aria-live="polite"></div></div><p class="caption" id="f-trace"></p></div>
+  <div class="note"><strong>和 Policy 的共同点，及实现差异</strong>共同点：待分析对象的筛选不能隐藏引用目标。Policy 分析器按不同目标名字逐个 Get，并在本次调用缓存；ResourceClaim 分析器一次 List 全部 DeviceClass，再建名字集合。不能把二者都说成同一套查询或缓存实现。</div>
+  <h2>真实代码里的集合与去重</h2>
+  <div class="code-label">原始循环摘录 · Failure 构造前的判断</div><pre><code>for _, request := range claim.Spec.Devices.Requests {
+    if request.DeviceClassName == "" {
+        continue
+    }
+    if _, ok := knownDeviceClasses[request.DeviceClassName]; ok {
+        continue
+    }
+    if _, ok := reportedDeviceClasses[request.DeviceClassName]; ok {
+        continue
+    }
+    reportedDeviceClasses[request.DeviceClassName] = struct{}{}
+    // 后续追加一条 Failure
+}</code></pre><p class="caption">最后的注释为教学省略。reportedDeviceClasses 在每个 Claim 的循环内重新创建；去重范围是单个 Claim。</p>
+  <h2>三个真实回归测试</h2>
+  <div class="table-wrap"><table><thead><tr><th>场景</th><th>验证点</th></tr></thead><tbody><tr><td>有效 gpu + 重复 missing-class</td><td>有效引用不报告；一个 Claim 的同一缺失名字只产生一条 Failure。</td></tr><tr><td>Claim 与类别标签不同</td><td>筛选只选择 Claim。存在的 DeviceClass 不会被标签隐藏。</td></tr><tr><td>指定 Claim 名字</td><td>Claim List 收到名字和标签条件；DeviceClass List 两种条件都为空。</td></tr></tbody></table></div>
+  <div class="note orange"><strong>“没有这条告警”能证明什么？</strong>仅说明被检查的直接 DeviceClass 引用没有发现缺失。它不能证明设备已经分配成功、容量充足、驱动正常或 Claim 整体健康。本 PR 未分析 Template、ResourceSlice、Pod-to-Claim 引用，也未实现 GPU 调度。</div>
+  <div class="quiz" data-quiz="claim"><h3>自测 · Claim 名字为 selected-claim，类别名字为 gpu，查询谁需要名称筛选？</h3><button type="button" data-answer="correct">只筛选 Claim；DeviceClass 应按真实引用集合判断。</button><button type="button" data-answer="wrong">两类资源都要叫 selected-claim，否则说明引用无效。</button><p class="quiz-feedback" aria-live="polite"></p></div>
+  <p class="source"><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1768" target="_blank" rel="noopener">PR #1768</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/analyzer/resource_claim.go" target="_blank" rel="noopener">固定版本源码</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/analyzer/resource_claim_test.go" target="_blank" rel="noopener">测试</a><a href="https://v1-32.docs.kubernetes.io/docs/concepts/scheduling-eviction/dynamic-resource-allocation/" target="_blank" rel="noopener">官方 v1.32 · DRA</a></p>
+ </article>
+
+ <article class="chapter" id="code" data-name="第一次读 Go 与测试">
+  <div class="eyebrow">06 / Read only what you need</div><div class="chapter-head"><h1 class="chapter-title">第一次打开源码，<br><em>只沿一条主线。</em></h1><span class="folio" aria-hidden="true">06</span></div>
+  <p class="intro">不用先通读整个仓库，也不用先精通 Go。第一次选 ResourceClaim 的 Analyze：查询对象、遍历、检查、生成结果。遇到下面这些写法，按“它在这里做什么”去读。</p>
+  <div class="chapter-meta"><span>阅读顺序 / Claim → Deployment → Policy → 框架</span><span>暂缓 / 并发调度、指标、OpenAPI 实现</span></div>
+  <h2>最小 Go 阅读词典</h2>
+  <div class="table-wrap"><table><thead><tr><th>写法</th><th>这里怎么读</th></tr></thead><tbody><tr><td><code>type X struct { ... }</code></td><td>定义一条有字段的记录。<code>X{Field: value}</code> 创建它。即使 X 定义为空结构体，也可以为 X 定义方法。</td></tr><tr><td><code>func (r X) Analyze(a Y) ([]Result, error)</code></td><td>X 类型有个 Analyze 方法，接收配置 a，返回一列结果和一个执行错误。</td></tr><tr><td><code>[]X</code> / <code>append(xs, x)</code></td><td>一列 X（slice）；把 x 加进去，接住返回的新 slice。</td></tr><tr><td><code>v := ...</code></td><td>声明并赋值。Go 根据右边推断变量类型。</td></tr><tr><td><code>*X</code> / <code>*p</code> / <code>&amp;x</code></td><td>指针类型 / 读取指针指向的值 / 取得变量地址。读取前先确认不是 nil。</td></tr><tr><td><code>nil</code></td><td>指针等类型没有值。函数返回的 error 为 nil，通常表示这次执行没有出错。</td></tr><tr><td><code>for _, item := range items</code></td><td>逐个遍历。<code>_</code> 忽略此处不需要的索引。</td></tr><tr><td><code>continue</code></td><td>跳过当前元素，继续下一项；不是结束整个函数。</td></tr><tr><td><code>map[string]struct{}</code></td><td>这里用作名字集合。<code>_, ok := set[name]</code> 中 ok 表示是否存在这个键。</td></tr><tr><td><code>interface</code></td><td>方法契约。不同分析器都提供规定的 Analyze 方法，框架就能统一调用。</td></tr><tr><td><code>a.Context</code></td><td>Go 调用上下文，可携带取消和期限。它与 kubeconfig 里的“集群 context”不是同一概念。</td></tr><tr><td><code>if err != nil { return nil, err }</code></td><td>查询失败就提前返回。不要将无法读取误判成对象不存在。</td></tr></tbody></table></div>
+  <h2>读测试：先看输入，再看断言</h2>
+  <p>fake client 将事先写好的 API 对象放进内存，分析器像查询真实客户端一样读取它们。它不运行控制器，不自动生成 status，不分配设备。你在测试里看到的状态，是测试手工设置的。</p>
+  <div class="grid-2"><div class="panel"><h3>测试手动给的输入</h3><ul><li>存在一个 DeviceClass：<code>gpu</code>。</li><li>一个 Claim 请求 <code>gpu</code>。</li><li>同一 Claim 还请求两次 <code>missing-class</code>。</li><li>另一个 Claim 没有设备请求。</li></ul><p class="callout-title">先猜：几个 Result？几条 Failure？</p></div><div class="panel"><h3>核对真实断言</h3><pre><code>require.NoError(t, err)
+require.Len(t, results, 1)
+require.Equal(t, "ResourceClaim", results[0].Kind)
+require.Equal(t, "default/workload-devices", results[0].Name)
+require.Len(t, results[0].Error, 1)</code></pre><p class="caption">#1768 · TestResourceClaimAnalyzerReportsMissingDeviceClass 原始摘录</p></div></div>
+  <p>这里 <code>err == nil</code> 表示 Analyze 执行成功；<code>results[0].Error</code> 有一条问题，表示扫描发现了配置问题。这两个“错误”不是同一个东西。</p>
+  <h2>几个断言不是装饰，它们在防止什么回归？</h2>
+  <div class="table-wrap"><table><thead><tr><th>断言</th><th>证明的范围</th></tr></thead><tbody><tr><td>results 长度为 1</td><td>无设备请求的 Claim 没有进入结果；只报告含缺失引用的 workload-devices。</td></tr><tr><td>Kind / Name 匹配</td><td>诊断归属正确对象，不误挂到 DeviceClass 或另一个 Claim 上。</td></tr><tr><td>Error 长度为 1</td><td>存在的 gpu 不报告；重复 missing-class 被去重。</td></tr><tr><td>Text 精确匹配（完整源码中）</td><td>缺失对象名字与诊断文案正确。</td></tr></tbody></table></div>
+  <details><summary>进阶但很实用：为什么名称筛选测试用了 PrependReactor？</summary><p>fake client 不是完整 API server，它默认不执行所有服务端字段筛选。名称筛选测试截获 Claim 的 List 操作，手动落实名字条件，并检查 ListRestrictions：Claim 收到标签和 <code>metadata.name</code>，DeviceClass 两者都为空。这验证了真实查询参数，避免把 fake 行为当成服务端保证。</p><p>第一次只要理解：“假客户端有边界，测试不能盲信它与真实 API 完全一样。”不用现在就写 reactor。</p></details>
+  <h2>把同一套读法用到 Deployment</h2>
+  <div class="table-wrap"><table><thead><tr><th>真实测试输入</th><th>你应先预测的结果</th></tr></thead><tbody><tr><td>期望=就绪=1；Available=True；Progressing=False；超时原因。</td><td>1 个 Result，报告失败条件。对应 #1740 超时测试。</td></tr><tr><td>期望=3，就绪=2；generation=observed=1；两个条件 True。</td><td>0 个 Result。对应 #1743 healthy rollout 子测试。</td></tr><tr><td>期望=3，就绪=1；generation=2，observed=1；无条件。</td><td>0 个 Result。对应 #1743 controller 未观察最新版本子测试。</td></tr><tr><td>Spec.Replicas=nil。</td><td>不因读取 nil 指针而崩溃。对应保留的 nil 测试。</td></tr></tbody></table></div>
+  <div class="note"><strong>什么时候算“读懂了一段代码”？</strong>遮住解释，只留下函数：你能说出输入是什么、在哪些条件下返回什么、能举一个正常和一个异常例子，并指出至少一个未覆盖的边界。熟悉语法只是第一层，能推演行为才是目标。</div>
+  <p class="source"><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/analyzer/resource_claim_test.go#L31" target="_blank" rel="noopener">完整 Claim 测试</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/cbaae54ed3890f6728ee4668dbff4f20041493e6/pkg/analyzer/deployment_test.go#L369" target="_blank" rel="noopener">Deployment 表驱动测试</a><a href="https://go.dev/ref/spec" target="_blank" rel="noopener">Go 官方规范</a><a href="https://pkg.go.dev/k8s.io/client-go/kubernetes/fake#NewSimpleClientset" target="_blank" rel="noopener">fake client 文档</a></p>
+ </article>
+ <article class="chapter" id="interview" data-name="把理解变成回答">
+  <div class="eyebrow">07 / Explain, then support</div><div class="chapter-head"><h1 class="chapter-title">面试回答的材料，<br>来自<em>理解和反例。</em></h1><span class="folio" aria-hidden="true">07</span></div>
+  <p class="intro">先遮住参考回答，用自己的话说一遍。卡住的地方就是下一次学习的入口。可以用很普通的语言；说清楚“为什么”比堆术语更有用。</p>
+  <div class="chapter-meta"><span>结构 / 问题 → 旧行为 → 修改 → 测试 → 边界</span><span>目标 / 能接受追问，而非背一段话</span></div>
+  <h2>先试一轮：不打开答案</h2>
+  <ol class="steps"><li><strong>用半分钟介绍 k8sgpt</strong>输入来自哪里？规则和 LLM 各干什么？你的贡献在什么位置？</li><li><strong>用一分钟解释 Deployment 的两个反例</strong>数量少为什么可能正常？数量够为什么仍可能发布超时？两个 PR 分别改变哪项判断？</li><li><strong>用一分钟解释引用与筛选</strong>给出一个 Binding 或 Claim 的标签例子。为何被筛掉不等于不存在？最终查询是 Get 还是 List？</li><li><strong>打开源码，指出一个测试</strong>输入是什么、你预期输出是什么、断言证明了什么、fake client 没证明什么？</li></ol>
+  <h2>项目与贡献 · 参考表达</h2>
+  <details><summary>k8sgpt 是什么？你贡献的部分在哪里？</summary><p>k8sgpt 是 Kubernetes 诊断工具。它通过 API 读取集群资源，由 Go 分析器按规则生成问题列表；启用 explain 后，再使用 AI 解释这些已发现的问题。我这几项贡献在规则诊断层：新增准入策略和 ResourceClaim 分析器，并修复 Deployment 状态判定。</p><p class="caption">如果还没学懂某部分，先缩小回答到你能解释的范围，不把这段完整参考当作当前掌握的证明。</p></details>
+  <details><summary>Deployment 这一条，可以怎样说完整？</summary><p>原来的数量判断容易出现两个方向的问题：正常更新时期望数与就绪数暂时不同，会误报；旧版本还就绪、新版本却超时，数量可能相等，会漏报。#1743 在控制器尚未观察最新 generation、或 Available 和 Progressing 同时为 True 时，抑制副本差异诊断。#1740 则独立检查 Progressing=False，保留控制器给的 reason 和 message。fake-client 回归测试构造了正常过渡、状态滞后，以及就绪数达标但进展失败的输入。</p><p>边界是：这些条件不是完整健康证明，分析器也没自己计时或回滚。状态滞后抑制只作用于数量差异，不作用于独立失败条件。</p></details>
+  <details><summary>新增分析器这一条，哪些点值得展开？</summary><p>准入策略分析器读取 Kubernetes 已有的 CEL 类型检查 warning，并检查 Binding 的 policyName 目标是否存在。ResourceClaim 分析器检查设备请求的直接 DeviceClass 引用。共同的查询边界是：用户筛选要检查的对象，不应隐藏它引用的目标。前者按名字独立 Get 并在本次调用缓存；后者 List 未过滤的集群级 DeviceClass，建名字集合，再检查筛选后的 Claim。</p><p>它们是可选分析器。没有实现 CEL 引擎、DRA 调度或 GPU 分配。对 Claim 的同一缺失名字做了去重，测试包含标签和名称筛选场景；VAP 则只支持本次代码中的标签筛选。</p></details>
+  <h2>高频追问：从定义走向取舍</h2>
+  <details><summary>为什么 observedGeneration 跟上了，发布仍不一定完成？</summary><p>它说明控制器观察到了目标版本，后续创建实例、等待就绪、替换旧实例仍可能进行中。所以“状态版本已更新”和“目标已完成”是两件事。</p></details>
+  <details><summary>两个条件 True，为什么不能说 Deployment 完全健康？</summary><p>Available=True 只保证最低可用性；Progressing=True 也可以来自之前的进展或已完成发布。它们是该 PR 采用的数量差异抑制规则，没有检查所有故障、UpdatedReplicas 或全部发布完成条件。</p></details>
+  <details><summary>如果 API 没权限读 Policy，是否输出“策略不存在”？</summary><p>不能。NotFound 才进入缺失引用分支；其他查询错误向上传递。否则会把工具无法获取信息误当成配置错误。</p></details>
+  <details><summary>为何 VAP 用两张 bool map，Claim 用空 struct 的 map？</summary><p>VAP 要区分“是否查过”与“是否存在”，两张表显式记录两个状态。Claim 先读取完整名字集合，只需成员判断，因此用 map[string]struct{}；另一个同类型集合用于单个 Claim 内的缺失名字去重。</p></details>
+  <details><summary>fake-client 测试已经通过，还需要真实集群吗？</summary><p>单元测试能稳定验证给定字段、引用与查询参数下的分支。真实集群能进一步验证权限、API 支持、服务端行为与控制器实际产生的状态。它们覆盖不同范围，fake 通过不能外推生产效果。本轮学习资料没有执行上游 Go 测试或集群实验。</p></details>
+  <h2>被问到“AI 做了多少”时</h2>
+  <div class="note"><strong>按实际阶段回答</strong>当前可以说：“这些 PR 当时使用 AI 完成实现，我现在正在补齐相关概念并阅读最终代码与测试。”学懂并完成练习以后，才补充自己能解释、验证的具体部分。若后来真的运行了测试或实验，就说清实际操作及结果。</div>
+  <p>PR 与测试能证明交付内容；不能替你证明独立设计、手写全部代码、亲历生产排障。面试问“为什么这样写”时，讲最终代码的理由；问“当时怎么发现”时，讲真实过程。你可以承担已经理解的范围，也可以明确尚未掌握的部分。</p>
+  <h2>写下自己的版本</h2>
+  <label for="answer-draft" class="legend">试着用 150–250 字回答：“Deployment 修复的问题、方法和边界是什么？”</label><textarea id="answer-draft" placeholder="不用照抄。先写：一个正常场景、一个异常场景、两项独立判断、一个测试边界。"></textarea><p class="status-text" id="draft-status" aria-live="polite">只保存在当前浏览器，不上传。</p>
+  <div class="note orange"><strong>完成这一章的标准</strong>能离开本文，自行解释两个反例；追问字段含义时不需要回到背诵稿；对没有亲自做过的验证，能明确区分历史测试、代码推演和真实实验。</div>
+ </article>
+
+ <article class="chapter" id="evidence" data-name="贡献与证据索引">
+  <div class="eyebrow">08 / Trace every statement</div><div class="chapter-head"><h1 class="chapter-title">每一条说法，<br>都能<em>回到代码。</em></h1><span class="folio" aria-hidden="true">08</span></div>
+  <p class="intro">2026-10-02 用 gh 重新核对：账号 junnhwan 在 k8sgpt 仓库有 11 个已合并 PR；另有 3 个 open、2 个 closed-unmerged。这里先学简历核心四个，其他作为后续扩展。</p>
+  <div class="chapter-meta"><span>证据基线 / 各 PR 的合并提交</span><span>核对方式 / gh pr list · gh pr view · gh api</span></div>
+  <h2>四个核心 PR 的阅读入口</h2>
+  <div class="table-wrap"><table><thead><tr><th>贡献 / 北京时间合并日</th><th>源码与测试（固定提交）</th><th>提交 SHA</th></tr></thead><tbody><tr><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1740" target="_blank" rel="noopener">#1740 · 超时漏报</a><br>2026-08-19</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/05247a851ba9292ca57e5070f1d0c4d3986b8d4c/pkg/analyzer/deployment.go#L95" target="_blank" rel="noopener">独立 Progressing=False 分支</a><br><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/05247a851ba9292ca57e5070f1d0c4d3986b8d4c/pkg/analyzer/deployment_test.go#L249" target="_blank" rel="noopener">数量达标但超时测试</a></td><td><code>05247a85…</code></td></tr><tr><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1743" target="_blank" rel="noopener">#1743 · 数量差异误报</a><br>2026-09-25</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/cbaae54ed3890f6728ee4668dbff4f20041493e6/pkg/analyzer/deployment.go#L145" target="_blank" rel="noopener">数量判断辅助函数</a><br><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/cbaae54ed3890f6728ee4668dbff4f20041493e6/pkg/analyzer/deployment_test.go#L369" target="_blank" rel="noopener">过渡场景表驱动测试</a></td><td><code>cbaae54e…</code></td></tr><tr><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1765" target="_blank" rel="noopener">#1765 · VAP 分析器</a><br>2026-09-14</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/c520d4a1c0da6eb88fa0cfc506a5917a031b1813/pkg/analyzer/validating_admission_policy.go" target="_blank" rel="noopener">分析器源码</a><br><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/c520d4a1c0da6eb88fa0cfc506a5917a031b1813/pkg/analyzer/validating_admission_policy_test.go" target="_blank" rel="noopener">warning / 引用 / 筛选 / 注册测试</a></td><td><code>c520d4a1…</code></td></tr><tr><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1768" target="_blank" rel="noopener">#1768 · Claim 分析器</a><br>2026-09-27</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/analyzer/resource_claim.go" target="_blank" rel="noopener">分析器源码</a><br><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/analyzer/resource_claim_test.go" target="_blank" rel="noopener">引用 / 去重 / 筛选测试</a></td><td><code>f2dd92e4…</code></td></tr></tbody></table></div>
+  <p class="caption">缩写只用于展示；链接里包含完整 SHA。项目调用链统一用 #1768 合并版本作观察基线，不把该版本全部能力归为 #1768 的贡献。</p>
+  <h2>全部 11 个已合并 PR · 按主题归组</h2>
+  <div class="table-wrap"><table><thead><tr><th>主题</th><th>PR</th><th>下一阶段可学的问题</th></tr></thead><tbody><tr><td>Deployment 状态诊断</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1740" target="_blank" rel="noopener">1740</a> / <a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1743" target="_blank" rel="noopener">1743</a></td><td>当前核心：状态滞后、正常过渡、独立失败条件。</td></tr><tr><td>新增两类分析器</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1765" target="_blank" rel="noopener">1765</a> / <a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1768" target="_blank" rel="noopener">1768</a></td><td>当前核心：已有信号、直接引用、筛选范围。</td></tr><tr><td>RoleBinding</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1755" target="_blank" rel="noopener">1755</a></td><td>按 roleRef.kind 区分 Role 与 ClusterRole，查实际权限规则。</td></tr><tr><td>Gateway</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1737" target="_blank" rel="noopener">1737</a></td><td>按条件类型识别 Accepted / Programmed，不依赖列表顺序。</td></tr><tr><td>ReplicaSet</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1750" target="_blank" rel="noopener">1750</a></td><td>已有部分副本时，仍能报告 ReplicaFailure / FailedCreate。</td></tr><tr><td>Job</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1725" target="_blank" rel="noopener">1725</a></td><td>成功状态与历史失败计数，避免重试成功后仍报错。</td></tr><tr><td>NetworkPolicy</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1747" target="_blank" rel="noopener">1747</a></td><td>命名空间查询范围，避免跨命名空间的同标签对象干扰。</td></tr><tr><td>ConfigMap 使用扫描</td><td><a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1722" target="_blank" rel="noopener">1722</a> / <a href="https://github.com/k8sgpt-ai/k8sgpt/pull/1741" target="_blank" rel="noopener">1741</a></td><td>补 init container 与 projected volume 的引用扫描。</td></tr></tbody></table></div>
+  <p class="caption">本册未重新逐行审计全部辅助主题；其细节来自仓库已有证据素材，核心四项已再次核对。#1753 / #1759 / #1760 仍 open，#1726 / #1727 未合并，不算完成贡献。</p>
+  <h2>术语速查</h2>
+  <div class="search-panel"><label for="glossary-search">输入中文或英文词，如“就绪”“Binding”“nil”“selector”</label><input type="search" id="glossary-search" placeholder="搜索概念，而不只是记缩写…" autocomplete="off"><div class="glossary-results" id="glossary-results" aria-live="polite"></div></div>
+  <h2>更详细的研究笔记</h2>
+  <p>保留了逐行解释、测试名称与查询错误分支，可以在第二遍阅读时查阅：</p><ul><li>基础概念与真实调用链</li><li>Deployment 代码、场景与测试证据</li><li>两个新增分析器的逐块解释</li><li>已有简历写作素材库</li></ul>
+  <div class="note"><strong>核验与未核验，区分清楚</strong>已重新核对核心 PR 的合并状态、diff、固定源码与测试内容。HTML 演示是按代码逻辑制作的教学模拟；未连接 Kubernetes 集群，未运行上游 Go 测试，未调用真实模型。没有新增生产效果或准确率数字。</div>
+  <p class="footnote">源代码摘录来自 k8sgpt-ai/k8sgpt，原项目采用 Apache License 2.0。Copyright 2023 The K8sGPT Authors。摘录的教学省略处均有说明。<a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/LICENSE" target="_blank" rel="noopener">原项目 LICENSE</a> · <a href="https://www.apache.org/licenses/LICENSE-2.0" target="_blank" rel="noopener">Apache 2.0</a></p>
+ </article>
+
+ <article class="chapter" id="practice" data-name="动手研读与复盘">
+  <div class="eyebrow">09 / Make the next step small</div><div class="chapter-head"><h1 class="chapter-title">今天先完成，<br><em>一个能讲清的反例。</em></h1><span class="folio" aria-hidden="true">09</span></div>
+  <p class="intro">第一轮不需要装集群。先用本册、固定源码和测试输入形成理解；之后再根据需要执行上游单元测试和真实集群验证。这些是后续练习，本轮没有代你执行。</p>
+  <div class="chapter-meta"><span>第一轮 / 概念与行为</span><span>第二轮 / 源码与测试</span><span>第三轮 / 实际验证</span></div>
+  <h2>第一轮：从 01 → 02 → 03</h2>
+  <ol class="steps"><li><strong>画出对象关系</strong>不用复制原图，写出 Deployment → ReplicaSet → Pod → 容器。再加一个 controller，解释对象和后台程序的区别。</li><li><strong>读懂一个带数字的状态片段</strong>期望 3、就绪 2、generation=8、observed=7。不要先说“报错”；先解释每个字段。</li><li><strong>在 Deployment 演示里切换四个场景</strong>先预测右边会不会报告，再点击。不一致时回看判断顺序。</li><li><strong>解释“3 = 3 也可能失败”</strong>提示：旧副本仍就绪、新版本卡住、失败条件独立检查。能用自己的话说清就进入第二轮。</li></ol>
+  <h2>第二轮：用 gh 读取一个真实文件</h2>
+  <p>下面的命令只查询公开 PR 与固定版本源码，不需要 Kubernetes 集群。可以在 PowerShell 中一条条执行。先看 diff，再看函数和对应测试，不用一开始克隆整仓库。</p>
+  <div class="code-label">READ ONLY / gh CLI · 查看最终 diff</div><pre><code>gh pr view 1743 --repo k8sgpt-ai/k8sgpt --json title,state,mergedAt,mergeCommit,url
+gh pr diff 1743 --repo k8sgpt-ai/k8sgpt --color never
+
+gh pr diff 1768 --repo k8sgpt-ai/k8sgpt --color never</code></pre>
+  <div class="code-label">READ ONLY / PowerShell · 解码固定提交源码</div><pre><code>$fileResponse = gh api 'repos/k8sgpt-ai/k8sgpt/contents/pkg/analyzer/resource_claim.go?ref=f2dd92e40ace4a6aa0e341b8907d9da312e53a76' | ConvertFrom-Json
+[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($fileResponse.content))</code></pre>
+  <p>阅读顺序：先找 <code>Analyze</code>，标出两行 List；再找 <code>knownDeviceClasses</code> 和 <code>reportedDeviceClasses</code>；最后跟到 Result。不要被指标、文档链接或脱敏字段打断主线，第二遍再补。</p>
+  <h2>第三轮：真的运行测试，再补自己的验证记录</h2>
+  <p>需要另一个 k8sgpt 源码目录，使用包含这几个 PR 的固定版本，并安装 go.mod 要求的 Go 工具链。#1768 合并基线包含四项核心修改。依赖下载可能需要网络。</p>
+  <details><summary>怎样准备这个源码目录？</summary><p>在一个准备放学习代码的新目录中执行下面的命令。克隆是下载仓库；checkout 是把本地文件切换到某个版本。这里固定到合并 SHA，方便与本文对照。请用新克隆的目录，不在有未保存改动的旧仓库中切换。</p><pre><code>gh repo clone k8sgpt-ai/k8sgpt k8sgpt-study
+Set-Location k8sgpt-study
+git checkout --detach f2dd92e40ace4a6aa0e341b8907d9da312e53a76
+go version</code></pre><p class="caption">下载与测试属于后续动手练习，本轮仅提供入口。detach 表示直接观察固定提交，适合只读研读。</p></details>
+  <div class="code-label">在 k8sgpt 源码根目录执行 · 不是本简历仓库</div><pre><code>go test ./pkg/analyzer -run '^TestResourceClaimAnalyzer' -count=1
+go test ./pkg/analyzer -run '^TestValidatingAdmissionPolicyAnalyzer' -count=1
+go test ./pkg/analyzer -run '^TestDeploymentAnalyzer' -count=1</code></pre>
+  <p class="caption">上面是未来练习入口，不是本次测试通过记录。发生构建或版本问题时，先记录提交 SHA、Go 版本和错误，不把环境失败误当成诊断逻辑失败。</p>
+  <h2>可选：有测试集群以后再观察</h2>
+  <p>只有已经具备可访问的测试集群、相应 API 支持和读取权限时，下面的分析命令才有意义。使用包含相关提交的 k8sgpt 版本；不要假定某个已发布二进制一定包含这些 PR。</p>
+  <div class="code-label">读取与诊断 · 不启用 AI 解释</div><pre><code>k8sgpt filters list
+k8sgpt analyze --filter=Deployment
+k8sgpt analyze --filter=ValidatingAdmissionPolicy,ResourceClaim
+k8sgpt analyze --filter=ResourceClaim --namespace=default --selector=app=selected</code></pre>
+  <p><code>--filter</code> 选择分析器；<code>--selector</code> 选择标签；<code>--namespace</code> 选择命名空间。分析命令的规则在 Go 程序中执行，仍然会访问集群 API。“不带 explain”不是“离线分析真实集群”。加 <code>--explain</code> 才进入 AI 解释流程，需要配置 provider，且可能命中缓存。</p>
+  <h2>学习记录 · 保存到当前浏览器</h2>
+  <div class="panel"><label class="check"><input type="checkbox" class="practice-check" data-task="draw">我能画出对象关系，解释 spec 与 status。</label><label class="check"><input type="checkbox" class="practice-check" data-task="predict">我能预测四种 Deployment 场景的结果。</label><label class="check"><input type="checkbox" class="practice-check" data-task="reference">我能解释为何引用查询不应沿用待查对象筛选。</label><label class="check"><input type="checkbox" class="practice-check" data-task="source">我已经自己打开过一个源码文件和对应测试。</label><label class="check"><input type="checkbox" class="practice-check" data-task="boundary">我能说出每个核心贡献至少一个边界。</label><label class="check"><input type="checkbox" class="practice-check" data-task="test">我实际运行了上游测试，并记录了版本与结果。</label></div>
+  <label class="legend" for="study-notes">还有哪些地方没懂？实际验证过什么？</label><textarea id="study-notes" placeholder="记录具体问题：例如 Progressing=True 为什么完成后也保留？若运行测试，记录日期、SHA、命令与结果。"></textarea><p class="status-text" id="notes-status" aria-live="polite">本地保存，不上传。</p>
+  <div class="note"><strong>下一次继续讨论的好起点</strong>从一个具体问题继续，例如“03 章第三个场景我为什么会猜错”或“resource_claim.go 这段 map 我仍没读懂”。已经会的部分不用重讲，缺的概念就从更前一层补起。</div>
+  <p class="source"><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/go.mod" target="_blank" rel="noopener">基线 Go / client-go 依赖</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/cmd/analyze/analyze.go" target="_blank" rel="noopener">CLI 参数源码</a></p>
+ </article>
+ <article class="chapter" id="ai-application" data-name="AI 应用的解释链路">
+  <div class="eyebrow">10 / AI application, grounded in evidence</div><div class="chapter-head"><h1 class="chapter-title">诊断事实，<br>怎样变成<em>AI 解释？</em></h1><span class="folio" aria-hidden="true">10</span></div>
+  <p class="intro">k8sgpt 可以作为 AI 应用项目讨论。它把领域规则、真实 API 数据、模型调用、缓存与输出串起来。这一章只看应用代码怎样组织模型的输入和结果；不要求学习训练、GPU 推理服务或模型内部结构。</p>
+  <div class="chapter-meta"><span>先修 / 02 · 项目调用链</span><span>观察基线 / #1768 合并提交</span><span>范围 / 现有项目机制 + 面试设计题</span></div>
+  <div class="note"><strong>三种说法，先分清</strong><span class="tag green">源码已实现</span> 是固定版本里能看到的行为；<span class="tag">代码推导</span> 是基于这些行为作出的解释；<span class="tag rust">改进设计</span> 是面试讨论方案。后两类不自动成为已交付功能。你的四个核心 PR 修改诊断层，AI 模块是为了理解整个项目而补学的内容。</div>
+  <h2>先认识六个 AI 应用词</h2>
+  <dl class="term-list"><dt>LLM</dt><dd>大语言模型。应用把文本等输入发给它，获得生成的回答。这里用它解释诊断；能生成流利文字，不保证推断一定真实。</dd><dt>Prompt</dt><dd>本次交给模型的指令与材料。例如“请解释这条 Kubernetes 错误，用中文回答”。模板 + 实际错误文本，才能形成最终输入。</dd><dt>Context / 上下文</dt><dd>模型本次可见的信息。没有被提供的数据，不能当成它已经查看过。这里的模型上下文，与 Go 的取消上下文 Context 不同。</dd><dt>Provider / Model</dt><dd>Provider 是模型服务后端及其适配实现；Model 是实际选择的模型。同一个 provider 可以提供不同模型。</dd><dt>Token</dt><dd>模型处理文本的计量单位，不简单等于一个中文字或一个英文单词。输入与输出都占用模型容量；很多服务也按此计费。</dd><dt>Hallucination / 幻觉</dt><dd>模型输出缺乏依据或不真实的内容。例如没有读取事件，就断言某个特定权限错误是唯一根因。</dd></dl>
+  <h2>Q1 · 为什么先用规则，再用模型？</h2>
+  <span class="tag green">源码已实现</span>
+  <p>规则负责可明确判定的事情，例如引用目标是否存在、控制器是否记录失败条件。模型负责把诊断文字变成更易读的解释与排查建议。这样可以单独测试诊断，不必为每次条件判断调用模型；不启用 explain，也能得到规则结果。</p>
+  <p><strong>面试追问：</strong>“那 LLM 有什么不可替代的价值？”可以回答：它方便整合语言解释、可能原因和排查顺序，但仍需真实证据验证根因。领域规则不是万能的，模型也不能补出它没看到的集群事实。</p>
+  <h2>Q2 · 模型实际看到了什么？</h2>
+  <span class="tag green">源码已实现</span>
+  <ol class="steps"><li><strong>按一个 Result 收集 Failure.Text</strong>Result 是某个对象的诊断；Error 列表里可能有多条 Failure。GetAIResults 遍历结果，提取它们的文本。</li><li><strong>启用匿名化时，先替换声明的敏感值</strong>使用 Failure.Sensitive 与对象身份构建映射，再对文本做替换。匿名化是选项，不是无条件执行。</li><li><strong>选择 Prompt 模板，拼接错误文本</strong>按资源 Kind 查特定模板，没有时使用默认模板；先把错误文本拼起来，供缓存身份计算使用。</li><li><strong>先查缓存，必要时填充 Prompt 并调用 provider</strong>缓存命中可以直接得到解释。否则把目标语言和错误文本填入模板，再调用 GetCompletion，返回解释文本。</li><li><strong>写入 Details</strong>启用匿名化时先还原可映射的名称，再把回答放进 Result.Details。原始诊断列表与 AI 解释是不同字段。</li></ol>
+  <div class="note orange"><strong>不要把“工具能访问集群”说成“模型看过全部集群”</strong>这条主链路主要提供诊断文本，而不是把所有 YAML、日志、事件和文档完整发给模型。Failure.KubernetesDoc 的字段文档说明也不会因此自动变成检索增强输入。工具可见信息与模型本次可见信息，必须分别讲。</div>
+  <h2>Q3 · 你的 PR 和 AI 应用有什么关系？</h2>
+  <span class="tag">代码推导</span>
+  <div class="big-quote">上游给出错误的事实，<br>模型可能把错误解释得更有说服力。</div>
+  <p>例如类别真实存在，却被筛选隐藏，规则报告“DeviceClass 不存在”。模型可能围绕这条输入建议“创建类别”，即使这句话忠实于输入，最终排查方向仍然错了。减少这种误报，是在改善解释链路上游的证据质量。</p>
+  <p>#1740 补上失败条件，也让原本没有进入解释流程的问题有机会被解释。#1765、#1768 增加可选诊断资源范围。可以讲这些结构上的作用，不能据此声称你优化了 Prompt、实现了模型调用或测得 AI 准确率提升。</p>
+  <div class="lab" id="ai-evidence-lab"><div class="lab-header"><h3>动手看 · 同一集群，给模型的“事实”可以不同</h3><span class="lab-kicker">LAB 03 / 只生成教学 Prompt</span></div><p class="caption">场景：Claim selected-claim 引用 gpu；DeviceClass gpu 真实存在，但标签与 Claim 不同。下拉框选择的是诊断方式；这里不调用模型，也不展示伪造的模型回答。</p><div class="lab-controls"><label class="field">诊断方式<select id="a-evidence-mode"><option value="wrong">假想错误方式：目标也被标签筛选</option><option value="correct">#1768：独立读取引用集合</option><option value="missing">对照：gpu 在集群中真的不存在</option></select></label><label class="field">解释语言<select id="a-language"><option value="Chinese">Chinese</option><option value="English">English</option></select></label></div><label class="check"><input id="a-anonymize" type="checkbox">教学匿名化：将 Claim 名与类别名替换成占位符</label><div class="output" id="a-finding" aria-live="polite"></div><div class="code-label">缓存未命中时可构造的教学 Prompt · 模板按固定版本展示</div><pre><code id="a-prompt"></code></pre><p class="caption" id="a-prompt-note"></p></div>
+  <h2>Q4 · Prompt 怎么设计？模型会严格听话吗？</h2>
+  <span class="tag green">已有模板</span> <span class="tag rust">后半为改进设计</span>
+  <p>默认模板要求解释错误、给步骤化方案、按 Error / Solution 输出，并要求长度限制。它使用文字指令，而不是在程序中严格校验每个字段或长度。指定格式能引导回答，不能保证结果总符合要求。</p>
+  <p>如果改进，可以明确区分“观察到的事实”“可能原因”“下一步验证”，要求没有证据时说明不确定；可消费输出需要时，再采用结构化字段与校验。CLI 的 JSON 包装，不等于 LLM 本身产生了符合 schema 的 JSON。</p>
+  <details><summary>追问：temperature 调低，是否就能解决幻觉？</summary><p>不能。它影响部分模型的采样行为；更稳定的输出也可能稳定地错误。证据、任务边界、输出校验和评估都需要考虑。不要把某个参数当成真实性开关。</p></details>
+  <h2>Q5 · 怎么减少幻觉？怎么验证解释质量？</h2>
+  <span class="tag rust">改进设计 · 未声称项目已完整实现</span>
+  <p>先保证规则输入准确，保留资源身份、明确条件、reason 与 message；把缺失信息告诉模型，要求给可验证的下一步。生成“可能原因”时，避免改写成“已经证实的根因”。涉及命令时，还要检查资源类型、命名空间和可能影响。</p>
+  <p>测试分两层：诊断层用 fake client 检验固定输入的确定性结果；解释层用一组固定诊断案例，检查是否忠于事实、是否承认信息不足、排查步骤是否正确与有用。不要只比较文字是否完全相同，也不要把 API 返回成功当成回答正确。</p>
+  <div class="grid-2"><div class="panel"><h3>可以验证的回答</h3><p>“工具发现 Claim 引用的 DeviceClass 名称不存在。请先核对名字及该类别对象是否已创建。”</p><p class="caption">人写的教学例子，不是本次模型输出。</p></div><div class="panel"><h3>超出当前证据的回答</h3><p>“这一定是某款 GPU 驱动故障，重启驱动就能修复。”</p><p class="caption">直接引用缺失不够证明驱动故障。这种回答应在解释评估中被发现。</p></div></div>
+  <h2>Q6 · 为什么用缓存？哪些变化应该让缓存失效？</h2>
+  <span class="tag green">固定版本现状</span>
+  <p>重复诊断可以复用解释，减少延迟与模型调用。该基线用 provider 名、语言和拼接后的错误文本生成缓存 key；代码留有 model 等配置维度的 TODO。最终 Prompt 模板也没有直接进入这次 key 的参数。</p>
+  <p><span class="tag">代码推导</span> 在同一缓存范围内，只切换模型或模板、其他输入相同，缓存身份仍可能相同。这是源码推导的边界；本轮没有真实切换模型复现，也不据此宣称发生过生产故障。</p>
+  <p><span class="tag rust">改进设计</span> 先定义“什么情况下两次解释请求等价”。可考虑模型、最终 Prompt / 模板版本、语言，以及影响输出的服务配置。敏感凭据不应作为可见 key 字段；缓存中的文本是 base64 编码，也不等于加密。</p>
+  <details><summary>追问：怎么测试缓存，不用真的调用模型？</summary><p>用能记录调用次数、返回固定文本的 fake provider。相同输入应复用；模型或模板变化按设计应重新调用。分别检查返回哪份答案、provider 被调用几次，避免只断言内部 hash 长什么样。</p></details>
+  <h2>Q7 · 模型超时或限流，会怎样？你会如何改进？</h2>
+  <span class="tag green">固定版本现状</span>
+  <p>规则诊断先完成，但 CLI 启用 explain 后，GetAIResults 返回错误会退出，正常打印结果的步骤不再执行。因此“代码先诊断”并不自动保证“AI 失败仍把基础结果展示给用户”。该循环遇到第一个解释错误就返回。</p>
+  <p><span class="tag rust">改进设计</span> 可以保留基础诊断，把解释状态单独标为失败，向用户说明部分解释不可用。再区分瞬时限流、鉴权错误、配额问题、用户取消；只对适合重试的错误做有限重试，并受总期限约束。不要对所有错误无限重试，也不要默认一个 429 只有一种原因。</p>
+  <details><summary>追问：并发更多模型请求，是否一定更快？</summary><p>不一定。固定基线的 AI 结果循环是串行；分析器并发参数不能直接等同模型并发。若要改进，还要核对客户端与缓存能否并发使用、限制总并发、处理限流、保留结果归属和取消传播。一次请求更快与整体服务更稳，可能有取舍。</p></details>
+  <h2>Q8 · 输入变长了怎么办？输出限制够吗？</h2>
+  <span class="tag green">源码观察</span> <span class="tag rust">方案为改进设计</span>
+  <p>这里把一个 Result 的错误文本拼接进 Prompt；所查路径没有看到输入 Token 预算与裁剪。OpenAI 适配器的输出 Token 上限，不等于为输入自动做好预算。</p>
+  <p>可以先按最终 Prompt 和实际模型计算输入预算，预留输出空间，再保留最有诊断价值的证据。截断时保留对象、条件和原因，并告知有内容未纳入；不要直接按字节切断中文或关键字段。这里没有个人性能或 Token 节省数字。</p>
+  <h2>Q9 · 发给外部模型的数据，怎样处理隐私？</h2>
+  <span class="tag green">已有可选匿名化</span> <span class="tag rust">覆盖审查属于改进设计</span>
+  <p>分析器可以在 Failure.Sensitive 声明原值与替换值，解释流程还能纳入对象身份。开匿名化后先替换再发送，收到解释后按映射还原。它不是“所有日志、任意消息中的秘密都会自动被识别并删除”。</p>
+  <p>你的两个新增分析器和 Deployment 诊断都在失败条目里附带相关名称的敏感值信息，便于接入既有流程。这可以作为代码细节解释；不应把项目整个匿名化模块归为自己的实现。</p>
+  <details><summary>源码边界：初次解释开了匿名化，交互追问也一定匿名吗？</summary><p>不能这样保证。固定版本的 interactive 直接使用初次打印输出与当前问题，再调用 GetCompletion，没有重新经过 GetAIResults 的匿名化步骤。打印输出可能含原始 Name / Error 和已经还原的 Details，因此相关标识可能重新进入交互 Prompt。这是代码可见的路径边界，本轮没有对真实模型做发送验证。</p></details>
+  <div class="quiz" data-quiz="ai-input"><h3>自测 · 模型忠实解释了一条误报，能否说明整体结果可靠？</h3><button type="button" data-answer="wrong">能，只要它没有编造与输入不同的信息。</button><button type="button" data-answer="correct">不能。上游诊断事实也要正确，解释忠实与端到端正确是两层问题。</button><p class="quiz-feedback" aria-live="polite"></p></div>
+  <p class="source"><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/analysis/analysis.go#L631" target="_blank" rel="noopener">解释与匿名化入口</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/analysis/analysis.go#L708" target="_blank" rel="noopener">Prompt / 缓存 / 模型调用</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/ai/prompts.go" target="_blank" rel="noopener">已有 Prompt 模板</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/ai/openai.go" target="_blank" rel="noopener">OpenAI 适配器</a>更细的 AI 链路证据笔记</p>
+ </article>
+
+ <article class="chapter" id="agent-interview" data-name="Agent 边界与设计追问">
+  <div class="eyebrow">11 / Define the loop before the label</div><div class="chapter-head"><h1 class="chapter-title">会解释问题，<br>和能<em>继续行动</em>之间。</h1><span class="folio" aria-hidden="true">11</span></div>
+  <p class="intro">AI 应用不一定需要自主 Agent。面试里先说明谁选择下一步、谁执行工具、谁验证结果，再谈“Agent”这个名字。这一章补足工具调用、MCP、RAG 与评估的入门含义。</p>
+  <div class="chapter-meta"><span>先修 / 10 · 模型输入与解释</span><span>范围 / 项目定位 + 设计讨论</span></div>
+  <h2>Q10 · k8sgpt 算不算 Agent？</h2>
+  <span class="tag green">固定版本主链路</span>
+  <p>普通 analyze 路径由应用按配置执行分析器，再调用文本 completion 生成解释。所查接口中没有模型自主选择工具、读取工具结果再决定下一步的循环。可以准确称为“领域诊断引擎 + LLM 解释层”；AI 应用价值不要求先贴自主 Agent 标签。</p>
+  <div class="grid-2"><div class="hero-graphic"><div class="diagram-kicker">APPLICATION WORKFLOW / 固定主链路</div><div class="flow"><div class="flow-node"><b>程序安排</b>选分析器 → 诊断<br>模型解释 → 输出</div></div><p class="caption" style="color:#bed0c2">下一步由应用代码组织。</p></div><div class="hero-graphic"><div class="diagram-kicker">AGENT LOOP / 本册使用的典型定义</div><div class="flow"><div class="flow-node"><b>模型决策</b>选工具 → 程序执行<br>读结果 → 再决策</div></div><p class="caption" style="color:#bed0c2">工具循环由某个运行时组织，并有停止条件。</p></div></div>
+  <p class="caption">Agent 一词的使用并不完全统一。这里借助典型工具循环区分职责，不以某个框架名称判定项目价值。</p>
+  <h2>Q11 · Tool calling 到底是什么？</h2>
+  <dl class="term-list"><dt>工具</dt><dd>程序提供的一项能力，例如读取某个 Pod 的事件。有名字、用途、输入参数和返回结果。</dd><dt>模型提出调用</dt><dd>模型生成结构化的工具名与参数。模型本身不因此直接获得 shell 或集群访问权。</dd><dt>程序执行</dt><dd>应用验证参数、权限和调用条件后执行，再把工具结果提供给模型。</dd><dt>循环与停止</dt><dd>模型根据新结果决定下一步或给出答案；运行时约束步数、时间、成本、重复调用和失败行为。</dd></dl>
+  <div class="note"><strong>“模型给了 kubectl 命令”不等于“模型调用了工具”</strong>文本建议与真实执行是两件事。固定版本的普通模型适配器返回文本；某些模板请求命令建议，不能据此宣称有自动修复闭环。</div>
+  <h2>Q12 · MCP 是什么？支持 MCP，就自动有 Agent 吗？</h2>
+  <p>MCP 是连接应用与工具、资源等能力的协议。工具服务器公开名字、参数结构及可调用操作；客户端可以发现和调用它们。k8sgpt 提供 MCP server，使外部客户端能够使用其诊断等能力。</p>
+  <p>模型是否自主选工具、如何保留历史、什么时候停止，仍需要客户端或其他运行时组织。MCP 本身不提供所有这些决策逻辑。固定版本还注册了资源 list / get、事件与日志读取等工具；config 和 add / remove filters 可修改本地配置。所查集群操作为读取，不包含 kubectl apply / delete 式的资源修改；“所有工具都只读”与“已有自动修改集群”这两种说法都不准确。</p>
+  <div class="hero-graphic"><div class="diagram-kicker">RESPONSIBILITY / 外部 Agent 可使用 k8sgpt</div><div class="flow"><div class="flow-node"><b>客户端 / Agent</b>模型决策<br>维护循环与边界</div><span class="flow-arrow">→</span><div class="flow-node"><b>MCP server</b>公布工具定义<br>处理调用参数</div><span class="flow-arrow">→</span><div class="flow-node"><b>k8sgpt 能力</b>诊断 / 其他已注册操作<br>结果返回客户端</div></div></div>
+  <h2>Q13 · 交互式追问，等于多轮记忆吗？</h2>
+  <span class="tag green">固定版本源码观察</span>
+  <p>该版本 interactive 路径把初次分析输出与当前问题组成新的 Prompt。所查文件没有持续追加之前每轮问答的历史。所以“界面能反复提问”和“模型每轮都能看见全部聊天历史”不是同一件事。</p>
+  <p><span class="tag rust">改进设计</span> 真正维护多轮上下文时，要明确会话归属、历史顺序、资源范围、最大长度，以及新证据是否替代旧证据。可以先做有界会话状态；不必一开始建立长期记忆系统。</p>
+  <h2>Q14 · 这里有没有 RAG？什么时候值得加？</h2>
+  <dl class="term-list"><dt>RAG</dt><dd>Retrieval-Augmented Generation，检索增强生成。先从外部资料取相关内容，再把资料作为模型生成的依据。</dd><dt>常见资料</dt><dd>匹配版本的 Kubernetes 文档、团队排障手册、驱动说明等。检索可能用关键词，也可能用向量相似度，不等于必须有向量数据库。</dd></dl>
+  <p><span class="tag green">源码观察</span> 本册所查主解释链没看到文档检索、选择片段、再注入 Prompt 的完整路径。<code>--with-doc</code> 可以从 API Discovery 读取 OpenAPI Schema，为字段说明提供资料；但 GetAIResults 读取的是 Failure.Text，不会自动把独立的 KubernetesDoc 字段拼进去。存在 API 文档补充，也不等于已经建立面向知识库的检索增强链。</p>
+  <p><span class="tag rust">改进设计</span> 当模型缺少特定版本、内部流程或驱动资料时，可以检索相应文档，保留来源与版本，并核对回答是否被资料支持。如果已有诊断足够，不一定每次都需要检索；多一层检索，也多一层错误、延迟与权限处理。</p>
+  <h2>Q15 · 如果改成排障 Agent，你先做什么？</h2>
+  <span class="tag rust">设计题 · 不是本人的既有贡献</span>
+  <ol class="steps"><li><strong>先定义一个小任务与完成条件</strong>例如解释一个 Deployment 的发布异常；输出已证实事实、未证实假设与下一步。</li><li><strong>提供有结构的证据查询工具</strong>例如查询选定资源状态与相关事件。限制资源范围，保留来源和观察时刻。</li><li><strong>让每次调用都回到证据</strong>模型选查询 → 程序执行 → 返回结果 → 模型再判断。没有证据时允许停止并说明未知。</li><li><strong>限制循环成本与错误传播</strong>步数、总时间、并发与取消都要有边界。工具失败不是“资源不存在”，也不是允许模型凭空补答案。</li><li><strong>另行设计写入操作</strong>如果需要修改集群，先形成可审阅方案，再按实际权限与用户授权执行，并验证结果。不将任意模型命令直接交给 shell。</li></ol>
+  <p>这些是面试里的设计取舍。现有 MCP 工具集必须按源码逐项核对；该方案不意味着原项目已经实现这个循环，或所有现有写入工具都具有同样的审阅与验证机制。</p>
+  <h2>Q16 · 怎么评估一个排障 Agent，而不是只听它说得好？</h2>
+  <span class="tag rust">设计题</span>
+  <div class="table-wrap"><table><thead><tr><th>层</th><th>测试或评估的问题</th></tr></thead><tbody><tr><td>诊断事实</td><td>正常、异常和过渡状态是否正确？引用筛选是否误报？用确定性用例验证。</td></tr><tr><td>模型解释</td><td>是否忠于已知事实、区分猜测与结论、引用可用来源？用固定案例加人工判断或明确评分标准。</td></tr><tr><td>工具调用</td><td>参数、权限、命名空间是否正确？是否越界、重复调用或把查询失败当成缺失？</td></tr><tr><td>任务完成</td><td>是否找出可验证的原因或合理地停止？如果执行修改，是否实际验证目标状态？</td></tr><tr><td>应用成本</td><td>延迟、调用数、Token、失败与取消路径是否可接受？和简单规则流程相比是否有实际收益？</td></tr></tbody></table></div>
+  <p>fake 模型和假客户端可以验证编排契约；真实模型与固定任务集帮助评价回答和决策质量。没有做过这些实验，就不能在简历里写通过率或成本改善数字。</p>
+  <h2>Q17 · 工具返回的数据里夹了指令，怎么办？</h2>
+  <span class="tag rust">AI 应用设计题</span>
+  <p>错误、事件、日志或资料可能含外部文本。它们应该作为证据数据读取，不是更高权限的指令。Prompt 中加分隔符有助于表达边界，但不保证抵御所有提示注入。应用还需约束工具权限与参数、验证输出；不能只靠一句“忽略恶意指令”赋予模型任意执行能力。</p>
+  <h2>先准备哪几题？</h2>
+  <div class="table-wrap"><table><thead><tr><th>优先级</th><th>先能讲清</th><th>为什么与你有关</th></tr></thead><tbody><tr><td>第一轮</td><td>Q1–3、Q10、Q12</td><td>项目定位、模型输入、PR 影响与 Agent / MCP 边界。</td></tr><tr><td>第二轮</td><td>Q4–7、Q9</td><td>Prompt、质量、缓存、失败和数据处理，直接可对照代码。</td></tr><tr><td>第三轮</td><td>Q8、Q13–17</td><td>预算、多轮、RAG、Agent 设计与评估，明确作为扩展讨论。</td></tr></tbody></table></div>
+  <div class="note"><strong>一段符合贡献边界的表达</strong>“我参与的是 k8sgpt 的诊断层贡献。为了理解整个应用，我也阅读了诊断文本如何进入 Prompt、缓存和模型解释流程。这些 PR 提高了上游诊断的完整性与正确性；模型调用、MCP 等模块是我补学的项目背景，并非这几个 PR 由我实现的部分。”只在实际阅读并理解相应内容后使用这段表达。</div>
+  <div class="quiz" data-quiz="agent"><h3>自测 · 一个项目提供 MCP server，能证明什么？</h3><button type="button" data-answer="correct">它提供可被客户端发现和调用的能力；自主循环仍需核对运行时。</button><button type="button" data-answer="wrong">它已经内建模型规划、长期记忆和自动修复闭环。</button><p class="quiz-feedback" aria-live="polite"></p></div>
+  <p class="source"><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/ai/iai.go" target="_blank" rel="noopener">模型接口</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/ai/interactive/interactive.go" target="_blank" rel="noopener">交互模式源码</a><a href="https://github.com/k8sgpt-ai/k8sgpt/blob/f2dd92e40ace4a6aa0e341b8907d9da312e53a76/pkg/server/mcp.go" target="_blank" rel="noopener">MCP 工具注册与处理</a><a href="https://modelcontextprotocol.io/specification/2025-06-18/server/tools" target="_blank" rel="noopener">MCP 官方 · Tools</a><a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank" rel="noopener">典型 workflow / agent 的区分</a></p>
+ </article>
+ </main>
+</div>
+<script>
+(() => {
+ 'use strict';
+ const $ = id => document.getElementById(id);
+ const chapters = [...document.querySelectorAll('.chapter')];
+ const ids = chapters.map(c => c.id);
+ const navLinks = [...document.querySelectorAll('#chapter-nav a')];
+ const key = 'k8sgpt-field-notes-v1';
+ let canStore = true;
+ let state = {done:{},tasks:{},draft:'',notes:'',last:'start'};
+ try {
+  const saved = JSON.parse(localStorage.getItem(key) || 'null');
+  if (saved && typeof saved === 'object') {
+   for (const id of ids) state.done[id] = saved.done?.[id] === true;
+   for (const task of ['draw','predict','reference','source','boundary','test']) state.tasks[task] = saved.tasks?.[task] === true;
+   state.draft = typeof saved.draft === 'string' ? saved.draft : '';
+   state.notes = typeof saved.notes === 'string' ? saved.notes : '';
+   state.last = ids.includes(saved.last) ? saved.last : 'start';
+  }
+ } catch { canStore = false; }
+ function save() {
+  if (!canStore) return false;
+  try { localStorage.setItem(key, JSON.stringify(state)); return true; }
+  catch { canStore = false; return false; }
+ }
+ function updateProgress() {
+  const n = ids.filter(id => state.done[id]).length;
+  $('progress-label').textContent = '已掌握 ' + n + ' / ' + ids.length + ' 章';
+  $('progress-fill').style.width = (n / ids.length * 100) + '%';
+  navLinks.forEach(a => a.classList.toggle('done', !!state.done[a.hash.slice(1)]));
+  document.querySelectorAll('[data-complete]').forEach(c => { c.checked = !!state.done[c.dataset.complete]; });
+ }
+ function showChapter(id, focus = false) {
+  if (!ids.includes(id)) id = 'start';
+  chapters.forEach(c => { c.hidden = c.id !== id; });
+  navLinks.forEach(a => {
+   const active = a.hash === '#' + id;
+   a.classList.toggle('active',active);
+   if (active) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+  });
+  $('current-crumb').textContent = $(id).dataset.name;
+  document.title = $(id).dataset.name + ' · K8sGPT 研读手册';
+  state.last = id; save();
+  document.querySelector('.rail').classList.remove('open');
+  document.querySelector('.mobile-menu').setAttribute('aria-expanded','false');
+  if (focus) { window.scrollTo(0,0); $('main').focus({preventScroll:true}); }
+ }
+ function navigate(id) {
+  if (!ids.includes(id)) return;
+  if (location.hash !== '#' + id) history.pushState(null,'','#'+id);
+  showChapter(id,true);
+ }
+ const criteria = {
+  start:'我知道本册学习范围，并接受从对象与状态开始。',
+  basics:'我能解释 Pod 与容器的区别，并画出 Deployment → ReplicaSet → Pod。',
+  project:'我能解释 API 查询、规则发现与 AI 解释的分工。',
+  deployment:'我能推演正常过渡、旧状态与数量达标但失败三个反例。',
+  policy:'我能解释已有 warning、Binding 引用与无标签 Get。',
+  claim:'我能解释直接 DeviceClass 引用、筛选范围和单 Claim 去重。',
+  code:'我能沿一段源码推演输入输出，并解释一个对应断言。',
+  interview:'我能用自己的话回答核心问题，且没有把未做的过程说成亲历。',
+  evidence:'我知道如何打开固定提交源码，区分事实与未执行的验证。',
+  practice:'我完成了当前适合我的练习，并记录了未懂的具体问题。',
+  'ai-application':'我能说清模型真正收到的数据，以及 Prompt、缓存、失败和隐私的边界。',
+  'agent-interview':'我能区分 AI 工作流、工具循环与 MCP，并把设计方案和已有贡献分开。'
+ };
+ chapters.forEach((chapter,i) => {
+  const done = document.createElement('label'); done.className = 'completion';
+  const check = document.createElement('input'); check.type = 'checkbox'; check.dataset.complete = chapter.id;
+  const copy = document.createElement('span'); const b = document.createElement('strong'); b.textContent = '我能做到这一点，再标记掌握';
+  const s = document.createElement('small'); s.textContent = criteria[chapter.id]; copy.append(b,s); done.append(check,copy); chapter.append(done);
+  check.addEventListener('change',() => {state.done[chapter.id] = check.checked;save();updateProgress();});
+  const footer = document.createElement('div'); footer.className='chapter-footer';
+  const prev = document.createElement('button'); prev.type='button';prev.className='prev';prev.textContent=i?'← 上一章 · '+chapters[i-1].dataset.name:'从概念开始，按自己的速度走';prev.disabled=!i;
+  if(i) prev.addEventListener('click',()=>navigate(chapters[i-1].id));
+  const next=document.createElement('button');next.type='button';next.className='next';next.textContent=i<chapters.length-1?'下一章 · '+chapters[i+1].dataset.name+' →':'回到学习路线 ↗';next.addEventListener('click',()=>navigate(i<chapters.length-1?chapters[i+1].id:'start'));
+  footer.append(prev,next);chapter.append(footer);
+ });
+ window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(ids.includes(id))showChapter(id,true);});
+ window.addEventListener('popstate',()=>{const id=location.hash.slice(1);showChapter(ids.includes(id)?id:'start',true);});
+ document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  if(ids.includes(a.hash.slice(1)))a.addEventListener('click',e=>{e.preventDefault();navigate(a.hash.slice(1));});
+ });
+ document.querySelector('.mobile-menu').addEventListener('click',e=>{
+  const open=document.querySelector('.rail').classList.toggle('open');e.currentTarget.setAttribute('aria-expanded',String(open));
+ });
+ let printDetails=[];
+ function preparePrint(){printDetails=[...document.querySelectorAll('details')].filter(d=>!d.open);printDetails.forEach(d=>{d.open=true;});}
+ function restorePrint(){printDetails.forEach(d=>{d.open=false;});printDetails=[];}
+ window.addEventListener('beforeprint',preparePrint);window.addEventListener('afterprint',restorePrint);
+ $('print-button').addEventListener('click',()=>window.print());
+ $('glossary-shortcut').addEventListener('click',()=>{
+  navigate('evidence');
+  requestAnimationFrame(()=>{showChapter('evidence');$('glossary-search').scrollIntoView({block:'center'});$('glossary-search').focus({preventScroll:true});});
+ });
+ const layerText={
+  deployment:'Deployment 是 API 中的配置对象。你写“镜像版本 v2、期望 3 份”。Deployment controller 读它，协调 ReplicaSet。版本更新期间可能同时存在新旧两个 ReplicaSet。',
+  replicaset:'ReplicaSet 保存一个 Pod 模板与目标数量。ReplicaSet controller 尝试维持这组 Pod 的份数。Deployment 更新版本时，通常会协调新旧 ReplicaSet。',
+  pod:'Pod 是实际被调度到某个 Node 的运行单元，里面有一个或多个容器。某个 Pod 消失后，控制器可以创建替代 Pod；新的对象不是原来的 Pod。',
+  controller:'Controller 是后台程序，不是应用实例。它读 API 对象中的目标与现状，持续协调两者。Deployment 对象是配置记录，Deployment controller 才是处理记录的程序。'
+ };
+ document.querySelectorAll('[data-layer]').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('[data-layer]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)));$('layer-text').textContent=layerText[button.dataset.layer];
+ }));
+ const number = id => Math.max(0,Math.min(20,Number($(id).value)||0));
+ function output(id,title,lines,bad) {
+  const el=$(id);el.className='output '+(bad?'bad':'good');el.replaceChildren();
+  const label=document.createElement('small');label.textContent=title;el.append(label);
+  lines.forEach((line,i)=>{const item=document.createElement(i===0?'strong':'p');item.textContent=line;el.append(item);});
+ }
+ function updateDeployment() {
+  const nil=$('d-nil').checked;
+  const desired=number('d-desired'),ready=number('d-ready'),gen=number('d-generation'),obs=number('d-observed');
+  const av=$('d-available').value,pr=$('d-progressing').value;
+  const mismatch=!nil&&desired!==ready,stale=obs<gen,healthy=av==='True'&&pr==='True';
+  const report=mismatch&&!stale&&!healthy,failed=pr==='False';
+  let reason;
+  if(nil) reason='spec.replicas 为 nil：跳过副本差异。';
+  else if(!mismatch) reason='期望数 = 就绪数：没有副本差异。';
+  else if(stale) reason='observedGeneration < generation：状态未跟上，暂不报告数量差异。';
+  else if(healthy) reason='Available 与 Progressing 同时 True：抑制过渡中的数量差异。';
+  else reason='有数量差异，且不满足抑制条件：报告副本差异。';
+  output('d-old','#1740 之前 / 核心数量判断',[mismatch?'报告副本数量差异':'没有副本差异诊断',mismatch?'数量不一致就触发，未使用状态版本或正常进展抑制。':'这一层不独立检查 Progressing=False；数量相等时可能漏报发布失败。'],mismatch);
+  const lines=[report&&failed?'报告数量差异 + 失败条件':failed?'报告发布失败条件':report?'报告副本数量差异':'这两项检查没有报告问题',reason,failed?'独立分支：Progressing=False，报告 reason=ProgressDeadlineExceeded（演示原因）。':'独立分支：没有 Progressing=False，不触发这项诊断。'];
+  output('d-new','#1740 + #1743 / 最终相关规则',lines,report||failed);
+  $('d-trace').textContent='顺序：nil/数量 → 观察版本 → 两条件 AND；另行检查 Progressing=False。'+(stale&&failed?' 当前状态落后，但 False 条件仍被报告；版本门只控制数量分支。':'')+' 无报告不等于整个 Deployment 健康。';
+  $('d-desired').disabled=nil;
+ }
+ const scenarios={stale:[3,2,8,7,'True','True'],healthy:[3,2,8,8,'True','True'],timeout:[3,3,8,8,'True','False'],shortage:[3,1,8,8,'False','Missing']};
+ const fields=['d-desired','d-ready','d-generation','d-observed','d-available','d-progressing'];
+ document.querySelectorAll('[data-scenario]').forEach(b=>b.addEventListener('click',()=>{
+  const values=scenarios[b.dataset.scenario];fields.forEach((f,i)=>{$(f).value=values[i];});$('d-nil').checked=false;updateDeployment();
+ }));
+ document.querySelectorAll('#deployment-lab input,#deployment-lab select').forEach(el=>el.addEventListener('input',updateDeployment));
+ function updateFilter() {
+  const mode=$('f-class').value,requests=$('f-requests').value;
+  const exists=mode!=='missing',filtered=mode==='same',count=requests==='empty'?0:requests==='repeat'?2:1;
+  $('f-claim-text').textContent=requests==='empty'?'deviceClassName: ""（空名字）':'deviceClassName: gpu'+(count===2?' · 两条请求':'');
+  const target=$('f-target');target.className='resource'+(exists?'':' empty');target.replaceChildren();
+  const b=document.createElement('b');b.textContent=exists?'DeviceClass gpu':'无 DeviceClass gpu';const dim=document.createElement('div');dim.className='dim';dim.textContent=mode==='different'?'cluster-scoped · tier=platform':mode==='same'?'cluster-scoped · app=selected':'真实引用目标不存在';target.append(b,dim);
+  const wrong=count&&!filtered?count:0,correct=count&&!exists?1:0;
+  output('f-old','错误方式 / 假想反例',[wrong?'报告 '+wrong+' 条缺失引用':'没有缺失引用诊断','对 DeviceClass 也附带 app=selected；此反例同时未做重复去重。'],!!wrong);
+  output('f-new','#1768 / 最终实现',[correct?'报告 1 条缺失引用':'没有缺失引用诊断',requests==='empty'?'空直接引用名字被跳过。':exists?'未过滤的类别集合包含 gpu，引用有效。':'类别真实不存在，同 Claim 内同名缺失只报告一次。'],!!correct);
+  $('f-trace').textContent=mode==='different'&&count?'误报来自把“没被标签选中”当成“在集群里不存在”。最终实现把 Claim 筛选与 DeviceClass 存在性分开。':mode==='missing'&&count?'这是实际缺失，不是标签误报。重复引用的去重范围是单个 Claim。':'这项检查仅判断直接 DeviceClass 引用；没有告警不代表设备已分配。';
+ }
+ ['f-class','f-requests'].forEach(id=>$(id).addEventListener('change',updateFilter));
+ function updateAIProof() {
+  const mode=$('a-evidence-mode').value,anonymous=$('a-anonymize').checked,language=$('a-language').value;
+  if(mode==='correct'){
+   output('a-finding','#1768 / 正确存在性查询',['本检查没有缺失引用','DeviceClass gpu 存在。该 Claim 不因这项检查产生 Failure。'],false);
+   $('a-prompt').textContent='（这项检查无 Failure，不为它生成解释 Prompt。其他对象或分析器可能仍有异常结果。）';
+   $('a-prompt-note').textContent='若整个分析结果列表为空，GetAIResults 会直接返回，不发起解释调用。';return;
+  }
+  const name=anonymous?'CLAIM_PLACEHOLDER':'selected-claim',klass=anonymous?'CLASS_PLACEHOLDER':'gpu';
+  const finding='ResourceClaim '+name+' references DeviceClass '+klass+' which does not exist.';
+  output('a-finding',mode==='wrong'?'假想错误筛选 / 教学反例':'真实缺失 / 教学对照',[mode==='wrong'?'产生一条不正确的诊断':'产生一条有事实依据的诊断',finding],true);
+  $('a-prompt').textContent='Simplify the following Kubernetes error message delimited by triple dashes written in --- '+language+' --- language; --- '+finding+' ---.\nProvide the most possible solution in a step by step style in no more than 280 characters. Write the output in the following format:\nError: {Explain error here}\nSolution: {Step by step solution here}';
+  $('a-prompt-note').textContent=(mode==='wrong'?'此时输入本身是误报。它与“目标真的不存在”时可以是完全相同的文字，模型仅凭这段输入无法替你确认存在性。':'此时规则诊断有依据；模型仍需区分已知事实与可能原因。')+(anonymous?' 占位符只演示映射思路，不复刻项目随机 MaskString 算法。':'')+' 280 characters 是模板文字要求，不是程序校验或 Token 预算。';
+ }
+ ['a-evidence-mode','a-language','a-anonymize'].forEach(id=>$(id).addEventListener('change',updateAIProof));
+ const feedback={pod:'Pod 管理一个或多个共享网络、可共享卷的容器。一个主要容器是常见用法，不是定义。',llm:'Failure 先由 Go 规则生成；--explain 才进入解释流程，且可能命中缓存。',timeout:'数量相等只排除了副本差异。Progressing=False 仍由另一个独立分支报告。',policy:'标签筛选只说明没被选中。独立 Get 的 NotFound 才能支持缺失判断；其他错误向上传递。',claim:'Claim 名字与 DeviceClass 名字不是同一字段。筛选 Claim，引用目标按未过滤的名字集合判断。','ai-input':'上游误报可以被模型忠实地解释。需要分别验证诊断事实、解释质量和端到端结果。',agent:'MCP 暴露能力；模型选工具、执行循环、记忆与停止机制仍需核对具体客户端或运行时。'};
+ document.querySelectorAll('[data-quiz]').forEach(quiz=>quiz.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{
+  quiz.querySelectorAll('button').forEach(b=>{b.setAttribute('aria-pressed',String(b===button));b.classList.remove('correct');});
+  const correct=button.dataset.answer==='correct';if(correct)button.classList.add('correct');
+  quiz.querySelector('.quiz-feedback').textContent=(correct?'判断正确。':'再检查一个概念：')+feedback[quiz.dataset.quiz];
+ })));
+ const glossary=[
+  ['Pod / 容器','Pod 是 Kubernetes 管理的运行单元，可装一个或多个容器，共享网络与可共享卷。'],
+  ['Deployment','保存目标应用模板、份数和更新策略，由控制器协调发布。'],
+  ['ReplicaSet / 副本','维持一个 Pod 模板的目标数量；Deployment 管理新旧 ReplicaSet。'],
+  ['Controller / 控制器','持续观察 API 对象并尝试让实际状态接近目标的后台程序。'],
+  ['spec / status','spec 是目标；status 是系统记录的观察结果，两者异步变化。'],
+  ['generation','对象期望状态的代次；不是镜像 tag，也不是 Pod 数量或 resourceVersion。'],
+  ['observedGeneration','控制器已观察到的代次；落后说明状态尚未跟上，不等于完成发布。'],
+  ['Ready / 就绪','ReadyReplicas 是就绪 Pod 数，可能包含旧版本；不等于仅仅 Running。'],
+  ['Available / 可用','Available=True 表示最低可用性，不保证所有新副本完成。'],
+  ['Progressing / 进展','True 可以表示进行中或已经完成；False 表示失败条件，需读 reason。'],
+  ['ProgressDeadlineExceeded','Kubernetes 记录进展超时的 reason；k8sgpt 不自己计时。'],
+  ['Namespace / 命名空间','对象的逻辑分组与命名范围；DeviceClass、Policy、Binding 为集群级。'],
+  ['Label / Selector / 标签','标签是键值标记；选择器是查询条件。引用对象不必有同样标签。'],
+  ['--filter / --selector','filter 选择分析器类型；selector 选择待查对象的标签。'],
+  ['Admission / 准入','API 请求处理中的对象检查环节，与 Pod 运行后健康检查不同。'],
+  ['Policy / VAP','ValidatingAdmissionPolicy 定义校验规则，status 可含类型检查 warnings。'],
+  ['Binding / 绑定','ValidatingAdmissionPolicyBinding 通过 policyName 引用规则并配置适用范围。'],
+  ['CEL','Common Expression Language，表达式语言；这项贡献只读取已有类型检查告警。'],
+  ['DRA','Dynamic Resource Allocation，动态资源分配；本 PR 不实现分配器。'],
+  ['ResourceClaim / 申请','命名空间内的设备需求对象，本检查分析直接 DeviceClass 引用。'],
+  ['ResourceClaimTemplate','用于生成 Claim 的模板；作为背景出现，未被 #1768 分析。'],
+  ['DeviceClass / 设备类','集群级设备类别与选择条件，不是一块具体硬件。'],
+  ['client-go / List / Get','Go 客户端查询 API：List 读一批，Get 按名称取一个。'],
+  ['Analyzer / 分析器','按代码规则检查 API 对象，输出诊断或执行错误。'],
+  ['Result / Failure / error','Result.Error 是问题条目列表；Go error 是工具执行失败。'],
+  ['nil / 指针','nil 表示无指针值；*p 读值前要先排除 nil。'],
+  ['map / 集合','用名字作键查存在性；reportedDeviceClasses 用于单 Claim 内去重。'],
+  ['Context / ctx','Go 调用取消与期限的上下文，与 kubeconfig 集群 context 不同。'],
+  ['fake client / 假客户端','内存中预置对象，验证分析分支；不运行控制器或分配设备。'],
+  ['PrependReactor','在 fake client 前插入动作处理器，用于落实或检查特定查询。'],
+  ['误报 / 漏报','误报：正常对象被诊断为异常。漏报：已有异常未被诊断发现。'],
+  ['--explain / LLM','对规则已发现的问题生成 AI 解释，可命中缓存；不启用也能诊断。'],
+  ['Prompt / 提示词','模型这次收到的指令与材料。模板填入语言和真实错误后，才形成最终输入。'],
+  ['模型上下文 / Context','本次实际提供给模型的信息。它与 Go 取消上下文、集群 context 分别不同。'],
+  ['Provider / Model','服务后端及其适配实现 / 具体选择的模型；同一后端可有多个模型。'],
+  ['Token / 预算','模型文本计量单位。输入与输出均要考虑；字符数量不等于 Token 数。'],
+  ['幻觉 / Hallucination','输出缺乏依据或不真实。流利、稳定、API成功都不能证明事实正确。'],
+  ['缓存 / Cache','复用解释以减少调用；需要定义请求等价性，模型与 Prompt 变化可能影响答案。'],
+  ['Base64','编码方式，不是加密。缓存文本经过编码也可能还包含敏感内容。'],
+  ['Agent / 工具循环','典型模式是模型选择工具，程序执行，模型读取结果后继续决策或停止。'],
+  ['Tool calling / 工具调用','模型给出结构化工具与参数，应用验证并执行；文本命令建议不是执行。'],
+  ['MCP','Model Context Protocol，连接客户端与工具、资源等能力的协议，不自动提供完整 Agent 运行时。'],
+  ['RAG / 检索增强','先取相关外部资料，再注入模型上下文；不要求必须使用向量数据库。'],
+  ['多轮记忆 / 历史','模型每轮可见的已保留对话。界面能继续提问，不等于它一直收到全部历史。'],
+  ['Prompt injection / 提示注入','外部证据混入试图改变指令的内容；分隔符不是完整防护机制。'],
+  ['评估 / Evaluation','分别验证事实、解释、工具调用、任务结果和成本；模型调用成功不等于任务完成。']
+ ];
+ function renderGlossary() {
+  const q=$('glossary-search').value.trim().toLowerCase();const results=glossary.filter(([term,description])=>(term+' '+description).toLowerCase().includes(q));
+  const container=$('glossary-results');container.replaceChildren();
+  if(!results.length){const p=document.createElement('p');p.textContent='没有找到这个词。可以把它记到第 09 章，作为下一次讨论入口。';container.append(p);return;}
+  for(const [term,description] of results){const div=document.createElement('div');div.className='glossary-item';const b=document.createElement('b');b.textContent=term;const span=document.createElement('span');span.textContent=description;div.append(b,span);container.append(div);}
+ }
+ $('glossary-search').addEventListener('input',renderGlossary);
+ function bindNotes(id,prop,statusId){
+  $(id).value=state[prop];
+  $(id).addEventListener('input',()=>{state[prop]=$(id).value;$(statusId).textContent=save()?'已保存在当前浏览器，不上传。':'浏览器不允许本地保存，本次会话内可编辑；关闭前请自行复制。';});
+ }
+ bindNotes('answer-draft','draft','draft-status');bindNotes('study-notes','notes','notes-status');
+ document.querySelectorAll('.practice-check').forEach(check=>{check.checked=!!state.tasks[check.dataset.task];check.addEventListener('change',()=>{state.tasks[check.dataset.task]=check.checked;save();});});
+ $('reset-progress').addEventListener('click',()=>{
+  state={done:{},tasks:{},draft:'',notes:'',last:'start'};save();
+  $('answer-draft').value='';$('study-notes').value='';document.querySelectorAll('.practice-check').forEach(c=>{c.checked=false;});updateProgress();navigate('start');
+ });
+ updateProgress();updateDeployment();updateFilter();updateAIProof();renderGlossary();
+ showChapter(ids.includes(location.hash.slice(1))?location.hash.slice(1):state.last);
+ if(!canStore){$('progress-label').textContent+='（本次会话）';$('draft-status').textContent=$('notes-status').textContent='当前浏览器禁用本地保存，关闭前请自行复制文字。';}
+})();
+</script>
+</body>
+</html>

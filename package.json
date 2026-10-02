@@ -7,6 +7,7 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "library:import": "node scripts/import-learning.mjs",
     "astro": "astro"
   },
   "dependencies": {
