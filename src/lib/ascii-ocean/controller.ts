@@ -49,6 +49,17 @@ export function mountAsciiOcean(root: HTMLElement) {
   const { signal } = events;
   const STEP = 1 / 60;
   const clock = new FrameClock();
+  // Adaptive quality: devices that miss the frame budget step down the scene's
+  // resolution and density; comfortable devices step back up. Never persisted.
+  const DEGRADE_COST_MS = 7;
+  const RECOVER_COST_MS = 3.5;
+  const DEGRADE_FRAMES = 45;
+  const RECOVER_FRAMES = 400;
+  let qualityLevel = 0;
+  let costEma = 0;
+  let overFrames = 0;
+  let underFrames = 0;
+  let graceFrames = 90;
   let width = 0;
   let height = 0;
   let frame = 0;
@@ -73,12 +84,47 @@ export function mountAsciiOcean(root: HTMLElement) {
     root.dataset.motion = reduced.matches ? 'reduced' : preferences.paused ? 'paused' : canAnimate() ? 'playing' : 'idle';
   };
 
+  function watchQuality(cost: number) {
+    if (graceFrames > 0) { graceFrames--; return; }
+    costEma = costEma === 0 ? cost : costEma * .9 + cost * .1;
+    if (costEma > DEGRADE_COST_MS) {
+      overFrames++;
+      underFrames = 0;
+    } else if (costEma < RECOVER_COST_MS) {
+      underFrames++;
+      overFrames = 0;
+    } else {
+      overFrames = 0;
+      underFrames = 0;
+    }
+    if (overFrames >= DEGRADE_FRAMES && qualityLevel < 3) {
+      qualityLevel++;
+      applyQuality();
+    } else if (underFrames >= RECOVER_FRAMES && qualityLevel > 0) {
+      qualityLevel--;
+      applyQuality();
+    }
+  }
+
+  function applyQuality() {
+    overFrames = 0;
+    underFrames = 0;
+    costEma = 0;
+    graceFrames = 120;
+    scene.setQuality(qualityLevel);
+    draw();
+  }
+
   function tick(now: number) {
     frame = 0;
     if (!canAnimate()) return;
-    const plan = clock.advance(now);
+    const plan = clock.advance(now, scene.paintInterval());
     for (let i = 0; i < plan.steps; i++) scene.step(STEP);
-    if (plan.draw) draw();
+    if (plan.draw) {
+      const started = performance.now();
+      draw();
+      watchQuality(performance.now() - started);
+    }
     frame = requestAnimationFrame(tick);
   }
 
@@ -86,6 +132,10 @@ export function mountAsciiOcean(root: HTMLElement) {
     cancelAnimationFrame(frame);
     frame = 0;
     clock.reset();
+    costEma = 0;
+    overFrames = 0;
+    underFrames = 0;
+    graceFrames = 60;
     scene.releasePointer();
     updateControls();
     if (canAnimate()) frame = requestAnimationFrame(tick);
@@ -98,7 +148,7 @@ export function mountAsciiOcean(root: HTMLElement) {
     if (nextWidth < 1 || nextHeight < 1 || (nextWidth === width && nextHeight === height)) return;
     width = nextWidth;
     height = nextHeight;
-    scene.resize(width, height, Math.min(devicePixelRatio || 1, 2));
+    scene.resize(width, height, devicePixelRatio || 1);
     draw();
   };
 

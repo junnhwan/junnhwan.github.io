@@ -16,15 +16,19 @@ export interface Contributions {
   source: 'live' | 'fallback';
 }
 
-// Verified against GitHub search on 2026-10-02. A failed request must not label
+// Verified against GitHub search on 2026-10-24. A failed request must not label
 // these cached numbers with the current build date.
-const FALLBACK_UPDATED_AT = new Date('2026-10-02T00:00:00+08:00');
+const FALLBACK_UPDATED_AT = new Date('2026-10-24T00:00:00+08:00');
 const FALLBACK_COUNTS: RepoCounts = {
   'The-PR-Agent/pr-agent': 34,
-  'k8sgpt-ai/k8sgpt': 11,
+  'k8sgpt-ai/k8sgpt': 12,
+  'thedotmack/claude-mem': 10,
   'kprompt/kprompt': 2,
+  'kubevela/kubevela': 2,
+  'agentscope-ai/agentscope-go': 2,
+  'kubernetes-sigs/kueue': 1,
+  'agentscope-ai/ReMe': 1,
   'ag2ai/ag2': 1,
-  'kubevela/kubevela': 1,
   'k0sproject/k0smotron': 1,
   'updatecli/updatecli': 1,
   'kubeflow/sdk': 1,
@@ -86,7 +90,16 @@ async function fetchCounts(): Promise<RepoCounts> {
   throw new Error('GitHub search did not return all contributions');
 }
 
-export async function getContributions(): Promise<Contributions> {
+// Both /about and the home panel render during one build; a module-level
+// promise keeps them on a single live fetch (and a single fallback).
+let contributionsCache: Promise<Contributions> | null = null;
+
+export function getContributions(): Promise<Contributions> {
+  contributionsCache ??= fetchContributions();
+  return contributionsCache;
+}
+
+async function fetchContributions(): Promise<Contributions> {
   const summarise = (counts: RepoCounts, source: Contributions['source'], updatedAt: Date): Contributions => ({
     counts,
     total: Object.values(counts).reduce((sum, n) => sum + n, 0),

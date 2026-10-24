@@ -1,86 +1,9 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getContributions, allMergedUrl, GH_USER } from '../../utils/contributions';
+import { featuredRepos as featured, moreRepos as more } from '../../data/oss';
 
 const { counts, total, repoCount, updatedAt, source } = await getContributions();
-
-// Curated from the resume. Dates are upstream merge dates, verified on GitHub.
-const featured = [
-  {
-    repo: 'The-PR-Agent/pr-agent',
-    name: 'PR-Agent',
-    stack: 'Python · LiteLLM · A2A',
-    note: '开源代码审查 Agent',
-    topics: [
-      {
-        title: '模型上下文预算',
-        description: '/ask_line 在发送请求前按实际模型重新计算 Prompt，裁剪历史并保留当前问题。',
-        prs: [{ number: 2862, title: 'fix(ask-line): enforce conversation history token budget', date: '2026-08-28' }],
-      },
-      {
-        title: '分块容错与恢复',
-        description: '保留成功分块，提供可选的失败分块补跑；按顺序汇总结果，并恢复模型部署配置。',
-        prs: [
-          { number: 2829, title: 'fix(suggestions): retain successful chunks after partial failure', date: '2026-08-28' },
-          { number: 3324, title: 'feat(improve): recover failed chunks with fallback models', date: '2026-09-14' },
-        ],
-      },
-      {
-        title: '上下文准备性能',
-        description: '在同一请求中复用 Diff 预处理与 Token 计数，切换备用模型时单独准备。',
-        prs: [{ number: 3291, title: 'perf(review): reuse prepared diff chunks', date: '2026-09-11' }],
-      },
-      {
-        title: 'A2A 多轮上下文',
-        description: '在同一用户与会话范围内恢复 PR / Diff 上下文，继续处理后续任务。',
-        prs: [{ number: 3643, title: 'fix(mosaico): retain A2A context across follow-up tasks', date: '2026-09-23' }],
-      },
-    ],
-  },
-  {
-    repo: 'k8sgpt-ai/k8sgpt',
-    name: 'k8sgpt',
-    stack: 'Go · Kubernetes',
-    note: 'Kubernetes 智能诊断工具',
-    topics: [
-      {
-        title: '新增资源分析器',
-        description: '新增 ValidatingAdmissionPolicy 与 ResourceClaim 分析器，识别类型检查告警与缺失引用。',
-        prs: [
-          { number: 1765, title: 'feat: add ValidatingAdmissionPolicy analyzer', date: '2026-09-14' },
-          { number: 1768, title: 'feat: add ResourceClaim analyzer for missing DeviceClasses', date: '2026-09-26' },
-        ],
-      },
-      {
-        title: 'Deployment 状态诊断',
-        description: '结合状态更新与 Progressing 条件，减少正常滚动更新误报，并补充发布超时诊断。',
-        prs: [
-          { number: 1740, title: 'fix: report Deployment ProgressDeadlineExceeded when replica counts still match', date: '2026-08-19' },
-          { number: 1743, title: 'fix: ignore in-progress Deployment replica mismatches', date: '2026-09-25' },
-        ],
-      },
-    ],
-  },
-];
-
-const more = [
-  {
-    repo: 'The-PR-Agent/pr-agent',
-    prs: [
-      { number: 3011, title: 'GitHub Review 提交后触发命令' },
-      { number: 2993, title: 'CodeCommit 多目标 PR 审查' },
-    ],
-  },
-  {
-    repo: 'k8sgpt-ai/k8sgpt',
-    prs: [
-      { number: 1725, title: 'Job 重试成功后的状态诊断' },
-      { number: 1737, title: '按类型识别 Gateway 状态条件' },
-    ],
-  },
-  { repo: 'ag2ai/ag2', prs: [{ number: 3216, title: '流式输出后的重试边界' }] },
-  { repo: 'kubevela/kubevela', prs: [{ number: 7303, title: 'TraitDefinition 准入冲突校验' }] },
-];
 
 const synced = new Intl.DateTimeFormat('sv-SE', {
   timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',

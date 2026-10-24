@@ -20,11 +20,27 @@ const hash = (x: number) => {
 };
 const rgb = (color: number[], alpha = 1) => `rgba(${color.join(',')},${alpha})`;
 
+/** Spend less per frame when a device cannot keep up; the art direction is unchanged. */
+interface QualityTier {
+  dprCap: number;
+  particleScale: number;
+  strandScale: number;
+  glow: boolean;
+}
+const QUALITY_LEVELS: readonly QualityTier[] = [
+  { dprCap: 2, particleScale: 1, strandScale: 1, glow: true },
+  { dprCap: 1.5, particleScale: .7, strandScale: .75, glow: false },
+  { dprCap: 1.25, particleScale: .5, strandScale: .55, glow: false },
+  { dprCap: 1.25, particleScale: .5, strandScale: .55, glow: false },
+];
+
 export class TidalScene {
   private ctx: CanvasRenderingContext2D;
   private width = 0;
   private height = 0;
   private dpr = 1;
+  private rawDpr = 1;
+  private quality = QUALITY_LEVELS[0];
   private time = 9;
   private light = false;
   private kind: OceanKind = 'sharks';
@@ -41,6 +57,16 @@ export class TidalScene {
   private ripples: Ripple[] = [];
   private glow: HTMLCanvasElement;
   private pointer = { x: 0, y: 0, vx: 0, vy: 0, tx: 0, ty: 0, strength: 0, active: false };
+  // Per-index random factors are resolution-independent and never change; only
+  // time and size are applied at draw time, so no hashing runs in the frame loop.
+  private plankton = {
+    drifting: Array.from({ length: 235 }, (_, i) => {
+      const seed = hash(i + 17);
+      return { seed, uBase: hash(i * 3 + 7), speed: .002 + seed * .003, layer: i % 3 === 0 ? 1 : 0, strand: hash(i * 7 + 9), spread: (hash(i * 13) - .5) * .24 };
+    }),
+    distant: Array.from({ length: 65 }, (_, i) => ({ xFactor: hash(i * 19 + 2), yFactor: hash(i * 23 + 1), speed: 1 + hash(i) * 2 })),
+  };
+  private habitatCache: { key: string; contours: Path2D[]; stemBases: { baseX: number; height: number }[]; dots: Float64Array }[] = [];
 
   constructor(private canvas: HTMLCanvasElement) {
     const context = canvas.getContext('2d', { alpha: true });
@@ -84,13 +110,29 @@ export class TidalScene {
     ctx.fillRect(0, 0, 48, 48);
   }
 
-  resize(width: number, height: number, dpr: number) {
+  /** Level 0 is full quality; higher levels trade resolution and density for frame headroom. */
+  setQuality(level: number) {
+    const next = QUALITY_LEVELS[Math.max(0, Math.min(QUALITY_LEVELS.length - 1, Math.round(level)))];
+    if (next === this.quality) return false;
+    this.quality = next;
+    if (this.width && this.height) this.applySize(this.width, this.height, this.rawDpr);
+    return true;
+  }
+
+  paintInterval() { return this.quality === QUALITY_LEVELS[3] ? 1000 / 30 : 1000 / 60; }
+
+  private applySize(width: number, height: number, rawDpr: number) {
     this.width = width;
     this.height = height;
-    this.dpr = dpr;
-    this.canvas.width = Math.round(width * dpr);
-    this.canvas.height = Math.round(height * dpr);
+    this.rawDpr = rawDpr;
+    this.dpr = Math.max(1, Math.min(rawDpr, this.quality.dprCap));
+    this.canvas.width = Math.round(width * this.dpr);
+    this.canvas.height = Math.round(height * this.dpr);
     this.school.configure(width, height, this.kind === 'koi');
+  }
+
+  resize(width: number, height: number, rawDpr: number) {
+    this.applySize(width, height, rawDpr);
   }
 
   pointAt(x: number, y: number) {
@@ -166,7 +208,7 @@ export class TidalScene {
     const columns = Math.ceil(this.width / 22);
     ctx.lineWidth = .65;
     for (let layer = 0; layer < 2; layer++) {
-      const count = this.width < 600 ? 12 : 19;
+      const count = Math.max(6, Math.round((this.width < 600 ? 12 : 19) * this.quality.strandScale));
       for (let line = 0; line < count; line++) {
         const strand = line / (count - 1);
         ctx.beginPath();
@@ -184,28 +226,29 @@ export class TidalScene {
 
   private drawPlankton() {
     const ctx = this.ctx;
-    const total = this.width < 600 ? 125 : 235;
+    const total = Math.max(40, Math.round((this.width < 600 ? 125 : 235) * this.quality.particleScale));
     for (let i = 0; i < total; i++) {
-      const seed = hash(i + 17);
-      const u = (hash(i * 3 + 7) + this.time * (.002 + seed * .003)) % 1;
-      const layer = i % 3 === 0 ? 1 : 0;
-      const y = this.currentY(u, hash(i * 7 + 9), layer) + (hash(i * 13) - .5) * this.height * .24;
+      const mote = this.plankton.drifting[i];
+      const u = (mote.uBase + this.time * mote.speed) % 1;
+      const y = this.currentY(u, mote.strand, mote.layer) + mote.spread * this.height;
       const p = this.displace(u * this.width, y);
-      const glint = .5 + .5 * Math.sin(this.time * .6 + seed * 40);
+      const glint = .5 + .5 * Math.sin(this.time * .6 + mote.seed * 40);
       ctx.globalAlpha = this.clarity(p.x, p.y) * (.12 + glint * .4);
-      ctx.fillStyle = seed > .88 ? this.brightStyle : this.inkStyle;
-      const size = seed > .86 ? 1.4 : .75;
+      ctx.fillStyle = mote.seed > .88 ? this.brightStyle : this.inkStyle;
+      const size = mote.seed > .86 ? 1.4 : .75;
       ctx.fillRect(p.x, p.y, size, size);
-      if (seed > .93 && !this.light) {
+      if (mote.seed > .93 && !this.light && this.quality.glow) {
         ctx.globalAlpha *= .7;
         ctx.drawImage(this.glow, p.x - 8, p.y - 8, 16, 16);
       }
     }
     // A sparse, slower layer gives the moving currents a sense of distance.
     ctx.fillStyle = this.dimStyle;
-    for (let i = 0; i < 65; i++) {
-      const x = hash(i * 19 + 2) * this.width;
-      const y = (hash(i * 23 + 1) * this.height - this.time * (1 + hash(i) * 2) + this.height * 10) % this.height;
+    const distant = Math.max(16, Math.round(65 * this.quality.particleScale));
+    for (let i = 0; i < distant; i++) {
+      const mote = this.plankton.distant[i];
+      const x = mote.xFactor * this.width;
+      const y = ((mote.yFactor * this.height - this.time * mote.speed + this.height * 10) % this.height + this.height) % this.height;
       ctx.globalAlpha = this.clarity(x, y) * .25;
       ctx.fillRect(x, y, .7, .7);
     }
@@ -214,27 +257,48 @@ export class TidalScene {
 
   private drawHabitats() {
     const ctx = this.ctx;
-    for (const home of this.school.habitats) {
+    for (const [index, home] of this.school.habitats.entries()) {
       const size = home.size;
+      // Contours, stem anchors and dot positions only depend on the habitat's
+      // placement, so they are rebuilt when configure() moves a habitat.
+      const key = `${home.x}|${home.y}|${home.side}|${size.toFixed(2)}`;
+      let layer = this.habitatCache[index];
+      if (!layer || layer.key !== key) {
+        const contours: Path2D[] = [];
+        for (let contour = 0; contour < 4; contour++) {
+          const path = new Path2D();
+          for (let i = 0; i <= 38; i++) {
+            const u = i / 38;
+            const x = home.x + (u - .5) * size * (1.05 - contour * .12);
+            const ridge = Math.sin(u * Math.PI) * (.17 + .055 * Math.sin(u * 10 + contour * .65));
+            const y = home.y - ridge * size + contour * size * .035;
+            if (i === 0) path.moveTo(x, y); else path.lineTo(x, y);
+          }
+          contours.push(path);
+        }
+        const stemBases = Array.from({ length: 7 }, (_, stem) => {
+          const seed = hash(stem * 7 + home.side * 31);
+          return { baseX: home.x + home.side * size * (.17 + stem * .045), height: size * (.32 + seed * .5) };
+        });
+        const dots = new Float64Array(32 * 3);
+        for (let i = 0; i < 32; i++) {
+          const u = hash(i * 5 + home.side * 17);
+          dots[i * 3] = home.x + (u - .5) * size * .9;
+          dots[i * 3 + 1] = home.y - Math.sin(u * Math.PI) * size * .12 + hash(i + 8) * size * .07;
+          dots[i * 3 + 2] = i % 4 ? 0 : 1;
+        }
+        layer = { key, contours, stemBases, dots };
+        this.habitatCache[index] = layer;
+      }
       // Low rock contours anchor the scene; fine stems move with the same tide.
       ctx.strokeStyle = this.dimStyle;
       ctx.lineWidth = .75;
       for (let contour = 0; contour < 4; contour++) {
-        ctx.beginPath();
-        for (let i = 0; i <= 38; i++) {
-          const u = i / 38;
-          const x = home.x + (u - .5) * size * (1.05 - contour * .12);
-          const ridge = Math.sin(u * Math.PI) * (.17 + .055 * Math.sin(u * 10 + contour * .65));
-          const y = home.y - ridge * size + contour * size * .035;
-          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
         ctx.globalAlpha = this.light ? .4 : .6 - contour * .09;
-        ctx.stroke();
+        ctx.stroke(layer.contours[contour]);
       }
       for (let stem = 0; stem < 7; stem++) {
-        const seed = hash(stem * 7 + home.side * 31);
-        const baseX = home.x + home.side * size * (.17 + stem * .045);
-        const height = size * (.32 + seed * .5);
+        const { baseX, height } = layer.stemBases[stem];
         const phase = this.time * .65 + stem * .8;
         ctx.beginPath();
         for (let i = 0; i <= 24; i++) {
@@ -262,10 +326,7 @@ export class TidalScene {
       ctx.fillStyle = this.inkStyle;
       ctx.globalAlpha = .36;
       for (let i = 0; i < 32; i++) {
-        const u = hash(i * 5 + home.side * 17);
-        const x = home.x + (u - .5) * size * .9;
-        const y = home.y - Math.sin(u * Math.PI) * size * .12 + hash(i + 8) * size * .07;
-        ctx.fillText(i % 4 ? '·' : ':', x, y);
+        ctx.fillText(layer.dots[i * 3 + 2] ? ':' : '·', layer.dots[i * 3], layer.dots[i * 3 + 1]);
       }
     }
     ctx.globalAlpha = 1;
@@ -331,7 +392,7 @@ export class TidalScene {
         const size = seed > .78 ? 1.35 : .85;
         ctx.fillRect(p.x, p.y, size, size);
       }
-      if (shine > .82 && seed > .91 && !this.light) {
+      if (shine > .82 && seed > .91 && !this.light && this.quality.glow) {
         ctx.globalAlpha = alpha * .65;
         ctx.drawImage(this.glow, p.x - 7, p.y - 7, 14, 14);
       }
@@ -388,7 +449,8 @@ export class TidalScene {
 
   private drawShoal(large = false) {
     const ctx = this.ctx;
-    const count = large ? (this.width < 600 ? 68 : 115) : (this.width < 600 ? 16 : 28);
+    const base = large ? (this.width < 600 ? 68 : 115) : (this.width < 600 ? 16 : 28);
+    const count = Math.max(large ? 20 : 10, Math.round(base * (large ? this.quality.particleScale : 1)));
     for (let i = 0; i < count; i++) {
       const seed = hash(i * 41 + 8);
       const u = (hash(i * 11 + 1) + this.time * .006) % 1;
@@ -416,7 +478,7 @@ export class TidalScene {
     for (const ripple of this.ripples) {
       const age = this.time - ripple.born;
       const progress = clamp(age / 2.8);
-      if (age < .2) {
+      if (age < .2 && this.quality.glow) {
         ctx.globalAlpha = (1 - age / .2) * .65;
         ctx.drawImage(this.glow, ripple.x - 13, ripple.y - 13, 26, 26);
       }
@@ -438,7 +500,7 @@ export class TidalScene {
         ctx.globalAlpha = (1 - progress) ** 3 * .8;
         ctx.fillStyle = this.brightStyle;
         ctx.fillRect(x, y, 1.2, 1.2);
-        if (i % 3 === 0 && !this.light) ctx.drawImage(this.glow, x - 10, y - 10, 20, 20);
+        if (i % 3 === 0 && !this.light && this.quality.glow) ctx.drawImage(this.glow, x - 10, y - 10, 20, 20);
       }
     }
     ctx.globalAlpha = 1;

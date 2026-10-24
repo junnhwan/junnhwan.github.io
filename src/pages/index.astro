@@ -1,17 +1,25 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AsciiOcean from '../components/AsciiOcean.astro';
-import { Wordmark } from '../components/Wordmark';
+import Wordmark from '../components/Wordmark.astro';
 import { getCollection } from 'astro:content';
 import { formatDate, calculateReadingTime } from '../utils/readingTime';
+import { getContributions, allMergedUrl, GH_USER } from '../utils/contributions';
+import { recentMergedPrs } from '../data/oss';
+
 const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
+const { counts, total, repoCount } = await getContributions();
+// The panel features the three main contribution lines; counts stay live.
+const FEATURED_REPOS = ['thedotmack/claude-mem', 'The-PR-Agent/pr-agent', 'k8sgpt-ai/k8sgpt'];
+const topRepos = FEATURED_REPOS.map((repo) => ({ name: repo.split('/')[1] ?? repo, merged: counts[repo] ?? 0 }));
+const barMax = Math.max(...topRepos.map((repo) => repo.merged), 1);
 ---
 <BaseLayout title="junnhwan · Be here now" description="junnhwan 的博客。">
   <section data-ocean-hero class="ocean-hero">
     <AsciiOcean />
     <div class="hero-mark">
-      <Wordmark client:load />
+      <Wordmark />
       <div class="hero-links">
         <a href="/blog">Explore the writing <span aria-hidden="true">↗</span></a>
       </div>
@@ -21,31 +29,68 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
       <a href="#recent-title">最近更新 <span aria-hidden="true">↓</span></a>
     </div>
   </section>
-  <section class="home-posts page-shell" aria-labelledby="recent-title">
-    <div class="section-heading">
-      <div>
-        <p class="section-eyebrow">Journal</p>
-        <h2 id="recent-title">最近更新</h2>
-      </div>
-      <a href="/blog" class="all-posts">全部文章 <span aria-hidden="true">↗</span></a>
-    </div>
-    {recentPosts.map((post, index) => (
-      <article class:list={['home-post', { 'home-post-latest': index === 0 }]}>
-        <div class="post-date">
-          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
-          <span>{post.data.category}</span>
-        </div>
-        <a href={`/blog/${post.slug}`} class="home-post-link article-row">
-          <h3>{post.data.title}</h3>
-          <p>{post.data.description}</p>
-          <div class="post-meta">
-            <span>{post.data.tags.slice(0, 2).join(' / ')}</span>
-            <span>{calculateReadingTime(post.body).replace('min read', '分钟阅读')}</span>
+  <section class="home-feed page-shell" aria-labelledby="recent-title">
+    <div class="feed-grid">
+      <div class="feed-posts">
+        <div class="section-heading">
+          <div>
+            <p class="section-eyebrow">Journal</p>
+            <h2 id="recent-title">最近更新</h2>
           </div>
-          <span class="article-arrow" aria-hidden="true">↗</span>
+          <a href="/blog" class="all-posts">全部文章 <span aria-hidden="true">↗</span></a>
+        </div>
+        <ol class="post-index">
+          {recentPosts.map((post) => (
+            <li>
+              <a href={`/blog/${post.slug}`} class="post-row article-row">
+                <time class="post-row-date" datetime={post.data.pubDate.toISOString()}>
+                  {formatDate(post.data.pubDate).slice(5).replace('-', '.')}
+                </time>
+                <span class="post-row-main">
+                  <span class="post-row-title">{post.data.title}</span>
+                  <span class="post-row-meta">
+                    <span>{post.data.tags.slice(0, 2).join(' / ')}</span>
+                    <span>{calculateReadingTime(post.body).replace('min read', '分钟阅读')}</span>
+                  </span>
+                </span>
+                <span class="article-arrow" aria-hidden="true">↗</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <aside class="feed-oss" aria-label="开源贡献概览">
+        <p class="oss-cmd" aria-hidden="true"><span class="oss-prompt">$</span> gh pr list --merged --author {GH_USER}</p>
+        <a class="oss-total" href={allMergedUrl()} target="_blank" rel="noopener noreferrer"
+          aria-label={`查看全部 ${total} 个已合并 PR，涉及 ${repoCount} 个仓库`}>
+          <span class="oss-count">{total}<span aria-hidden="true">↗</span></span>
+          <span class="oss-total-note">已合并 PR<br />{repoCount} 个仓库</span>
         </a>
-      </article>
-    ))}
+        <ul class="oss-repos">
+          {topRepos.map((repo) => (
+            <li>
+              <span class="oss-repo-name">{repo.name}</span>
+              <span class="oss-bar" aria-hidden="true"><i style={`width: ${Math.max(6, Math.round(repo.merged / barMax * 100))}%`}></i></span>
+              <span class="oss-repo-count">{repo.merged}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="oss-divider">最近合并</p>
+        <ul class="oss-prs">
+          {recentMergedPrs.map((pr) => (
+            <li>
+              <a href={pr.url} target="_blank" rel="noopener noreferrer" title={pr.title}>
+                <span class="pr-number">#{pr.number}</span>
+                <span class="oss-pr-label"><span class="oss-pr-repo">{pr.name}</span>{pr.label}</span>
+                <time datetime={pr.date}>{pr.date.slice(5).replace('-', '.')}</time>
+              </a>
+            </li>
+          ))}
+        </ul>
+        <a class="oss-more" href="/about">完整清单与关于我 <span aria-hidden="true">↗</span></a>
+      </aside>
+    </div>
   </section>
 </BaseLayout>
 <style>
@@ -60,31 +105,59 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .hero-caption { position: absolute; bottom: 2.5rem; left: 0; right: 0; display: flex; justify-content: space-between; gap: 1rem; color: var(--fg-subtle); font-size: 12px; }
   .hero-caption a { display: flex; align-items: center; gap: .75rem; }
   .hero-caption a:hover { color: var(--accent); }
-  .home-posts { padding-top: 2.5rem; }
+  .home-feed { padding-block: 2.75rem 4.5rem; }
+  .feed-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .95fr); gap: 3.5rem; align-items: start; }
   .section-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: end; padding-bottom: 1.75rem; border-bottom: 1px solid var(--line-strong); }
   .section-eyebrow { color: var(--accent); font-size: 11px; letter-spacing: .08em; margin-bottom: .5rem; }
   .section-heading h2 { font-family: var(--font-reading); font-size: clamp(24px, 3vw, 32px); color: var(--fg); }
   #recent-title { scroll-margin-top: 7rem; }
   .all-posts { font-size: 12px; color: var(--fg-muted); padding-block: .5rem; }
-  .home-posts a { text-decoration: none; }
-  .home-post { display: grid; grid-template-columns: 150px minmax(0,1fr); gap: 2rem; border-bottom: 1px solid var(--line); }
-  .post-date { padding-block: 2rem; font-size: 12px; color: var(--fg-subtle); display: flex; flex-direction: column; gap: .65rem; }
-  .post-date time { font-family: 'JetBrains Mono Variable', monospace; font-size: 11px; }
-  .home-post-link { display: block; padding: 1.75rem 2.5rem 1.75rem 0; }
-  .home-post h3 { font-family: var(--font-reading); font-size: clamp(19px, 2.2vw, 25px); color: var(--fg); line-height: 1.55; transition: color var(--dur-fast) var(--ease); text-wrap: pretty; }
-  .home-post-latest h3 { font-size: clamp(23px, 2.6vw, 30px); }
-  .home-post-link p { margin-top: .65rem; max-width: 48rem; font-size: 14px; line-height: 1.8; color: var(--fg-muted); }
-  .post-meta { margin-top: 1rem; font-size: 11px; color: var(--fg-subtle); display: flex; gap: 1.25rem; }
-  .home-post-link:hover h3, .home-post-link:focus-visible h3 { color: var(--accent); }
+  .home-feed a { text-decoration: none; }
   .all-posts:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .post-index { list-style: none; margin: 0; padding: 0; }
+  .post-index li { border-bottom: 1px solid var(--line); }
+  .post-row { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 1.1rem; align-items: start; padding: 1.15rem 2rem 1.15rem 0; }
+  .post-row-date { padding-top: .3rem; font-family: 'JetBrains Mono Variable', monospace; font-size: 11px; color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
+  .post-row-title { display: block; font-family: var(--font-reading); font-size: 17.5px; line-height: 1.5; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color var(--dur-fast) var(--ease); }
+  .post-row-meta { display: flex; gap: 1rem; margin-top: .35rem; font-size: 11px; color: var(--fg-subtle); }
+  .post-row:hover .post-row-title, .post-row:focus-visible .post-row-title { color: var(--accent); }
+  .post-row .article-arrow { top: 1.3rem; }
+  .feed-oss { display: grid; gap: 1.05rem; padding: 1.5rem 1.5rem 1.35rem; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--bg-soft); }
+  .oss-cmd { margin: 0; font-family: 'JetBrains Mono Variable', monospace; font-size: 11px; color: var(--fg-subtle); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .oss-prompt { margin-right: .5em; color: var(--accent); }
+  .oss-total { display: flex; align-items: center; gap: 1rem; }
+  .oss-count { font-family: 'JetBrains Mono Variable', monospace; font-size: clamp(36px, 4vw, 44px); font-weight: 500; letter-spacing: -.04em; line-height: 1; color: var(--fg); font-variant-numeric: tabular-nums; }
+  .oss-count > span { margin-left: .35rem; font-size: 17px; color: var(--accent); transition: transform var(--dur-fast) var(--ease); }
+  .oss-total:hover .oss-count > span { transform: translate(2px, -2px); }
+  .oss-total-note { font-size: 11px; line-height: 1.7; color: var(--fg-subtle); }
+  .oss-repos { list-style: none; margin: 0; padding: 0; display: grid; gap: .6rem; }
+  .oss-repos li { display: grid; grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr) 1.6rem; gap: .85rem; align-items: center; }
+  .oss-repo-name { font-family: 'JetBrains Mono Variable', monospace; font-size: 11px; color: var(--fg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .oss-bar { height: 3px; border-radius: 2px; background: var(--line); }
+  .oss-bar i { display: block; height: 100%; border-radius: inherit; background: var(--accent); opacity: .8; }
+  .oss-repo-count { font-family: 'JetBrains Mono Variable', monospace; font-size: 11px; color: var(--fg-subtle); text-align: right; font-variant-numeric: tabular-nums; }
+  .oss-divider { margin: 0; padding-top: 1.1rem; border-top: 1px dashed var(--line-strong); font-size: 10px; letter-spacing: .1em; color: var(--fg-subtle); }
+  .oss-prs { list-style: none; margin: 0; padding: 0; display: grid; gap: .25rem; }
+  .oss-prs a { display: grid; grid-template-columns: 3rem minmax(0, 1fr) auto; gap: .7rem; align-items: baseline; padding: .45rem .55rem; margin-inline: -.55rem; border-radius: 8px; transition: background-color var(--dur-fast) var(--ease); }
+  .oss-prs a:hover, .oss-prs a:focus-visible { background: var(--accent-soft); }
+  .pr-number { font-family: 'JetBrains Mono Variable', monospace; font-size: 11px; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .oss-pr-label { font-size: 12.5px; color: var(--fg-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color var(--dur-fast) var(--ease); }
+  .oss-pr-repo { margin-right: .45rem; font-family: 'JetBrains Mono Variable', monospace; font-size: 10.5px; color: var(--fg-subtle); }
+  .oss-prs a:hover .oss-pr-label { color: var(--fg); }
+  .oss-prs time { font-family: 'JetBrains Mono Variable', monospace; font-size: 10px; color: var(--fg-subtle); font-variant-numeric: tabular-nums; }
+  .oss-more { font-size: 12px; color: var(--fg-muted); }
+  .oss-more:hover { color: var(--accent); }
+  @media (max-width: 899px) {
+    .feed-grid { grid-template-columns: minmax(0, 1fr); gap: 2.25rem; }
+  }
   @media (max-width: 639px) {
     .hero-caption { bottom: 1.5rem; font-size: 10px; }
     .hero-caption > a { display: none; }
     .hero-mark { padding-bottom: 3rem; }
     .hero-links { margin-top: 1.5rem; gap: .25rem; }
-    .home-post { grid-template-columns: minmax(0,1fr); gap: 0; }
-    .post-date { padding: 1.5rem 0 0; flex-direction: row; gap: 1rem; }
-    .home-post-link { padding-top: .75rem; }
-    .home-post-link .article-arrow { top: .85rem; }
+    .post-row { padding: 1rem 1.9rem 1rem 0; }
+    .post-row .article-arrow { top: 1.15rem; }
+    .feed-oss { padding: 1.25rem 1.15rem 1.1rem; }
+    .oss-repos li { grid-template-columns: minmax(0, 5.5rem) minmax(0, 1fr) 1.6rem; }
   }
 </style>
