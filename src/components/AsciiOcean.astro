@@ -1,0 +1,98 @@
+---
+---
+
+<div class="ascii-ocean" data-ascii-ocean>
+  <div class="ocean-water" aria-hidden="true"><div class="ocean-atmosphere"></div><canvas></canvas></div>
+  <details class="ocean-controls" hidden>
+    <summary aria-label="潮汐背景设置" title="潮汐背景设置">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M3 12c4-6 11-6 15 0-4 6-11 6-15 0Zm15 0 3-4v8l-3-4ZM10 7l2-3 2 4" />
+        <circle cx="7" cy="11" r=".6" fill="currentColor" stroke="none" />
+      </svg>
+      <span>潮汐</span>
+      <span class="ocean-status" aria-hidden="true"></span>
+    </summary>
+    <div class="ocean-panel">
+      <div class="ocean-panel-heading">
+        <span class="ocean-panel-title">Tidal</span>
+        <span>水流与微光</span>
+      </div>
+      <label class="ocean-setting">
+        <span>水中的身影</span>
+        <select data-ocean-species>
+          <option value="sharks">ASCII 鲨鱼</option>
+          <option value="koi">锦鲤与金鱼</option>
+          <option value="rays">流光鳐鱼</option>
+          <option value="shoal">微光鱼群</option>
+        </select>
+      </label>
+      <label class="ocean-setting" for="ocean-opacity">
+        <span class="ocean-range-label"><span>光影强度</span><output for="ocean-opacity" aria-hidden="true">85%</output></span>
+        <input id="ocean-opacity" data-ocean-opacity type="range" min="20" max="100" step="5" value="85" />
+      </label>
+      <button type="button" class="ocean-pause" data-ocean-pause aria-pressed="false">
+        <svg class="pause-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 3h2.5v10H4zm5.5 0H12v10H9.5z" /></svg>
+        <svg class="play-icon" width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="m5 3 8 5-8 5z" /></svg>
+        <span data-ocean-pause-label>暂停游动</span>
+      </button>
+      <p class="ocean-hint"><span class="pointer-hint"><span class="fish-hint">有的鱼会跟着光标慢游，静下来便回到礁石与水草旁。</span><span class="field-hint">移动光标，拨动水流。</span></span>轻触水面，泛起涟漪。</p>
+    </div>
+  </details>
+</div>
+
+<style>
+  .ascii-ocean { --water-rgb: var(--accent-rgb); position: absolute; inset: 0; pointer-events: none; }
+  .ascii-ocean[data-scene='koi'] { --water-rgb: 190, 152, 93; }
+  .ocean-water { position: absolute; inset: 0; overflow: hidden; opacity: var(--ocean-opacity, .85); mask-image: linear-gradient(to bottom, transparent, #000 10%, #000 79%, transparent); transition: opacity var(--dur) var(--ease); }
+  .ocean-atmosphere { position: absolute; inset: 0; background: radial-gradient(ellipse 36% 56% at 82% 47%, rgba(var(--water-rgb), .08), transparent 80%), radial-gradient(ellipse 28% 44% at 12% 28%, rgba(var(--water-rgb), .045), transparent 80%); }
+  canvas { position: relative; display: block; width: 100%; height: 100%; }
+  .ocean-controls { position: absolute; top: 1.25rem; right: max(1.25rem, calc((100% - 1056px) / 2)); z-index: 3; pointer-events: auto; font-size: 12px; color: var(--fg-muted); }
+  .ocean-controls[hidden] { display: none; }
+  summary { display: flex; align-items: center; justify-content: center; gap: .55rem; min-width: 44px; min-height: 40px; padding: .45rem .85rem; border: 1px solid var(--line); border-radius: 999px; color: var(--fg-subtle); background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(12px); list-style: none; cursor: pointer; user-select: none; transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
+  summary::-webkit-details-marker { display: none; }
+  details[open] summary { color: var(--accent); border-color: var(--accent-line); }
+  .ocean-panel { position: absolute; top: calc(100% + .65rem); right: 0; width: 248px; padding: 1.25rem; border: 1px solid var(--line-strong); border-radius: 12px; background: color-mix(in srgb, var(--surface-solid) 92%, transparent); backdrop-filter: blur(16px); box-shadow: inset 0 1px var(--highlight), 0 18px 55px -24px rgba(0, 0, 0, .35); transform-origin: right top; }
+  .ocean-panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.6rem; color: var(--fg-subtle); font-size: 10px; }
+  .ocean-panel-title { font: italic 29px/1 'Newsreader Variable', serif; color: var(--fg); letter-spacing: -.03em; }
+  .ocean-status { width: 4px; height: 4px; margin-left: .15rem; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  [data-motion='paused'] .ocean-status, [data-motion='reduced'] .ocean-status { background: var(--fg-subtle); box-shadow: none; }
+  .ocean-setting { display: grid; gap: .65rem; margin-bottom: 1.2rem; }
+  select { width: 100%; min-height: 40px; padding: .5rem .65rem; border: 1px solid var(--line); border-radius: 6px; color: var(--fg); background: var(--bg); font: inherit; cursor: pointer; }
+  .ocean-range-label { display: flex; align-items: center; justify-content: space-between; }
+  output { font: 10px 'JetBrains Mono Variable', monospace; color: var(--fg-subtle); }
+  input[type='range'] { display: block; width: 100%; height: 24px; margin: 0; accent-color: var(--accent); cursor: pointer; }
+  .ocean-pause { display: flex; justify-content: center; align-items: center; gap: .5rem; width: 100%; min-height: 40px; padding: .5rem; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg-muted); font: inherit; cursor: pointer; transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease), transform var(--dur-fast) var(--ease); }
+  summary:active:not(:focus-visible), .ocean-pause:not(:disabled):active:not(:focus-visible) { transform: scale(.97); }
+  .play-icon, [aria-pressed='true'] .pause-icon { display: none; }
+  [aria-pressed='true'] .play-icon { display: block; }
+  .ocean-pause:disabled { cursor: default; color: var(--fg-subtle); }
+  .ocean-hint { margin-top: 1.15rem; font-size: 10px; line-height: 1.8; color: var(--fg-subtle); }
+  .field-hint, :is([data-scene='rays'], [data-scene='shoal']) .fish-hint { display: none; }
+  :is([data-scene='rays'], [data-scene='shoal']) .field-hint { display: inline; }
+  @media (hover: hover) and (pointer: fine) {
+    summary:hover, .ocean-pause:not(:disabled):hover { color: var(--accent); border-color: var(--accent-line); }
+  }
+  @media (max-width: 639px) {
+    .ocean-controls { top: .75rem; right: 1.25rem; }
+    summary { font-size: 11px; }
+  }
+  @media (hover: none), (pointer: coarse) {
+    .pointer-hint { display: none; }
+    summary, select, .ocean-pause { min-height: 44px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    summary, .ocean-pause { transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); }
+    summary:active:not(:focus-visible), .ocean-pause:not(:disabled):active:not(:focus-visible) { transform: none; }
+  }
+</style>
+
+<script>
+  import { mountAsciiOcean } from '../lib/ascii-ocean/controller';
+
+  document.addEventListener('astro:page-load', () => {
+    const root = document.querySelector<HTMLElement>('[data-ascii-ocean]');
+    if (!root) return;
+    const dispose = mountAsciiOcean(root);
+    if (dispose) document.addEventListener('astro:before-swap', dispose, { once: true });
+  });
+</script>

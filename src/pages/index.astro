@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import LineField from '../components/LineField.astro';
+import AsciiOcean from '../components/AsciiOcean.astro';
 import { Wordmark } from '../components/Wordmark';
 import { getCollection } from 'astro:content';
 import { formatDate, calculateReadingTime } from '../utils/readingTime';
@@ -8,8 +8,8 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()).slice(0, 3);
 ---
 <BaseLayout title="junnhwan · Be here now" description="junnhwan 的博客。">
-  <section data-line-hero class="line-hero">
-    <LineField />
+  <section data-ocean-hero class="ocean-hero">
+    <AsciiOcean />
     <div class="hero-mark">
       <Wordmark client:load />
       <div class="hero-links">
@@ -49,12 +49,11 @@ const recentPosts = (await getCollection('blog', ({ data }) => !data.draft))
   </section>
 </BaseLayout>
 <style>
-  .line-hero { position: relative; min-height: clamp(440px, 68dvh, 720px); display: grid; place-items: center; isolation: isolate; }
-  .hero-mark { position: relative; text-align: center; padding: 2rem 1rem 5rem; }
-  .hero-mark::before { content: ''; position: absolute; inset: -2rem; z-index: -1; background: radial-gradient(ellipse, var(--bg) 20%, transparent 70%); pointer-events: none; }
+  .ocean-hero { position: relative; min-height: clamp(500px, 72dvh, 780px); display: grid; place-items: center; isolation: isolate; overflow: clip; background: var(--bg); }
+  .hero-mark { position: relative; z-index: 1; isolation: isolate; text-align: center; padding: 2rem 1rem 5rem; }
   .hero-links { display: flex; gap: .75rem; justify-content: center; margin-top: 2rem; }
-  .hero-mark a { display: inline-flex; gap: .75rem; align-items: center; padding: .75rem 1rem; color: var(--fg-muted); font-size: 13px; transition: color var(--dur-fast) var(--ease), background-color var(--dur-fast) var(--ease); border-radius: 6px; }
-  .hero-mark a:first-child { color: var(--accent); background: var(--accent-soft); }
+  .hero-mark a { display: inline-flex; gap: 1rem; align-items: center; padding: .75rem .2rem; color: var(--fg-muted); font-size: 13px; transition: color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease); border-bottom: 1px solid var(--accent-line); }
+  .hero-mark a:first-child { color: var(--accent); }
   .hero-mark a span { transition: transform var(--dur-fast) var(--ease); }
   @media (hover: hover) and (pointer: fine) { .hero-mark a:hover { color: var(--accent); } .hero-mark a:hover span { transform: translate(2px,-2px); } }
   @media (prefers-reduced-motion: reduce) { .hero-mark a:hover span { transform: none; } }
