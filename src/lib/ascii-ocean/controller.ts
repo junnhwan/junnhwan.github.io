@@ -63,14 +63,16 @@ export function mountAsciiOcean(root: HTMLElement) {
   let width = 0;
   let height = 0;
   let frame = 0;
-  let visible = false;
+  let onScreen = false;
+  let scrolling = false;
+  let scrollTimer = 0;
   let disposed = false;
 
   const save = () => {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences)); }
     catch { /* Preferences still work when browser storage is unavailable. */ }
   };
-  const canAnimate = () => !disposed && visible && !document.hidden && !reduced.matches && !preferences.paused;
+  const canAnimate = () => !disposed && onScreen && !scrolling && !document.hidden && !reduced.matches && !preferences.paused;
   const draw = () => scene.render();
   const updateControls = () => {
     species.value = preferences.species;
@@ -207,12 +209,27 @@ export function mountAsciiOcean(root: HTMLElement) {
   document.addEventListener('visibilitychange', sync, { signal });
   reduced.addEventListener('change', sync, { signal });
   fine.addEventListener('change', () => scene.releasePointer(), { signal });
+  // Scrolling the hero and redrawing it in the same frame is what makes the page feel stuck.
+  // Freeze on the current frame until the scroll settles.
+  const onScroll = () => {
+    window.clearTimeout(scrollTimer);
+    if (!scrolling) {
+      scrolling = true;
+      sync();
+    }
+    scrollTimer = window.setTimeout(() => {
+      scrolling = false;
+      sync();
+    }, 140);
+  };
+  document.addEventListener('scroll', onScroll, { passive: true, signal });
+  window.addEventListener('scroll', onScroll, { passive: true, signal });
 
   const sizeObserver = new ResizeObserver(resize);
   const viewObserver = new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
+    onScreen = entry.isIntersecting && entry.intersectionRatio >= .33;
     sync();
-  }, { rootMargin: '-80px 0px 0px 0px' });
+  }, { rootMargin: '-80px 0px 0px 0px', threshold: [0, .33, 1] });
   const themeObserver = new MutationObserver(updateTheme);
   sizeObserver.observe(canvas);
   viewObserver.observe(host);
@@ -224,6 +241,7 @@ export function mountAsciiOcean(root: HTMLElement) {
 
   return () => {
     disposed = true;
+    window.clearTimeout(scrollTimer);
     cancelAnimationFrame(frame);
     events.abort();
     sizeObserver.disconnect();

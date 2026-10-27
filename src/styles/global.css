@@ -534,7 +534,7 @@
   .article-row::after { transition: none; }
 }
 
-/* Signature draws once; the complete mark responds as one piece of ink. */
+/* Signature draws once per visit; the complete mark responds as one piece of ink. */
 .signature-block { width: min(650px, 78vw); }
 .signature-heading { color: var(--fg); margin: 0; }
 .signature-ink { display: block; transform-origin: center; }
@@ -542,23 +542,31 @@
 .signature-stroke {
   fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round;
   stroke-dasharray: 1; stroke-dashoffset: 0;
-  animation: signature-write 420ms linear both;
-  animation-play-state: paused;
 }
-.signature-block[data-ready="true"] .signature-stroke { animation-play-state: running; }
 .signature-motto {
   position: relative; width: fit-content; margin: .3rem auto 0;
   font-family: 'Newsreader Variable', Georgia, serif; font-size: clamp(22px, 3vw, 32px);
   font-style: italic; font-weight: 400; color: var(--fg-muted); letter-spacing: -.04em;
 }
-.signature-motto i { display: inline-block; font-style: inherit; margin: 0 .08em;
-  animation: motto-arrive 500ms var(--ease) 2.1s both; animation-play-state: paused; }
-.signature-motto i:nth-child(2) { animation-delay: 2.2s; }
-.signature-motto i:nth-child(3) { animation-delay: 2.3s; }
+.signature-motto i { display: inline-block; font-style: inherit; margin: 0 .08em; }
 .signature-motto svg { display: block; width: 100%; height: 18px; color: var(--accent); }
 .signature-motto path { fill: none; stroke: currentColor; stroke-width: 1; stroke-linecap: round;
-  stroke-dasharray: 1; animation: signature-write 500ms linear 2.5s both; animation-play-state: paused; }
-.signature-block[data-ready="true"] .signature-motto :is(i,path) { animation-play-state: running; }
+  stroke-dasharray: 1; stroke-dashoffset: 0; }
+.signature-block[data-draw]:not([data-ready]) :is(.signature-stroke, .signature-motto i, .signature-motto path) {
+  opacity: 0;
+}
+.signature-block[data-ready][data-draw] .signature-stroke {
+  animation: signature-write var(--stroke-dur, 160ms) linear var(--stroke-delay, 0ms) both;
+}
+.signature-block[data-ready][data-draw] .signature-motto i {
+  animation: motto-arrive 280ms var(--ease) var(--motto-delay, 680ms) both;
+}
+.signature-block[data-ready][data-draw] .signature-motto path {
+  animation: signature-write 240ms linear var(--line-delay, 900ms) both;
+}
+.signature-block[data-written] :is(.signature-stroke, .signature-motto i, .signature-motto path) {
+  animation: none; opacity: 1; stroke-dashoffset: 0; transform: none;
+}
 /* Zero-length dashes with round caps still paint a dot. Keep each delayed
    stroke transparent until there is a real segment of ink to draw. */
 @keyframes signature-write {
@@ -568,5 +576,8 @@
 }
 @keyframes motto-arrive { from { opacity: 0; transform: translateY(7px) rotate(-4deg); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .signature-stroke, .signature-motto i, .signature-motto path { animation: none; opacity: 1; stroke-dashoffset: 0; }
+  .signature-stroke, .signature-motto i, .signature-motto path,
+  .signature-block[data-draw]:not([data-ready]) :is(.signature-stroke, .signature-motto i, .signature-motto path) {
+    animation: none; opacity: 1; stroke-dashoffset: 0; transform: none;
+  }
 }

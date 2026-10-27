@@ -85,6 +85,11 @@ function mesh(kind: FishKind): Cell[] {
       const eye = body && s > shape.eye[0] && s < shape.eye[1] && across > .55;
       const patch = kind !== 'shark' && body && Math.sin(s * 22 + v * 31) + Math.cos(v * 49 - s * 8) > .75;
       if (kind === 'shark' && s > .19 && s < .29 && across > .58 && row % 2 === 0) shade *= .5;
+      // Even rows keep the outline, eye and dorsal ridge. Interior fill is the
+      // expensive part of a resting fish and reads as noise once the silhouette holds.
+      const ridge = glyphs === shape.ridge;
+      const edge = body && across > .62;
+      if (row % 2 === 0 && !eye && !ridge && !edge) continue;
       cells.push({ s, v, shade, glyph: eye ? (kind === 'shark' ? 'o' : '目')
         : glyphs[fin || kind !== 'shark' ? Math.floor(seed * glyphs.length) : Math.floor(shade * (glyphs.length - 1))], patch, fin });
     }

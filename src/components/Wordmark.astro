@@ -15,7 +15,7 @@ const strokes = [
       <svg viewBox="0 0 650 205" aria-hidden="true" focusable="false">
         {strokes.map((d, index) => (
           <path d={d} pathLength={1} class="signature-stroke"
-            style={`animation-delay: ${index * 420}ms; stroke-width: ${index === 4 ? 1.8 : 3.2};`} />
+            style={`stroke-width: ${index === 4 ? 1.8 : 3.2};`} />
         ))}
       </svg>
     </span>
@@ -27,6 +27,18 @@ const strokes = [
     </svg>
   </p>
 </div>
+
+<script is:inline>
+  (function (script) {
+    var root = script.previousElementSibling;
+    if (!root || !root.hasAttribute('data-signature')) root = document.querySelector('[data-signature]');
+    if (!root) return;
+    try {
+      if (sessionStorage.getItem('junnhwan/signature-written') === '1') root.setAttribute('data-written', 'true');
+      else root.setAttribute('data-draw', 'true');
+    } catch (e) {}
+  })(document.currentScript);
+</script>
 
 <script>
   // The ink leans toward the pointer on the same spring the old React island
@@ -54,8 +66,48 @@ const strokes = [
     if (!ink || !heading) return;
     root.dataset.signatureMounted = 'true';
 
-    const ready = window.setTimeout(() => { root.dataset.ready = 'true'; }, 80);
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const SEEN_KEY = 'junnhwan/signature-written';
+    let seen = false;
+    try { seen = sessionStorage.getItem(SEEN_KEY) === '1'; } catch { seen = false; }
+
+    // Stroke time follows real path length so a short crossbar and the long
+    // flourish move at the same ink speed. The whole mark resolves in about 1.2s.
+    const scheduleDraw = () => {
+      const paths = [...root.querySelectorAll<SVGPathElement>('.signature-stroke')];
+      const lengths = paths.map((path) => {
+        const previous = path.getAttribute('pathLength');
+        path.removeAttribute('pathLength');
+        const length = path.getTotalLength() || 1;
+        if (previous !== null) path.setAttribute('pathLength', previous);
+        return length;
+      });
+      const sum = lengths.reduce((total, length) => total + length, 0) || 1;
+      const budget = 760;
+      let cursor = 40;
+      paths.forEach((path, index) => {
+        const duration = Math.max(70, Math.round(budget * lengths[index] / sum));
+        path.style.setProperty('--stroke-dur', `${duration}ms`);
+        path.style.setProperty('--stroke-delay', `${cursor}ms`);
+        cursor += duration;
+      });
+      const mottoAt = Math.max(0, cursor - 120);
+      root.querySelectorAll<HTMLElement>('.signature-motto i').forEach((word, index) => {
+        word.style.setProperty('--motto-delay', `${mottoAt + index * 40}ms`);
+      });
+      root.querySelector<SVGPathElement>('.signature-motto path')?.style.setProperty('--line-delay', `${mottoAt + 160}ms`);
+      try { sessionStorage.setItem(SEEN_KEY, '1'); } catch { /* The draw still plays; it just may replay next visit. */ }
+    };
+
+    let ready = 0;
+    if (reduced.matches || seen) {
+      root.dataset.written = 'true';
+      delete root.dataset.draw;
+    } else {
+      root.dataset.draw = 'true';
+      scheduleDraw();
+      ready = window.setTimeout(() => { root.dataset.ready = 'true'; }, 50);
+    }
     const fine = matchMedia('(hover: hover) and (pointer: fine)');
     const x = spring(140, 22);
     const y = spring(140, 22);

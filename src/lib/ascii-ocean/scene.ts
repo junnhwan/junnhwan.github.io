@@ -119,13 +119,28 @@ export class TidalScene {
     return true;
   }
 
-  paintInterval() { return this.quality === QUALITY_LEVELS[3] ? 1000 / 30 : 1000 / 60; }
+  /** Resting water paints at 30 fps. A turn, a ripple or the pointer returns to 60. */
+  paintInterval() {
+    if (this.quality === QUALITY_LEVELS[3] || !this.lively()) return 1000 / 30;
+    return 1000 / 60;
+  }
+
+  private lively() {
+    if (this.ripples.length > 0 || this.pointer.strength > .08) return true;
+    for (const fish of this.school.fish) {
+      if (fish.mood === 'following' || fish.mood === 'startled' || fish.speed > 24) return true;
+    }
+    return false;
+  }
 
   private applySize(width: number, height: number, rawDpr: number) {
     this.width = width;
     this.height = height;
     this.rawDpr = rawDpr;
-    this.dpr = Math.max(1, Math.min(rawDpr, this.quality.dprCap));
+    // A full-bleed hero at 2x is several million pixels per frame. Large screens
+    // stay at 1.25; phones keep the device ratio so the smaller canvas stays sharp.
+    const cap = width >= 840 ? Math.min(this.quality.dprCap, 1.25) : this.quality.dprCap;
+    this.dpr = Math.max(1, Math.min(rawDpr, cap));
     this.canvas.width = Math.round(width * this.dpr);
     this.canvas.height = Math.round(height * this.dpr);
     this.school.configure(width, height, this.kind === 'koi');
@@ -205,21 +220,19 @@ export class TidalScene {
 
   private drawCurrents() {
     const ctx = this.ctx;
-    const columns = Math.ceil(this.width / 22);
-    ctx.lineWidth = .65;
-    for (let layer = 0; layer < 2; layer++) {
-      const count = Math.max(6, Math.round((this.width < 600 ? 12 : 19) * this.quality.strandScale));
-      for (let line = 0; line < count; line++) {
-        const strand = line / (count - 1);
-        ctx.beginPath();
-        for (let col = 0; col <= columns; col++) {
-          const u = col / columns;
-          const p = this.displace(u * this.width, this.currentY(u, strand, layer));
-          if (col === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
-        }
-        ctx.strokeStyle = rgb(this.dim, (this.light ? .14 : .19) * (.3 + .7 * Math.sin(strand * Math.PI)));
-        ctx.stroke();
+    const columns = Math.ceil(this.width / 46);
+    const count = Math.max(4, Math.round((this.width < 600 ? 5 : 8) * this.quality.strandScale));
+    ctx.lineWidth = .7;
+    for (let line = 0; line < count; line++) {
+      const strand = line / (count - 1);
+      ctx.beginPath();
+      for (let col = 0; col <= columns; col++) {
+        const u = col / columns;
+        const p = this.displace(u * this.width, this.currentY(u, strand, line % 2));
+        if (col === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
       }
+      ctx.strokeStyle = rgb(this.dim, (this.light ? .18 : .24) * (.4 + .6 * Math.sin(strand * Math.PI)));
+      ctx.stroke();
     }
     ctx.globalAlpha = 1;
   }
@@ -276,16 +289,15 @@ export class TidalScene {
           }
           contours.push(path);
         }
-        const stemBases = Array.from({ length: 7 }, (_, stem) => {
+        const stemBases = Array.from({ length: 4 }, (_, stem) => {
           const seed = hash(stem * 7 + home.side * 31);
-          return { baseX: home.x + home.side * size * (.17 + stem * .045), height: size * (.32 + seed * .5) };
+          return { baseX: home.x + home.side * size * (.18 + stem * .09), height: size * (.58 + seed * .55) };
         });
-        const dots = new Float64Array(32 * 3);
-        for (let i = 0; i < 32; i++) {
+        const dots = new Float64Array(12 * 2);
+        for (let i = 0; i < 12; i++) {
           const u = hash(i * 5 + home.side * 17);
-          dots[i * 3] = home.x + (u - .5) * size * .9;
-          dots[i * 3 + 1] = home.y - Math.sin(u * Math.PI) * size * .12 + hash(i + 8) * size * .07;
-          dots[i * 3 + 2] = i % 4 ? 0 : 1;
+          dots[i * 2] = home.x + (u - .5) * size * .9;
+          dots[i * 2 + 1] = home.y - Math.sin(u * Math.PI) * size * .12 + hash(i + 8) * size * .07;
         }
         layer = { key, contours, stemBases, dots };
         this.habitatCache[index] = layer;
@@ -297,36 +309,26 @@ export class TidalScene {
         ctx.globalAlpha = this.light ? .4 : .6 - contour * .09;
         ctx.stroke(layer.contours[contour]);
       }
-      for (let stem = 0; stem < 7; stem++) {
+      ctx.strokeStyle = this.inkStyle;
+      ctx.fillStyle = this.inkStyle;
+      for (let stem = 0; stem < layer.stemBases.length; stem++) {
         const { baseX, height } = layer.stemBases[stem];
-        const phase = this.time * .65 + stem * .8;
+        const phase = this.time * .42 + stem * .8;
         ctx.beginPath();
-        for (let i = 0; i <= 24; i++) {
-          const u = i / 24;
-          const x = baseX + (Math.sin(phase - u * 2.6) * 9 + home.side * 8) * u ** 1.5;
+        for (let i = 0; i <= 16; i++) {
+          const u = i / 16;
+          const x = baseX + (Math.sin(phase - u * 2.2) * 12 + home.side * 10) * u ** 1.6;
           const y = home.y - height * u;
           if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
-        ctx.globalAlpha = this.light ? .43 : .49;
-        ctx.strokeStyle = this.inkStyle;
+        ctx.globalAlpha = this.light ? .4 : .46;
         ctx.lineWidth = stem % 2 ? .7 : 1;
         ctx.stroke();
-        for (let leaf = 1; leaf < 4; leaf++) {
-          const u = leaf / 4;
-          const x = baseX + (Math.sin(phase - u * 2.6) * 9 + home.side * 8) * u ** 1.5;
-          const y = home.y - height * u;
-          const side = leaf % 2 ? -1 : 1;
-          ctx.beginPath();
-          ctx.moveTo(x, y);
-          ctx.quadraticCurveTo(x + side * 8, y - 3, x + side * 9, y - 12);
-          ctx.stroke();
-        }
       }
-      ctx.font = '8px "JetBrains Mono Variable", monospace';
-      ctx.fillStyle = this.inkStyle;
-      ctx.globalAlpha = .36;
-      for (let i = 0; i < 32; i++) {
-        ctx.fillText(layer.dots[i * 3 + 2] ? ':' : '·', layer.dots[i * 3], layer.dots[i * 3 + 1]);
+      for (let i = 0; i < layer.dots.length / 2; i++) {
+        ctx.globalAlpha = this.light ? .28 : .34;
+        const mark = i % 4 ? .8 : 1.35;
+        ctx.fillRect(layer.dots[i * 2], layer.dots[i * 2 + 1], mark, mark);
       }
     }
     ctx.globalAlpha = 1;
